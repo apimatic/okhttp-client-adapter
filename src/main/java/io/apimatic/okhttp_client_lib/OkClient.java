@@ -22,6 +22,7 @@ import io.apimatic.core_interfaces.http.HttpMethod;
 import io.apimatic.core_interfaces.http.request.HttpRequest;
 import io.apimatic.core_interfaces.http.request.MultipartFileWrapper;
 import io.apimatic.core_interfaces.http.request.MultipartWrapper;
+import io.apimatic.core_interfaces.http.request.configuration.EndpointConfiguration;
 import io.apimatic.core_interfaces.http.request.configuration.RequestRetryConfiguration;
 import io.apimatic.core_interfaces.http.response.HttpResponse;
 import io.apimatic.core_interfaces.type.FileWrapper;
@@ -119,23 +120,23 @@ public class OkClient implements HttpClient {
      * @return CompletableFuture of HttpResponse after execution.
      */
     public CompletableFuture<HttpResponse> executeAsync(final HttpRequest httpRequest,
-            boolean hasBinaryResponse, RequestRetryConfiguration requestRetryConfiguration) {
+    		EndpointConfiguration endpointConfiguration) {
         okhttp3.Request okHttpRequest = convertRequest(httpRequest);
 
         RetryInterceptor retryInterceptor = getRetryInterceptor();
         if (retryInterceptor != null) {
-            retryInterceptor.addRequestEntry(okHttpRequest, requestRetryConfiguration);
+            retryInterceptor.addRequestEntry(okHttpRequest, endpointConfiguration.getRequestRetryConfiguration());
         }
 
         final CompletableFuture<HttpResponse> callBack = new CompletableFuture<>();
         client.newCall(okHttpRequest).enqueue(new okhttp3.Callback() {
 
             public void onFailure(okhttp3.Call call, IOException e) {
-                publishResponse(null, httpRequest, callBack, e, hasBinaryResponse);
+                publishResponse(null, httpRequest, callBack, e, endpointConfiguration.hasBinary());
             }
 
             public void onResponse(okhttp3.Call call, okhttp3.Response okHttpResponse) {
-                publishResponse(okHttpResponse, httpRequest, callBack, null, hasBinaryResponse);
+                publishResponse(okHttpResponse, httpRequest, callBack, null, endpointConfiguration.hasBinary());
             }
         });
 
@@ -151,18 +152,18 @@ public class OkClient implements HttpClient {
      * @return The converted http response.
      * @throws IOException exception to be thrown while converting response.
      */
-    public HttpResponse execute(HttpRequest httpRequest, boolean hasBinaryResponse,
-            RequestRetryConfiguration requestRetryConfiguration) throws IOException {
+    public HttpResponse execute(HttpRequest httpRequest,
+    		EndpointConfiguration endpointConfiguration) throws IOException {
         okhttp3.Request okHttpRequest = convertRequest(httpRequest);
 
         RetryInterceptor retryInterceptor = getRetryInterceptor();
         if (retryInterceptor != null) {
-            retryInterceptor.addRequestEntry(okHttpRequest, requestRetryConfiguration);
+            retryInterceptor.addRequestEntry(okHttpRequest, endpointConfiguration.getRequestRetryConfiguration());
         }
 
         okhttp3.Response okHttpResponse = null;
         okHttpResponse = client.newCall(okHttpRequest).execute();
-        return convertResponse(httpRequest, okHttpResponse, hasBinaryResponse);
+        return convertResponse(httpRequest, okHttpResponse, endpointConfiguration.hasBinary());
     }
 
     /**
@@ -312,7 +313,7 @@ public class OkClient implements HttpClient {
                     }
                     requestBody = formBuilder.build();
                 }
-            } else if (httpRequest.getHttpMethod().equals(HttpMethod.GET)) {
+            } else if (httpRequest.getHttpMethod().toString().equals(HttpMethod.GET.toString())) {
                 requestBody = null;
             } else {
                 requestBody = okhttp3.RequestBody.create(new byte[0], null);
