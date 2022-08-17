@@ -15,16 +15,16 @@ import java.util.Map.Entry;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 import io.apimatic.core_interfaces.compatibility.CompatibilityFactory;
+import io.apimatic.core_interfaces.http.CoreHttpClientConfiguration;
+import io.apimatic.core_interfaces.http.CoreHttpMethod;
 import io.apimatic.core_interfaces.http.HttpClient;
-import io.apimatic.core_interfaces.http.HttpClientConfiguration;
 import io.apimatic.core_interfaces.http.HttpHeaders;
-import io.apimatic.core_interfaces.http.HttpMethod;
-import io.apimatic.core_interfaces.http.request.HttpRequest;
-import io.apimatic.core_interfaces.http.request.MultipartFileWrapper;
-import io.apimatic.core_interfaces.http.request.MultipartWrapper;
-import io.apimatic.core_interfaces.http.request.configuration.EndpointConfiguration;
-import io.apimatic.core_interfaces.http.request.configuration.RequestRetryConfiguration;
-import io.apimatic.core_interfaces.http.response.HttpResponse;
+import io.apimatic.core_interfaces.http.request.ArraySerializationFormat;
+import io.apimatic.core_interfaces.http.request.CoreHttpRequest;
+import io.apimatic.core_interfaces.http.request.CoreMultipartFileWrapper;
+import io.apimatic.core_interfaces.http.request.CoreMultipartWrapper;
+import io.apimatic.core_interfaces.http.request.configuration.CoreEndpointConfiguration;
+import io.apimatic.core_interfaces.http.response.CoreHttpResponse;
 import io.apimatic.core_interfaces.type.FileWrapper;
 import io.apimatic.okhttp_client_lib.interceptors.HttpRedirectInterceptor;
 import io.apimatic.okhttp_client_lib.interceptors.RetryInterceptor;
@@ -48,7 +48,7 @@ public class OkClient implements HttpClient {
      * 
      * @param httpClientConfig The specified http client configuration.
      */
-    public OkClient(HttpClientConfiguration httpClientConfig,
+    public OkClient(CoreHttpClientConfiguration httpClientConfig,
             CompatibilityFactory compatibilityFactory) {
         this.compatibilityFactory = compatibilityFactory;
         okhttp3.OkHttpClient httpClientInstance = httpClientConfig.getHttpClientInstance();
@@ -67,7 +67,7 @@ public class OkClient implements HttpClient {
      * Applies the httpClientConfigurations on okhttp3.OkHttpClient.
      */
     private void applyHttpClientConfigurations(okhttp3.OkHttpClient client,
-            HttpClientConfiguration httpClientConfig) {
+            CoreHttpClientConfiguration httpClientConfig) {
         okhttp3.OkHttpClient.Builder clientBuilder = client.newBuilder();
         clientBuilder.readTimeout(httpClientConfig.getTimeout(), TimeUnit.SECONDS)
                 .writeTimeout(httpClientConfig.getTimeout(), TimeUnit.SECONDS)
@@ -119,16 +119,18 @@ public class OkClient implements HttpClient {
      * @param retryConfiguration The overridden retry configuration for request.
      * @return CompletableFuture of HttpResponse after execution.
      */
-    public CompletableFuture<HttpResponse> executeAsync(final HttpRequest httpRequest,
-    		EndpointConfiguration endpointConfiguration) {
-        okhttp3.Request okHttpRequest = convertRequest(httpRequest);
+    public CompletableFuture<CoreHttpResponse> executeAsync(final CoreHttpRequest httpRequest,
+            CoreEndpointConfiguration endpointConfiguration) {
+        okhttp3.Request okHttpRequest =
+                convertRequest(httpRequest, endpointConfiguration.getArraySerializationFormat());
 
         RetryInterceptor retryInterceptor = getRetryInterceptor();
         if (retryInterceptor != null) {
-            retryInterceptor.addRequestEntry(okHttpRequest, endpointConfiguration.getRequestRetryConfiguration());
+            retryInterceptor.addRequestEntry(okHttpRequest,
+                    endpointConfiguration.getRequestRetryConfiguration());
         }
 
-        final CompletableFuture<HttpResponse> callBack = new CompletableFuture<>();
+        final CompletableFuture<CoreHttpResponse> callBack = new CompletableFuture<>();
         client.newCall(okHttpRequest).enqueue(new okhttp3.Callback() {
 
             public void onFailure(okhttp3.Call call, IOException e) {
@@ -136,7 +138,8 @@ public class OkClient implements HttpClient {
             }
 
             public void onResponse(okhttp3.Call call, okhttp3.Response okHttpResponse) {
-                publishResponse(okHttpResponse, httpRequest, callBack, null, endpointConfiguration.hasBinary());
+                publishResponse(okHttpResponse, httpRequest, callBack, null,
+                        endpointConfiguration.hasBinary());
             }
         });
 
@@ -152,13 +155,15 @@ public class OkClient implements HttpClient {
      * @return The converted http response.
      * @throws IOException exception to be thrown while converting response.
      */
-    public HttpResponse execute(HttpRequest httpRequest,
-    		EndpointConfiguration endpointConfiguration) throws IOException {
-        okhttp3.Request okHttpRequest = convertRequest(httpRequest);
+    public CoreHttpResponse execute(CoreHttpRequest httpRequest,
+            CoreEndpointConfiguration endpointConfiguration) throws IOException {
+        okhttp3.Request okHttpRequest =
+                convertRequest(httpRequest, endpointConfiguration.getArraySerializationFormat());
 
         RetryInterceptor retryInterceptor = getRetryInterceptor();
         if (retryInterceptor != null) {
-            retryInterceptor.addRequestEntry(okHttpRequest, endpointConfiguration.getRequestRetryConfiguration());
+            retryInterceptor.addRequestEntry(okHttpRequest,
+                    endpointConfiguration.getRequestRetryConfiguration());
         }
 
         okhttp3.Response okHttpResponse = null;
@@ -187,10 +192,10 @@ public class OkClient implements HttpClient {
      * @param hasBinaryResponse Whether the response is binary or string.
      * @return The converted http response.
      */
-    private HttpResponse publishResponse(okhttp3.Response okHttpResponse, HttpRequest httpRequest,
-            CompletableFuture<HttpResponse> completionBlock, Throwable error,
-            boolean hasBinaryResponse) {
-        HttpResponse httpResponse = null;
+    private CoreHttpResponse publishResponse(okhttp3.Response okHttpResponse,
+            CoreHttpRequest httpRequest, CompletableFuture<CoreHttpResponse> completionBlock,
+            Throwable error, boolean hasBinaryResponse) {
+        CoreHttpResponse httpResponse = null;
         try {
             httpResponse = convertResponse(httpRequest, okHttpResponse, hasBinaryResponse);
 
@@ -215,9 +220,9 @@ public class OkClient implements HttpClient {
      * @return The converted http response.
      * @throws IOException exception to be thrown while converting response.
      */
-    protected HttpResponse convertResponse(HttpRequest request, okhttp3.Response response,
+    protected CoreHttpResponse convertResponse(CoreHttpRequest request, okhttp3.Response response,
             boolean hasBinaryResponse) throws IOException {
-        HttpResponse httpResponse = null;
+        CoreHttpResponse httpResponse = null;
 
         if (response != null) {
 
@@ -248,9 +253,11 @@ public class OkClient implements HttpClient {
      * Converts a given internal http request into an okhttp request model.
      * 
      * @param httpRequest The given http request in internal format.
+     * @param arraySerializationFormat
      * @return The converted okhttp request
      */
-    private okhttp3.Request convertRequest(HttpRequest httpRequest) {
+    private okhttp3.Request convertRequest(CoreHttpRequest httpRequest,
+            ArraySerializationFormat arraySerializationFormat) {
         okhttp3.RequestBody requestBody;
 
         if (httpRequest.getBody() != null) {
@@ -295,8 +302,8 @@ public class OkClient implements HttpClient {
             if (parameters != null && parameters.size() > 0) {
                 // check if a request is a multipart request
                 for (SimpleEntry<String, Object> param : parameters) {
-                    if ((param.getValue() instanceof MultipartFileWrapper)
-                            || (param.getValue() instanceof MultipartWrapper)) {
+                    if ((param.getValue() instanceof CoreMultipartFileWrapper)
+                            || (param.getValue() instanceof CoreMultipartWrapper)) {
                         multipartRequest = true;
                         break;
                     }
@@ -313,7 +320,8 @@ public class OkClient implements HttpClient {
                     }
                     requestBody = formBuilder.build();
                 }
-            } else if (httpRequest.getHttpMethod().toString().equals(HttpMethod.GET.toString())) {
+            } else if (httpRequest.getHttpMethod().toString()
+                    .equals(CoreHttpMethod.GET.toString())) {
                 requestBody = null;
             } else {
                 requestBody = okhttp3.RequestBody.create(new byte[0], null);
@@ -329,18 +337,19 @@ public class OkClient implements HttpClient {
         // build the request
         okhttp3.Request okHttpRequest = new okhttp3.Request.Builder()
                 .method(httpRequest.getHttpMethod().toString(), requestBody)
-                .headers(requestHeaders.build()).url(httpRequest.getUrl()).build();
+                .headers(requestHeaders.build()).url(httpRequest.getUrl(arraySerializationFormat))
+                .build();
 
         return okHttpRequest;
     }
 
-    private okhttp3.RequestBody createMultipartRequestBody(HttpRequest httpRequest) {
+    private okhttp3.RequestBody createMultipartRequestBody(CoreHttpRequest httpRequest) {
         okhttp3.MultipartBody.Builder multipartBuilder =
                 new okhttp3.MultipartBody.Builder().setType(okhttp3.MultipartBody.FORM);
 
         for (SimpleEntry<String, Object> param : httpRequest.getParameters()) {
-            if (param.getValue() instanceof MultipartFileWrapper) {
-                MultipartFileWrapper wrapperObj = (MultipartFileWrapper) param.getValue();
+            if (param.getValue() instanceof CoreMultipartFileWrapper) {
+                CoreMultipartFileWrapper wrapperObj = (CoreMultipartFileWrapper) param.getValue();
                 okhttp3.MediaType mediaType;
                 if (wrapperObj.getFileWrapper().getContentType() != null
                         && !wrapperObj.getFileWrapper().getContentType().isEmpty()) {
@@ -353,7 +362,8 @@ public class OkClient implements HttpClient {
 
                 okhttp3.RequestBody body = okhttp3.RequestBody
                         .create(wrapperObj.getFileWrapper().getFile(), mediaType);
-                HttpHeaders fileWrapperHeaders = compatibilityFactory.createHttpHeaders(wrapperObj.getHeaders());
+                HttpHeaders fileWrapperHeaders =
+                        compatibilityFactory.createHttpHeaders(wrapperObj.getHeaders());
                 fileWrapperHeaders.remove("content-type");
                 okhttp3.Headers.Builder fileWrapperHeadersBuilder =
                         createRequestHeaders(fileWrapperHeaders);
@@ -364,11 +374,12 @@ public class OkClient implements HttpClient {
                                 + "; filename=" + appendQuotedStringAndEncodeEscapeCharacters(
                                         wrapperObj.getFileWrapper().getFile().getName()));
                 multipartBuilder.addPart(fileWrapperHeadersBuilder.build(), body);
-            } else if (param.getValue() instanceof MultipartWrapper) {
-                MultipartWrapper wrapperObject = (MultipartWrapper) param.getValue();
+            } else if (param.getValue() instanceof CoreMultipartWrapper) {
+                CoreMultipartWrapper wrapperObject = (CoreMultipartWrapper) param.getValue();
                 okhttp3.RequestBody body = okhttp3.RequestBody.create(wrapperObject.getByteArray(),
                         okhttp3.MediaType.parse(wrapperObject.getHeaders().value("content-type")));
-                HttpHeaders wrapperHeaders = compatibilityFactory.createHttpHeaders(wrapperObject.getHeaders());
+                HttpHeaders wrapperHeaders =
+                        compatibilityFactory.createHttpHeaders(wrapperObject.getHeaders());
                 wrapperHeaders.remove("content-type");
                 okhttp3.Headers.Builder wrapperHeadersBuilder =
                         createRequestHeaders(wrapperHeaders);
