@@ -17,7 +17,7 @@ import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.TimeUnit;
 import io.apimatic.core_interfaces.http.CoreHttpClientConfiguration;
 import io.apimatic.core_interfaces.http.HttpMethodType;
-import io.apimatic.core_interfaces.http.request.configuration.RequestRetryConfiguration;
+import io.apimatic.core_interfaces.http.request.configuration.RetryOption;
 import okhttp3.Interceptor;
 import okhttp3.Request;
 import okhttp3.Response;
@@ -62,7 +62,7 @@ public class RetryInterceptor implements Interceptor {
         RequestState requestState = getRequestState(request);
         boolean isWhitelistedRequestMethod = this.httpClientConfiguration.getHttpMethodsToRetry()
                 .contains(HttpMethodType.valueOf(request.method()));
-        boolean isRetryAllowedForRequest = requestState.requestRetryConfiguration.getRetryOption()
+        boolean isRetryAllowedForRequest = requestState.retryOption
                 .isRetryAllowed(isWhitelistedRequestMethod);
         Response response = null;
         IOException timeoutException = null;
@@ -256,8 +256,8 @@ public class RetryInterceptor implements Interceptor {
      * @param retryConfiguration The overridden retry configuration for request.
      */
     public void addRequestEntry(Request okHttpRequest,
-            RequestRetryConfiguration requestRetryConfiguration) {
-        this.requestEntries.put(okHttpRequest, new RequestState(requestRetryConfiguration));
+            RetryOption retryOption) {
+        this.requestEntries.put(okHttpRequest, new RequestState(retryOption));
     }
 
     /**
@@ -293,7 +293,7 @@ public class RetryInterceptor implements Interceptor {
         /**
          * To keep track of request retry configurations.
          */
-        private RequestRetryConfiguration requestRetryConfiguration;
+        private RetryOption retryOption;
 
         /**
          * Default Constructor.
@@ -301,8 +301,8 @@ public class RetryInterceptor implements Interceptor {
          * @param retryForAllHttpMethods Whether to bypass the HTTP method checking for the given
          *        request in retries.
          */
-        private RequestState(RequestRetryConfiguration requestRetryConfiguration) {
-            this.requestRetryConfiguration = requestRetryConfiguration;
+        private RequestState(RetryOption retryOption) {
+            this.retryOption = retryOption;
         }
     }
 }

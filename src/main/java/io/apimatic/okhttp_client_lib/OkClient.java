@@ -127,7 +127,7 @@ public class OkClient implements HttpClient {
         RetryInterceptor retryInterceptor = getRetryInterceptor();
         if (retryInterceptor != null) {
             retryInterceptor.addRequestEntry(okHttpRequest,
-                    endpointConfiguration.getRequestRetryConfiguration());
+                    endpointConfiguration.getRetryOption());
         }
 
         final CompletableFuture<CoreHttpResponse> callBack = new CompletableFuture<>();
@@ -163,7 +163,7 @@ public class OkClient implements HttpClient {
         RetryInterceptor retryInterceptor = getRetryInterceptor();
         if (retryInterceptor != null) {
             retryInterceptor.addRequestEntry(okHttpRequest,
-                    endpointConfiguration.getRequestRetryConfiguration());
+                    endpointConfiguration.getRetryOption());
         }
 
         okhttp3.Response okHttpResponse = null;
