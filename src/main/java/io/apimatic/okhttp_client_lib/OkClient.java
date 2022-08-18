@@ -134,12 +134,12 @@ public class OkClient implements HttpClient {
         client.newCall(okHttpRequest).enqueue(new okhttp3.Callback() {
 
             public void onFailure(okhttp3.Call call, IOException e) {
-                publishResponse(null, httpRequest, callBack, e, endpointConfiguration.hasBinary());
+                publishResponse(null, httpRequest, callBack, e, endpointConfiguration.hasBinaryResponse());
             }
 
             public void onResponse(okhttp3.Call call, okhttp3.Response okHttpResponse) {
                 publishResponse(okHttpResponse, httpRequest, callBack, null,
-                        endpointConfiguration.hasBinary());
+                        endpointConfiguration.hasBinaryResponse());
             }
         });
 
@@ -168,7 +168,7 @@ public class OkClient implements HttpClient {
 
         okhttp3.Response okHttpResponse = null;
         okHttpResponse = client.newCall(okHttpRequest).execute();
-        return convertResponse(httpRequest, okHttpResponse, endpointConfiguration.hasBinary());
+        return convertResponse(httpRequest, okHttpResponse, endpointConfiguration.hasBinaryResponse());
     }
 
     /**
