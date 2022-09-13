@@ -3,8 +3,6 @@ package apimatic.okhttp_client_lib;
 import static org.junit.Assert.assertFalse;
 import static org.mockito.Mockito.when;
 import java.io.IOException;
-import java.net.Socket;
-import java.net.SocketException;
 import java.time.format.DateTimeParseException;
 import java.util.HashSet;
 import java.util.Set;
