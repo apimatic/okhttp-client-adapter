@@ -13,8 +13,8 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import apimatic.okhttp_client_lib.mocks.CompatibilityFactoryMock;
-import io.apimatic.core_interfaces.http.CoreHttpClientConfiguration;
-import io.apimatic.core_interfaces.http.CoreHttpMethod;
+import io.apimatic.core_interfaces.http.ClientConfiguration;
+import io.apimatic.core_interfaces.http.Method;
 import io.apimatic.core_interfaces.http.request.configuration.RetryOption;
 import io.apimatic.okhttp_client_lib.interceptors.RetryInterceptor;
 import okhttp3.Interceptor.Chain;
@@ -27,7 +27,7 @@ public class RetryInterceptorTest extends CompatibilityFactoryMock{
     public MockitoRule initRule = MockitoJUnit.rule();
     
     @Mock
-    private CoreHttpClientConfiguration clientConfiguration;
+    private ClientConfiguration clientConfiguration;
     
     @Mock
     private Request request; 
@@ -46,7 +46,7 @@ public class RetryInterceptorTest extends CompatibilityFactoryMock{
     @Test
     public void testRetryUsingCode() throws IOException {
         when(clientConfiguration.getNumberOfRetries()).thenReturn(3);
-        when(request.method()).thenReturn(CoreHttpMethod.GET.toString());
+        when(request.method()).thenReturn(Method.GET.toString());
         when(response.code()).thenReturn(400);
         RetryInterceptor interceptor = new RetryInterceptor(clientConfiguration);
         interceptor.addRequestEntry(request, RetryOption.DEFAULT);
@@ -58,7 +58,7 @@ public class RetryInterceptorTest extends CompatibilityFactoryMock{
     public void testTimeOutException() throws IOException {
         when(clientConfiguration.getNumberOfRetries()).thenReturn(3);
         when(chain.proceed(request)).thenThrow(IOException.class);
-        when(request.method()).thenReturn(CoreHttpMethod.GET.toString());
+        when(request.method()).thenReturn(Method.GET.toString());
         when(response.code()).thenReturn(400);
         RetryInterceptor interceptor = new RetryInterceptor(clientConfiguration);
         interceptor.addRequestEntry(request, RetryOption.DEFAULT);
@@ -70,7 +70,7 @@ public class RetryInterceptorTest extends CompatibilityFactoryMock{
         when(clientConfiguration.getNumberOfRetries()).thenReturn(3);
         when(clientConfiguration.shouldRetryOnTimeout()).thenReturn(true);
         when(chain.proceed(request)).thenThrow(IOException.class);
-        when(request.method()).thenReturn(CoreHttpMethod.GET.toString());
+        when(request.method()).thenReturn(Method.GET.toString());
         when(response.code()).thenReturn(400);
         RetryInterceptor interceptor = new RetryInterceptor(clientConfiguration);
         interceptor.addRequestEntry(request, RetryOption.DEFAULT);
@@ -80,7 +80,7 @@ public class RetryInterceptorTest extends CompatibilityFactoryMock{
     @Test
     public void testRetryHttpMethodsUsingCode() throws IOException {
         when(clientConfiguration.getNumberOfRetries()).thenReturn(3);
-        when(request.method()).thenReturn(CoreHttpMethod.GET.toString());
+        when(request.method()).thenReturn(Method.GET.toString());
         when(response.code()).thenReturn(400);
         RetryInterceptor interceptor = new RetryInterceptor(clientConfiguration);
         interceptor.addRequestEntry(request, RetryOption.ENABLE_FOR_HTTP_METHOD);
@@ -92,7 +92,7 @@ public class RetryInterceptorTest extends CompatibilityFactoryMock{
     @Test
     public void testRetryWithHeader() throws IOException {
         when(clientConfiguration.getNumberOfRetries()).thenReturn(3);
-        when(request.method()).thenReturn(CoreHttpMethod.GET.toString());
+        when(request.method()).thenReturn(Method.GET.toString());
         when(response.header("Retry-After")).thenReturn("3");
         RetryInterceptor interceptor = new RetryInterceptor(clientConfiguration);
         interceptor.addRequestEntry(request, RetryOption.DEFAULT);
@@ -104,7 +104,7 @@ public class RetryInterceptorTest extends CompatibilityFactoryMock{
     @Test(expected = DateTimeParseException.class)
     public void testRetryWithWrongHeaderValue() throws IOException {
         when(clientConfiguration.getNumberOfRetries()).thenReturn(3);
-        when(request.method()).thenReturn(CoreHttpMethod.GET.toString());
+        when(request.method()).thenReturn(Method.GET.toString());
         when(response.header("Retry-After")).thenReturn("3N");
         RetryInterceptor interceptor = new RetryInterceptor(clientConfiguration);
         interceptor.addRequestEntry(request, RetryOption.DEFAULT);
@@ -114,7 +114,7 @@ public class RetryInterceptorTest extends CompatibilityFactoryMock{
     @Test
     public void testRetryWithDateHeaderValue() throws IOException {
         when(clientConfiguration.getNumberOfRetries()).thenReturn(3);
-        when(request.method()).thenReturn(CoreHttpMethod.GET.toString());
+        when(request.method()).thenReturn(Method.GET.toString());
         when(response.header("Retry-After")).thenReturn("Wed, 13 Jul 2022 06:10:00 GMT");
         RetryInterceptor interceptor = new RetryInterceptor(clientConfiguration);
         interceptor.addRequestEntry(request, RetryOption.DEFAULT);
@@ -124,7 +124,7 @@ public class RetryInterceptorTest extends CompatibilityFactoryMock{
     @Test
     public void testZeroRetry() throws IOException {
         when(clientConfiguration.getNumberOfRetries()).thenReturn(0);
-        when(request.method()).thenReturn(CoreHttpMethod.GET.toString());
+        when(request.method()).thenReturn(Method.GET.toString());
         RetryInterceptor interceptor = new RetryInterceptor(clientConfiguration);
         interceptor.addRequestEntry(request, RetryOption.DEFAULT);
         Response response = interceptor.intercept(chain);
@@ -132,9 +132,9 @@ public class RetryInterceptorTest extends CompatibilityFactoryMock{
     }
     
     private void prepareStub() throws IOException {
-        Set<CoreHttpMethod> methodToRetry = new HashSet<CoreHttpMethod>();
-        methodToRetry.add(CoreHttpMethod.GET);
-        methodToRetry.add(CoreHttpMethod.PUT);
+        Set<Method> methodToRetry = new HashSet<Method>();
+        methodToRetry.add(Method.GET);
+        methodToRetry.add(Method.PUT);
         Set<Integer> statusCodeToRetry = new HashSet<>();
         statusCodeToRetry.add(400);
         statusCodeToRetry.add(404);

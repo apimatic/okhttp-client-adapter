@@ -14,8 +14,8 @@ import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
-import io.apimatic.core_interfaces.http.CoreHttpClientConfiguration;
-import io.apimatic.core_interfaces.http.CoreHttpMethod;
+import io.apimatic.core_interfaces.http.ClientConfiguration;
+import io.apimatic.core_interfaces.http.Method;
 import io.apimatic.okhttp_client_lib.interceptors.HttpRedirectInterceptor;
 import okhttp3.HttpUrl;
 import okhttp3.Interceptor.Chain;
@@ -28,7 +28,7 @@ public class HttpRedirectInterceptorTest {
     public MockitoRule initRule = MockitoJUnit.rule();
 
     @Mock
-    private CoreHttpClientConfiguration clientConfiguration;
+    private ClientConfiguration clientConfiguration;
 
     @Mock
     private Request request;
@@ -92,9 +92,9 @@ public class HttpRedirectInterceptorTest {
     }
 
     private void prepareStub() throws IOException {
-        Set<CoreHttpMethod> methodToRetry = new HashSet<CoreHttpMethod>();
-        methodToRetry.add(CoreHttpMethod.GET);
-        methodToRetry.add(CoreHttpMethod.PUT);
+        Set<Method> methodToRetry = new HashSet<Method>();
+        methodToRetry.add(Method.GET);
+        methodToRetry.add(Method.PUT);
         Set<Integer> statusCodeToRetry = new HashSet<>();
         statusCodeToRetry.add(400);
         statusCodeToRetry.add(404);

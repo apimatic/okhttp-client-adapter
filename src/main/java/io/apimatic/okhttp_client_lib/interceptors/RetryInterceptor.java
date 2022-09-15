@@ -15,7 +15,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.TimeUnit;
-import io.apimatic.core_interfaces.http.CoreHttpClientConfiguration;
+import io.apimatic.core_interfaces.http.ClientConfiguration;
 import io.apimatic.core_interfaces.http.HttpMethodType;
 import io.apimatic.core_interfaces.http.request.configuration.RetryOption;
 import okhttp3.Interceptor;
@@ -38,14 +38,14 @@ public class RetryInterceptor implements Interceptor {
     /**
      * User specified retry configurations.
      */
-    private final CoreHttpClientConfiguration httpClientConfiguration;
+    private final ClientConfiguration httpClientConfiguration;
 
     /**
      * Default Constructor, Initializes the httpClientConfiguration attribute.
      * 
      * @param httpClientConfig the user specified configurations.
      */
-    public RetryInterceptor(CoreHttpClientConfiguration httpClientConfig) {
+    public RetryInterceptor(ClientConfiguration httpClientConfig) {
         this.httpClientConfiguration = httpClientConfig;
         requestEntries = new ConcurrentHashMap<>();
     }

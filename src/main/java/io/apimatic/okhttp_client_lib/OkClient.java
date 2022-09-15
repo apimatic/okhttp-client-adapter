@@ -9,22 +9,30 @@ package io.apimatic.okhttp_client_lib;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.security.cert.CertificateException;
+import java.security.cert.X509Certificate;
 import java.util.AbstractMap.SimpleEntry;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
+import javax.net.ssl.HostnameVerifier;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLSession;
+import javax.net.ssl.SSLSocketFactory;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.X509TrustManager;
 import io.apimatic.core_interfaces.compatibility.CompatibilityFactory;
-import io.apimatic.core_interfaces.http.CoreHttpClientConfiguration;
-import io.apimatic.core_interfaces.http.CoreHttpMethod;
+import io.apimatic.core_interfaces.http.ClientConfiguration;
+import io.apimatic.core_interfaces.http.Method;
 import io.apimatic.core_interfaces.http.HttpClient;
 import io.apimatic.core_interfaces.http.HttpHeaders;
 import io.apimatic.core_interfaces.http.request.ArraySerializationFormat;
-import io.apimatic.core_interfaces.http.request.CoreHttpRequest;
-import io.apimatic.core_interfaces.http.request.CoreMultipartFileWrapper;
-import io.apimatic.core_interfaces.http.request.CoreMultipartWrapper;
-import io.apimatic.core_interfaces.http.request.configuration.CoreEndpointConfiguration;
-import io.apimatic.core_interfaces.http.response.CoreHttpResponse;
+import io.apimatic.core_interfaces.http.request.MultipartFile;
+import io.apimatic.core_interfaces.http.request.Multipart;
+import io.apimatic.core_interfaces.http.request.Request;
+import io.apimatic.core_interfaces.http.request.configuration.EndpointSetting;
+import io.apimatic.core_interfaces.http.response.Response;
 import io.apimatic.core_interfaces.type.FileWrapper;
 import io.apimatic.okhttp_client_lib.interceptors.HttpRedirectInterceptor;
 import io.apimatic.okhttp_client_lib.interceptors.RetryInterceptor;
@@ -35,6 +43,7 @@ import io.apimatic.okhttp_client_lib.interceptors.RetryInterceptor;
 public class OkClient implements HttpClient {
     private static final Object syncObject = new Object();
     private static volatile okhttp3.OkHttpClient defaultOkHttpClient;
+    private static okhttp3.OkHttpClient insecureOkHttpClient;
 
     /**
      * Private instance of the okhttp3.OkHttpClient.
@@ -48,7 +57,7 @@ public class OkClient implements HttpClient {
      * 
      * @param httpClientConfig The specified http client configuration.
      */
-    public OkClient(CoreHttpClientConfiguration httpClientConfig,
+    public OkClient(ClientConfiguration httpClientConfig,
             CompatibilityFactory compatibilityFactory) {
         this.compatibilityFactory = compatibilityFactory;
         okhttp3.OkHttpClient httpClientInstance = httpClientConfig.getHttpClientInstance();
@@ -59,7 +68,11 @@ public class OkClient implements HttpClient {
                 this.client = httpClientInstance;
             }
         } else {
-            applyHttpClientConfigurations(getDefaultOkHttpClient(), httpClientConfig);
+            if(httpClientConfig.skipSslCertVerification()) {
+                applyHttpClientConfigurations(getInsecureOkHttpClient(httpClientConfig), httpClientConfig);
+            }else {
+                applyHttpClientConfigurations(getDefaultOkHttpClient(), httpClientConfig);
+            }
         }
     }
 
@@ -67,7 +80,7 @@ public class OkClient implements HttpClient {
      * Applies the httpClientConfigurations on okhttp3.OkHttpClient.
      */
     private void applyHttpClientConfigurations(okhttp3.OkHttpClient client,
-            CoreHttpClientConfiguration httpClientConfig) {
+            ClientConfiguration httpClientConfig) {
         okhttp3.OkHttpClient.Builder clientBuilder = client.newBuilder();
         clientBuilder.readTimeout(httpClientConfig.getTimeout(), TimeUnit.SECONDS)
                 .writeTimeout(httpClientConfig.getTimeout(), TimeUnit.SECONDS)
@@ -84,7 +97,61 @@ public class OkClient implements HttpClient {
 
         this.client = clientBuilder.build();
     }
+    
+    /**
+     * Getter for the default static instance of the okhttp3.OkHttpClient.
+     */
+    private okhttp3.OkHttpClient getInsecureOkHttpClient(ClientConfiguration httpClientConfiguration) {
+        if (insecureOkHttpClient == null) {
+            synchronized (syncObject) {
+                if (insecureOkHttpClient == null) {
+                    insecureOkHttpClient = createInsecureOkHttpClient(httpClientConfiguration);
+                }
+            }
+        }
+        return insecureOkHttpClient;
+    }
 
+    private static okhttp3.OkHttpClient createInsecureOkHttpClient(ClientConfiguration httpClientConfiguration) {
+        try {
+            // Create a trust manager that does not validate certificate chains
+            final TrustManager[] trustAllCerts = new TrustManager[] {
+                new X509TrustManager() {
+                    public void checkClientTrusted(X509Certificate[] chain,
+                            String authType) throws CertificateException {
+                    }
+
+                    public void checkServerTrusted(X509Certificate[] chain,
+                            String authType) throws CertificateException {
+                    }
+
+                    public X509Certificate[] getAcceptedIssuers() {
+                        return new X509Certificate[0];
+                    }
+                }
+            };
+
+            // Install the all-trusting trust manager
+            final SSLContext sslContext = SSLContext.getInstance("SSL");
+            sslContext.init(null, trustAllCerts, new java.security.SecureRandom());
+            // Create an ssl socket factory with our all-trusting manager
+            final SSLSocketFactory sslSocketFactory = sslContext.getSocketFactory();
+
+            return new okhttp3.OkHttpClient().newBuilder()
+                    .sslSocketFactory(sslSocketFactory, (X509TrustManager) trustAllCerts[0])
+                    .hostnameVerifier(new HostnameVerifier() {
+                        public boolean verify(String hostname, SSLSession session) {
+                            return true;
+                        }
+                    }).retryOnConnectionFailure(true)
+                    .callTimeout(httpClientConfiguration.getTimeout(), TimeUnit.SECONDS)
+                    .build();
+
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+    
     /**
      * Getter for the default static instance of the okhttp3.OkHttpClient.
      */
@@ -109,6 +176,11 @@ public class OkClient implements HttpClient {
             defaultOkHttpClient.dispatcher().executorService().shutdown();
             defaultOkHttpClient.connectionPool().evictAll();
         }
+        
+        if (insecureOkHttpClient != null) {
+            insecureOkHttpClient.dispatcher().executorService().shutdown();
+            insecureOkHttpClient.connectionPool().evictAll();
+        }
     }
 
     /**
@@ -119,8 +191,8 @@ public class OkClient implements HttpClient {
      * @param retryConfiguration The overridden retry configuration for request.
      * @return CompletableFuture of HttpResponse after execution.
      */
-    public CompletableFuture<CoreHttpResponse> executeAsync(final CoreHttpRequest httpRequest,
-            CoreEndpointConfiguration endpointConfiguration) {
+    public CompletableFuture<Response> executeAsync(final Request httpRequest,
+            EndpointSetting endpointConfiguration) {
         okhttp3.Request okHttpRequest =
                 convertRequest(httpRequest, endpointConfiguration.getArraySerializationFormat());
 
@@ -130,7 +202,7 @@ public class OkClient implements HttpClient {
                     endpointConfiguration.getRetryOption());
         }
 
-        final CompletableFuture<CoreHttpResponse> callBack = new CompletableFuture<>();
+        final CompletableFuture<Response> callBack = new CompletableFuture<>();
         client.newCall(okHttpRequest).enqueue(new okhttp3.Callback() {
 
             public void onFailure(okhttp3.Call call, IOException e) {
@@ -155,8 +227,8 @@ public class OkClient implements HttpClient {
      * @return The converted http response.
      * @throws IOException exception to be thrown while converting response.
      */
-    public CoreHttpResponse execute(CoreHttpRequest httpRequest,
-            CoreEndpointConfiguration endpointConfiguration) throws IOException {
+    public Response execute(Request httpRequest,
+            EndpointSetting endpointConfiguration) throws IOException {
         okhttp3.Request okHttpRequest =
                 convertRequest(httpRequest, endpointConfiguration.getArraySerializationFormat());
 
@@ -192,10 +264,10 @@ public class OkClient implements HttpClient {
      * @param hasBinaryResponse Whether the response is binary or string.
      * @return The converted http response.
      */
-    private CoreHttpResponse publishResponse(okhttp3.Response okHttpResponse,
-            CoreHttpRequest httpRequest, CompletableFuture<CoreHttpResponse> completionBlock,
+    private Response publishResponse(okhttp3.Response okHttpResponse,
+            Request httpRequest, CompletableFuture<Response> completionBlock,
             Throwable error, boolean hasBinaryResponse) {
-        CoreHttpResponse httpResponse = null;
+        Response httpResponse = null;
         try {
             httpResponse = convertResponse(httpRequest, okHttpResponse, hasBinaryResponse);
 
@@ -220,9 +292,9 @@ public class OkClient implements HttpClient {
      * @return The converted http response.
      * @throws IOException exception to be thrown while converting response.
      */
-    protected CoreHttpResponse convertResponse(CoreHttpRequest request, okhttp3.Response response,
+    protected Response convertResponse(Request request, okhttp3.Response response,
             boolean hasBinaryResponse) throws IOException {
-        CoreHttpResponse httpResponse = null;
+        Response httpResponse = null;
 
         if (response != null) {
 
@@ -256,7 +328,7 @@ public class OkClient implements HttpClient {
      * @param arraySerializationFormat
      * @return The converted okhttp request
      */
-    private okhttp3.Request convertRequest(CoreHttpRequest httpRequest,
+    private okhttp3.Request convertRequest(Request httpRequest,
             ArraySerializationFormat arraySerializationFormat) {
         okhttp3.RequestBody requestBody;
 
@@ -302,8 +374,8 @@ public class OkClient implements HttpClient {
             if (parameters != null && parameters.size() > 0) {
                 // check if a request is a multipart request
                 for (SimpleEntry<String, Object> param : parameters) {
-                    if ((param.getValue() instanceof CoreMultipartFileWrapper)
-                            || (param.getValue() instanceof CoreMultipartWrapper)) {
+                    if ((param.getValue() instanceof MultipartFile)
+                            || (param.getValue() instanceof Multipart)) {
                         multipartRequest = true;
                         break;
                     }
@@ -321,7 +393,7 @@ public class OkClient implements HttpClient {
                     requestBody = formBuilder.build();
                 }
             } else if (httpRequest.getHttpMethod().toString()
-                    .equals(CoreHttpMethod.GET.toString())) {
+                    .equals(Method.GET.toString())) {
                 requestBody = null;
             } else {
                 requestBody = okhttp3.RequestBody.create(new byte[0], null);
@@ -343,13 +415,13 @@ public class OkClient implements HttpClient {
         return okHttpRequest;
     }
 
-    private okhttp3.RequestBody createMultipartRequestBody(CoreHttpRequest httpRequest) {
+    private okhttp3.RequestBody createMultipartRequestBody(Request httpRequest) {
         okhttp3.MultipartBody.Builder multipartBuilder =
                 new okhttp3.MultipartBody.Builder().setType(okhttp3.MultipartBody.FORM);
 
         for (SimpleEntry<String, Object> param : httpRequest.getParameters()) {
-            if (param.getValue() instanceof CoreMultipartFileWrapper) {
-                CoreMultipartFileWrapper wrapperObj = (CoreMultipartFileWrapper) param.getValue();
+            if (param.getValue() instanceof MultipartFile) {
+                MultipartFile wrapperObj = (MultipartFile) param.getValue();
                 okhttp3.MediaType mediaType;
                 if (wrapperObj.getFileWrapper().getContentType() != null
                         && !wrapperObj.getFileWrapper().getContentType().isEmpty()) {
@@ -374,8 +446,8 @@ public class OkClient implements HttpClient {
                                 + "; filename=" + appendQuotedStringAndEncodeEscapeCharacters(
                                         wrapperObj.getFileWrapper().getFile().getName()));
                 multipartBuilder.addPart(fileWrapperHeadersBuilder.build(), body);
-            } else if (param.getValue() instanceof CoreMultipartWrapper) {
-                CoreMultipartWrapper wrapperObject = (CoreMultipartWrapper) param.getValue();
+            } else if (param.getValue() instanceof Multipart) {
+                Multipart wrapperObject = (Multipart) param.getValue();
                 okhttp3.RequestBody body = okhttp3.RequestBody.create(wrapperObject.getByteArray(),
                         okhttp3.MediaType.parse(wrapperObject.getHeaders().value("content-type")));
                 HttpHeaders wrapperHeaders =

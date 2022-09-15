@@ -24,15 +24,15 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import apimatic.okhttp_client_lib.mocks.OkHttpClientMock;
-import io.apimatic.core_interfaces.http.CoreHttpClientConfiguration;
-import io.apimatic.core_interfaces.http.CoreHttpMethod;
+import io.apimatic.core_interfaces.http.ClientConfiguration;
+import io.apimatic.core_interfaces.http.Method;
 import io.apimatic.core_interfaces.http.HttpHeaders;
 import io.apimatic.core_interfaces.http.request.ArraySerializationFormat;
-import io.apimatic.core_interfaces.http.request.CoreMultipartFileWrapper;
-import io.apimatic.core_interfaces.http.request.CoreMultipartWrapper;
-import io.apimatic.core_interfaces.http.request.configuration.CoreEndpointConfiguration;
+import io.apimatic.core_interfaces.http.request.MultipartFile;
+import io.apimatic.core_interfaces.http.request.Multipart;
+import io.apimatic.core_interfaces.http.request.configuration.EndpointSetting;
 import io.apimatic.core_interfaces.http.request.configuration.RetryOption;
-import io.apimatic.core_interfaces.http.response.CoreHttpResponse;
+import io.apimatic.core_interfaces.http.response.Response;
 import io.apimatic.core_interfaces.type.FileWrapper;
 import io.apimatic.okhttp_client_lib.OkClient;
 
@@ -43,22 +43,22 @@ public class OkClientTest extends OkHttpClientMock {
     public MockitoRule initRule = MockitoJUnit.rule();
 
     @Mock
-    private CoreHttpClientConfiguration clientConfiguration;
+    private ClientConfiguration clientConfiguration;
 
     @Mock
-    private CoreHttpResponse coreHttpResponse;
+    private Response coreHttpResponse;
 
     @Mock
     private List<SimpleEntry<String, Object>> parametersList;
 
     @Mock
-    private CoreMultipartFileWrapper coreMultipartFileWrapper;
+    private MultipartFile coreMultipartFileWrapper;
 
     @Mock
-    private CoreMultipartWrapper coreMultipartWrapper;
+    private Multipart coreMultipartWrapper;
 
     @Mock
-    private CoreEndpointConfiguration configuration;
+    private EndpointSetting configuration;
 
     @Mock
     private File file;
@@ -72,7 +72,14 @@ public class OkClientTest extends OkHttpClientMock {
     }
 
     @Test
-    public void testOkClientConstructor() {
+    public void testDefaultOkHttpClient() {
+        OkClient client = new OkClient(clientConfiguration, compatibilityFactory);
+        assertNotNull(client);
+    }
+    
+    @Test
+    public void testInsecureOkhttpClient() {
+        when(clientConfiguration.skipSslCertVerification()).thenReturn(true);
         OkClient client = new OkClient(clientConfiguration, compatibilityFactory);
         assertNotNull(client);
     }
@@ -107,7 +114,7 @@ public class OkClientTest extends OkHttpClientMock {
         when(coreHttpRequest.getBody()).thenReturn(fileWrapper);
         when(fileWrapper.getContentType()).thenReturn("application/json");
 
-        when(coreHttpRequest.getHttpMethod()).thenReturn(CoreHttpMethod.POST);
+        when(coreHttpRequest.getHttpMethod()).thenReturn(Method.POST);
 
 
         when(call.execute()).thenReturn(okHttpResponse);
@@ -120,7 +127,7 @@ public class OkClientTest extends OkHttpClientMock {
         when(compatibilityFactory.createHttpResponse(anyInt(), any(HttpHeaders.class),
                 any(InputStream.class), anyString())).thenReturn(coreHttpResponse);
 
-        CoreHttpResponse coreHttpResponse = client.execute(coreHttpRequest, configuration);
+        Response coreHttpResponse = client.execute(coreHttpRequest, configuration);
         String expected = fileWrapper.toString();
         String actual = coreHttpResponse.getBody();
         assertEquals(actual, expected);
@@ -138,7 +145,7 @@ public class OkClientTest extends OkHttpClientMock {
         when(coreHttpRequest.getBody()).thenReturn(fileWrapper);
 
 
-        when(coreHttpRequest.getHttpMethod()).thenReturn(CoreHttpMethod.POST);
+        when(coreHttpRequest.getHttpMethod()).thenReturn(Method.POST);
         when(httpHeaders.has("content-type")).thenReturn(true);
 
 
@@ -152,7 +159,7 @@ public class OkClientTest extends OkHttpClientMock {
         when(compatibilityFactory.createHttpResponse(anyInt(), any(HttpHeaders.class),
                 any(InputStream.class), anyString())).thenReturn(coreHttpResponse);
 
-        CoreHttpResponse coreHttpResponse = client.execute(coreHttpRequest, configuration);
+        Response coreHttpResponse = client.execute(coreHttpRequest, configuration);
         String expected = fileWrapper.toString();
         String actual = coreHttpResponse.getBody();
         assertEquals(actual, expected);
@@ -170,7 +177,7 @@ public class OkClientTest extends OkHttpClientMock {
         when(coreHttpRequest.getBody()).thenReturn(fileWrapper);
 
 
-        when(coreHttpRequest.getHttpMethod()).thenReturn(CoreHttpMethod.POST);
+        when(coreHttpRequest.getHttpMethod()).thenReturn(Method.POST);
 
 
         when(call.execute()).thenReturn(okHttpResponse);
@@ -183,7 +190,7 @@ public class OkClientTest extends OkHttpClientMock {
         when(compatibilityFactory.createHttpResponse(anyInt(), any(HttpHeaders.class),
                 any(InputStream.class), anyString())).thenReturn(coreHttpResponse);
 
-        CoreHttpResponse coreHttpResponse = client.execute(coreHttpRequest, configuration);
+        Response coreHttpResponse = client.execute(coreHttpRequest, configuration);
         String expected = fileWrapper.toString();
         String actual = coreHttpResponse.getBody();
         assertEquals(actual, expected);
@@ -197,7 +204,7 @@ public class OkClientTest extends OkHttpClientMock {
         when(client.newCall(any(okhttp3.Request.class))).thenReturn(call);
 
         OkClient client = new OkClient(clientConfiguration, compatibilityFactory);
-        when(coreHttpRequest.getHttpMethod()).thenReturn(CoreHttpMethod.GET);
+        when(coreHttpRequest.getHttpMethod()).thenReturn(Method.GET);
 
 
         when(call.execute()).thenReturn(okHttpResponse);
@@ -210,7 +217,7 @@ public class OkClientTest extends OkHttpClientMock {
         when(compatibilityFactory.createHttpResponse(anyInt(), any(HttpHeaders.class),
                 any(InputStream.class), anyString())).thenReturn(coreHttpResponse);
 
-        CoreHttpResponse coreHttpResponse = client.execute(coreHttpRequest, configuration);
+        Response coreHttpResponse = client.execute(coreHttpRequest, configuration);
         String expected = serverResponseString;
         String actual = coreHttpResponse.getBody();
         assertEquals(actual, expected);
@@ -223,7 +230,7 @@ public class OkClientTest extends OkHttpClientMock {
         when(client.newCall(any(okhttp3.Request.class))).thenReturn(call);
 
         OkClient client = new OkClient(clientConfiguration, compatibilityFactory);
-        when(coreHttpRequest.getHttpMethod()).thenReturn(CoreHttpMethod.POST);
+        when(coreHttpRequest.getHttpMethod()).thenReturn(Method.POST);
         when(coreHttpRequest.getBody()).thenReturn("bodyValue");
 
 
@@ -237,7 +244,7 @@ public class OkClientTest extends OkHttpClientMock {
         when(compatibilityFactory.createHttpResponse(anyInt(), any(HttpHeaders.class),
                 any(InputStream.class), anyString())).thenReturn(coreHttpResponse);
 
-        CoreHttpResponse coreHttpResponse = client.execute(coreHttpRequest, configuration);
+        Response coreHttpResponse = client.execute(coreHttpRequest, configuration);
         String expected = serverResponseString;
         String actual = coreHttpResponse.getBody();
         assertEquals(actual, expected);
@@ -251,7 +258,7 @@ public class OkClientTest extends OkHttpClientMock {
         when(client.newCall(any(okhttp3.Request.class))).thenReturn(call);
 
         OkClient client = new OkClient(clientConfiguration, compatibilityFactory);
-        when(coreHttpRequest.getHttpMethod()).thenReturn(CoreHttpMethod.POST);
+        when(coreHttpRequest.getHttpMethod()).thenReturn(Method.POST);
 
         List<SimpleEntry<String, Object>> listP = new ArrayList<>();
         listP.add(new SimpleEntry<String, Object>("fileWrapper", coreMultipartFileWrapper));
@@ -270,7 +277,7 @@ public class OkClientTest extends OkHttpClientMock {
         when(compatibilityFactory.createHttpResponse(anyInt(), any(HttpHeaders.class),
                 any(InputStream.class), anyString())).thenReturn(coreHttpResponse);
 
-        CoreHttpResponse coreHttpResponse = client.execute(coreHttpRequest, configuration);
+        Response coreHttpResponse = client.execute(coreHttpRequest, configuration);
         String expected = serverResponseString;
         String actual = coreHttpResponse.getBody();
         assertEquals(actual, expected);
@@ -283,7 +290,7 @@ public class OkClientTest extends OkHttpClientMock {
         when(client.newCall(any(okhttp3.Request.class))).thenReturn(call);
 
         OkClient client = new OkClient(clientConfiguration, compatibilityFactory);
-        when(coreHttpRequest.getHttpMethod()).thenReturn(CoreHttpMethod.POST);
+        when(coreHttpRequest.getHttpMethod()).thenReturn(Method.POST);
 
         List<SimpleEntry<String, Object>> listP = new ArrayList<>();
         listP.add(new SimpleEntry<String, Object>("fileWrapper", "form value"));
@@ -301,7 +308,7 @@ public class OkClientTest extends OkHttpClientMock {
         when(compatibilityFactory.createHttpResponse(anyInt(), any(HttpHeaders.class),
                 any(InputStream.class), anyString())).thenReturn(coreHttpResponse);
 
-        CoreHttpResponse coreHttpResponse = client.execute(coreHttpRequest, configuration);
+        Response coreHttpResponse = client.execute(coreHttpRequest, configuration);
         String expected = serverResponseString;
         String actual = coreHttpResponse.getBody();
         assertEquals(actual, expected);
@@ -315,7 +322,7 @@ public class OkClientTest extends OkHttpClientMock {
         when(client.newCall(any(okhttp3.Request.class))).thenReturn(call);
 
         OkClient client = new OkClient(clientConfiguration, compatibilityFactory);
-        when(coreHttpRequest.getHttpMethod()).thenReturn(CoreHttpMethod.POST);
+        when(coreHttpRequest.getHttpMethod()).thenReturn(Method.POST);
 
         when(call.execute()).thenReturn(okHttpResponse);
         when(okHttpResponse.body()).thenReturn(okHttpResponseBody);
@@ -327,39 +334,10 @@ public class OkClientTest extends OkHttpClientMock {
         when(compatibilityFactory.createHttpResponse(anyInt(), any(HttpHeaders.class),
                 any(InputStream.class), anyString())).thenReturn(coreHttpResponse);
 
-        CoreHttpResponse coreHttpResponse = client.execute(coreHttpRequest, configuration);
+        Response coreHttpResponse = client.execute(coreHttpRequest, configuration);
         String expected = serverResponseString;
         String actual = coreHttpResponse.getBody();
         assertEquals(actual, expected);
-    }
-
-
-    @Test
-    public void testPostEmptyBodyAsyncRequest()
-            throws IOException, InterruptedException, ExecutionException {
-//        when(clientConfiguration.getHttpClientInstance()).thenReturn(client);
-//        when(clientConfiguration.shouldOverrideHttpClientConfigurations()).thenReturn(true);
-//        when(client.newCall(any(okhttp3.Request.class))).thenReturn(call);
-//
-//        OkClient client = new OkClient(clientConfiguration, compatibilityFactory);
-//        when(coreHttpRequest.getHttpMethod()).thenReturn(CoreHttpMethod.POST);
-//
-//
-//        when(okHttpResponse.body()).thenReturn(okHttpResponseBody);
-//        String serverResponseString = "empty body";
-//        when(coreHttpResponse.getBody()).thenReturn(serverResponseString);
-//        when(okHttpResponseBody.string()).thenReturn(serverResponseString);
-//        when(okHttpResponse.code()).thenReturn(200);
-//
-//        when(compatibilityFactory.createHttpResponse(anyInt(), any(HttpHeaders.class),
-//                any(InputStream.class), anyString())).thenReturn(coreHttpResponse);
-//
-//        CompletableFuture<CoreHttpResponse> completableFutureResponse =
-//                client.executeAsync(coreHttpRequest, configuration);
-//        CoreHttpResponse coreHttpResponse = completableFutureResponse.get();
-//        String expected = serverResponseString;
-//        String actual = coreHttpResponse.getBody();
-//        assertEquals(actual, expected);
     }
 
     @Test
@@ -369,7 +347,7 @@ public class OkClientTest extends OkHttpClientMock {
         when(client.newCall(any(okhttp3.Request.class))).thenReturn(call);
 
         OkClient client = new OkClient(clientConfiguration, compatibilityFactory);
-        when(coreHttpRequest.getHttpMethod()).thenReturn(CoreHttpMethod.POST);
+        when(coreHttpRequest.getHttpMethod()).thenReturn(Method.POST);
 
         List<SimpleEntry<String, Object>> listP = new ArrayList<>();
         listP.add(new SimpleEntry<String, Object>("fileWrapper", "formValue"));
@@ -386,7 +364,7 @@ public class OkClientTest extends OkHttpClientMock {
         when(compatibilityFactory.createHttpResponse(anyInt(), any(HttpHeaders.class),
                 any(InputStream.class), anyString())).thenReturn(coreHttpResponse);
 
-        CoreHttpResponse coreHttpResponse = client.execute(coreHttpRequest, configuration);
+        Response coreHttpResponse = client.execute(coreHttpRequest, configuration);
         String expected = serverResponseString;
         String actual = coreHttpResponse.getBody();
         assertEquals(actual, expected);
@@ -407,7 +385,7 @@ public class OkClientTest extends OkHttpClientMock {
         when(fileWrapper.getFile()).thenReturn(file);
 
 
-        when(coreHttpRequest.getHttpMethod()).thenReturn(CoreHttpMethod.POST);
+        when(coreHttpRequest.getHttpMethod()).thenReturn(Method.POST);
 
         when(call.execute()).thenReturn(okHttpResponse);
         when(okHttpResponse.body()).thenReturn(okHttpResponseBody);
@@ -422,7 +400,7 @@ public class OkClientTest extends OkHttpClientMock {
         when(compatibilityFactory.createHttpResponse(anyInt(), any(HttpHeaders.class),
                 any(InputStream.class))).thenReturn(coreHttpResponse);
 
-        CoreHttpResponse coreHttpResponse = client.execute(coreHttpRequest, configuration);
+        Response coreHttpResponse = client.execute(coreHttpRequest, configuration);
         InputStream expected = serverResponseStream;
         InputStream actual = coreHttpResponse.getRawBody();
         assertEquals(actual, expected);
