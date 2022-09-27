@@ -27,6 +27,7 @@ import io.apimatic.core_interfaces.http.request.Multipart;
 import io.apimatic.core_interfaces.http.request.Request;
 import io.apimatic.core_interfaces.http.request.configuration.EndpointSetting;
 import io.apimatic.core_interfaces.http.response.Response;
+import io.apimatic.core_interfaces.logger.ApiLogger;
 import io.apimatic.core_interfaces.type.FileWrapper;
 import io.apimatic.okhttp_client_lib.interceptors.HttpRedirectInterceptor;
 import io.apimatic.okhttp_client_lib.interceptors.RetryInterceptor;
@@ -44,6 +45,11 @@ public class OkClient implements HttpClient {
      */
     private okhttp3.OkHttpClient client;
 
+    /**
+     * Private instance of HttpLogger.
+     */
+    private final ApiLogger httpLogger;
+
     private CompatibilityFactory compatibilityFactory;
 
     /**
@@ -51,8 +57,9 @@ public class OkClient implements HttpClient {
      * 
      * @param httpClientConfig The specified http client configuration.
      */
-    public OkClient(ClientConfiguration httpClientConfig,
-            CompatibilityFactory compatibilityFactory) {
+    public OkClient(ClientConfiguration httpClientConfig, CompatibilityFactory compatibilityFactory,
+            ApiLogger httpApiLogger) {
+        httpLogger = httpApiLogger;
         this.compatibilityFactory = compatibilityFactory;
         okhttp3.OkHttpClient httpClientInstance = httpClientConfig.getHttpClientInstance();
         if (httpClientInstance != null) {
@@ -62,9 +69,10 @@ public class OkClient implements HttpClient {
                 this.client = httpClientInstance;
             }
         } else {
-            if(httpClientConfig.skipSslCertVerification()) {
-                applyHttpClientConfigurations(getInsecureOkHttpClient(httpClientConfig), httpClientConfig);
-            }else {
+            if (httpClientConfig.skipSslCertVerification()) {
+                applyHttpClientConfigurations(getInsecureOkHttpClient(httpClientConfig),
+                        httpClientConfig);
+            } else {
                 applyHttpClientConfigurations(getDefaultOkHttpClient(), httpClientConfig);
             }
         }
@@ -84,18 +92,19 @@ public class OkClient implements HttpClient {
         // If retries are allowed then RetryInterceptor must be registered
         if (httpClientConfig.getNumberOfRetries() > 0) {
             clientBuilder.callTimeout(httpClientConfig.getMaximumRetryWaitTime(), TimeUnit.SECONDS)
-                    .addInterceptor(new RetryInterceptor(httpClientConfig));
+                    .addInterceptor(new RetryInterceptor(httpClientConfig, httpLogger));
         } else {
             clientBuilder.callTimeout(httpClientConfig.getTimeout(), TimeUnit.SECONDS);
         }
 
         this.client = clientBuilder.build();
     }
-    
+
     /**
      * Getter for the default static instance of the okhttp3.OkHttpClient.
      */
-    private okhttp3.OkHttpClient getInsecureOkHttpClient(ClientConfiguration httpClientConfiguration) {
+    private okhttp3.OkHttpClient getInsecureOkHttpClient(
+            ClientConfiguration httpClientConfiguration) {
         if (insecureOkHttpClient == null) {
             synchronized (syncObject) {
                 if (insecureOkHttpClient == null) {
@@ -106,24 +115,21 @@ public class OkClient implements HttpClient {
         return insecureOkHttpClient;
     }
 
-    private static okhttp3.OkHttpClient createInsecureOkHttpClient(ClientConfiguration httpClientConfiguration) {
+    private static okhttp3.OkHttpClient createInsecureOkHttpClient(
+            ClientConfiguration httpClientConfiguration) {
         try {
             // Create a trust manager that does not validate certificate chains
-            final TrustManager[] trustAllCerts = new TrustManager[] {
-                new X509TrustManager() {
-                    public void checkClientTrusted(X509Certificate[] chain,
-                            String authType) throws CertificateException {
-                    }
+            final TrustManager[] trustAllCerts = new TrustManager[] {new X509TrustManager() {
+                public void checkClientTrusted(X509Certificate[] chain, String authType)
+                        throws CertificateException {}
 
-                    public void checkServerTrusted(X509Certificate[] chain,
-                            String authType) throws CertificateException {
-                    }
+                public void checkServerTrusted(X509Certificate[] chain, String authType)
+                        throws CertificateException {}
 
-                    public X509Certificate[] getAcceptedIssuers() {
-                        return new X509Certificate[0];
-                    }
+                public X509Certificate[] getAcceptedIssuers() {
+                    return new X509Certificate[0];
                 }
-            };
+            }};
 
             // Install the all-trusting trust manager
             final SSLContext sslContext = SSLContext.getInstance("SSL");
@@ -138,14 +144,13 @@ public class OkClient implements HttpClient {
                             return true;
                         }
                     }).retryOnConnectionFailure(true)
-                    .callTimeout(httpClientConfiguration.getTimeout(), TimeUnit.SECONDS)
-                    .build();
+                    .callTimeout(httpClientConfiguration.getTimeout(), TimeUnit.SECONDS).build();
 
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
-    
+
     /**
      * Getter for the default static instance of the okhttp3.OkHttpClient.
      */
@@ -170,7 +175,7 @@ public class OkClient implements HttpClient {
             defaultOkHttpClient.dispatcher().executorService().shutdown();
             defaultOkHttpClient.connectionPool().evictAll();
         }
-        
+
         if (insecureOkHttpClient != null) {
             insecureOkHttpClient.dispatcher().executorService().shutdown();
             insecureOkHttpClient.connectionPool().evictAll();
@@ -192,15 +197,15 @@ public class OkClient implements HttpClient {
 
         RetryInterceptor retryInterceptor = getRetryInterceptor();
         if (retryInterceptor != null) {
-            retryInterceptor.addRequestEntry(okHttpRequest,
-                    endpointConfiguration.getRetryOption());
+            retryInterceptor.addRequestEntry(okHttpRequest, endpointConfiguration.getRetryOption());
         }
 
         final CompletableFuture<Response> callBack = new CompletableFuture<>();
         client.newCall(okHttpRequest).enqueue(new okhttp3.Callback() {
 
             public void onFailure(okhttp3.Call call, IOException e) {
-                publishResponse(null, httpRequest, callBack, e, endpointConfiguration.hasBinaryResponse());
+                publishResponse(null, httpRequest, callBack, e,
+                        endpointConfiguration.hasBinaryResponse());
             }
 
             public void onResponse(okhttp3.Call call, okhttp3.Response okHttpResponse) {
@@ -221,20 +226,39 @@ public class OkClient implements HttpClient {
      * @return The converted http response.
      * @throws IOException exception to be thrown while converting response.
      */
-    public Response execute(Request httpRequest,
-            EndpointSetting endpointConfiguration) throws IOException {
+    public Response execute(Request httpRequest, EndpointSetting endpointConfiguration)
+            throws IOException {
         okhttp3.Request okHttpRequest =
                 convertRequest(httpRequest, endpointConfiguration.getArraySerializationFormat());
 
         RetryInterceptor retryInterceptor = getRetryInterceptor();
         if (retryInterceptor != null) {
-            retryInterceptor.addRequestEntry(okHttpRequest,
-                    endpointConfiguration.getRetryOption());
+            retryInterceptor.addRequestEntry(okHttpRequest, endpointConfiguration.getRetryOption());
         }
 
         okhttp3.Response okHttpResponse = null;
-        okHttpResponse = client.newCall(okHttpRequest).execute();
-        return convertResponse(httpRequest, okHttpResponse, endpointConfiguration.hasBinaryResponse());
+        try {
+            okHttpResponse = client.newCall(okHttpRequest).execute();
+        } catch (IOException e) {
+            // log response with error
+            httpLogger.setError(httpRequest, e);
+            httpLogger.logResponse(httpRequest, null);
+            throw e;
+        }
+
+        Response httpResponse = null;
+        try {
+            httpResponse = convertResponse(httpRequest, okHttpResponse,
+                    endpointConfiguration.hasBinaryResponse());
+        } catch (IOException e) {
+            httpLogger.setError(httpRequest, e);
+        }
+
+        if (httpLogger != null) {
+            // log response
+            httpLogger.logResponse(httpRequest, httpResponse);
+        }
+        return httpResponse;
     }
 
     /**
@@ -258,11 +282,14 @@ public class OkClient implements HttpClient {
      * @param hasBinaryResponse Whether the response is binary or string.
      * @return The converted http response.
      */
-    private Response publishResponse(okhttp3.Response okHttpResponse,
-            Request httpRequest, CompletableFuture<Response> completionBlock,
-            Throwable error, boolean hasBinaryResponse) {
+    private Response publishResponse(okhttp3.Response okHttpResponse, Request httpRequest,
+            CompletableFuture<Response> completionBlock, Throwable error,
+            boolean hasBinaryResponse) {
         Response httpResponse = null;
         try {
+            if (error != null) {
+                httpLogger.setError(httpRequest, error);
+            }
             httpResponse = convertResponse(httpRequest, okHttpResponse, hasBinaryResponse);
 
             // if there are no errors, pass on to the callback function
@@ -272,8 +299,10 @@ public class OkClient implements HttpClient {
                 completionBlock.completeExceptionally(error);
             }
         } catch (IOException e) {
+            httpLogger.setError(httpRequest, e);
             completionBlock.completeExceptionally(e);
         }
+        httpLogger.logResponse(httpRequest, httpResponse);
         return httpResponse;
     }
 
@@ -386,8 +415,7 @@ public class OkClient implements HttpClient {
                     }
                     requestBody = formBuilder.build();
                 }
-            } else if (httpRequest.getHttpMethod().toString()
-                    .equals(Method.GET.toString())) {
+            } else if (httpRequest.getHttpMethod().toString().equals(Method.GET.toString())) {
                 requestBody = null;
             } else {
                 requestBody = okhttp3.RequestBody.create(new byte[0], null);
@@ -398,6 +426,11 @@ public class OkClient implements HttpClient {
         okhttp3.Headers.Builder requestHeaders = new okhttp3.Headers.Builder();
         if (httpRequest.getHeaders() != null) {
             requestHeaders = createRequestHeaders(httpRequest.getHeaders());
+        }
+
+        // log request
+        if (httpLogger != null) {
+            httpLogger.logRequest(httpRequest, httpRequest.getUrl(arraySerializationFormat));
         }
 
         // build the request

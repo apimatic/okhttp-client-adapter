@@ -18,6 +18,7 @@ import java.util.concurrent.TimeUnit;
 import io.apimatic.core_interfaces.http.ClientConfiguration;
 import io.apimatic.core_interfaces.http.HttpMethodType;
 import io.apimatic.core_interfaces.http.request.configuration.RetryOption;
+import io.apimatic.core_interfaces.logger.ApiLogger;
 import okhttp3.Interceptor;
 import okhttp3.Request;
 import okhttp3.Response;
@@ -39,13 +40,19 @@ public class RetryInterceptor implements Interceptor {
      * User specified retry configurations.
      */
     private final ClientConfiguration httpClientConfiguration;
+    
+    /**
+     * Private instance of HttpLogger.
+     */
+     private final ApiLogger httpLogger;
 
     /**
      * Default Constructor, Initializes the httpClientConfiguration attribute.
      * 
      * @param httpClientConfig the user specified configurations.
      */
-    public RetryInterceptor(ClientConfiguration httpClientConfig) {
+    public RetryInterceptor(ClientConfiguration httpClientConfig, ApiLogger httpApiLogger) {
+        this.httpLogger = httpApiLogger;
         this.httpClientConfiguration = httpClientConfig;
         requestEntries = new ConcurrentHashMap<>();
     }
