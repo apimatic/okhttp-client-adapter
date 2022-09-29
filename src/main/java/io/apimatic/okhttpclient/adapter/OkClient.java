@@ -48,7 +48,7 @@ public class OkClient implements HttpClient {
     /**
      * Private instance of HttpLogger.
      */
-    private final ApiLogger httpLogger;
+    private ApiLogger apiLogger;
 
     private CompatibilityFactory compatibilityFactory;
 
@@ -58,8 +58,18 @@ public class OkClient implements HttpClient {
      * @param httpClientConfig The specified http client configuration.
      */
     public OkClient(ClientConfiguration httpClientConfig, CompatibilityFactory compatibilityFactory,
-            ApiLogger httpApiLogger) {
-        httpLogger = httpApiLogger;
+            ApiLogger apiLogger) {
+        this(httpClientConfig, compatibilityFactory);
+        this.apiLogger = apiLogger;
+    }
+
+    /**
+     * Default constructor.
+     * 
+     * @param httpClientConfig The specified http client configuration.
+     */
+    public OkClient(ClientConfiguration httpClientConfig,
+            CompatibilityFactory compatibilityFactory) {
         this.compatibilityFactory = compatibilityFactory;
         okhttp3.OkHttpClient httpClientInstance = httpClientConfig.getHttpClientInstance();
         if (httpClientInstance != null) {
@@ -92,7 +102,7 @@ public class OkClient implements HttpClient {
         // If retries are allowed then RetryInterceptor must be registered
         if (httpClientConfig.getNumberOfRetries() > 0) {
             clientBuilder.callTimeout(httpClientConfig.getMaximumRetryWaitTime(), TimeUnit.SECONDS)
-                    .addInterceptor(new RetryInterceptor(httpClientConfig, httpLogger));
+                    .addInterceptor(new RetryInterceptor(httpClientConfig, apiLogger));
         } else {
             clientBuilder.callTimeout(httpClientConfig.getTimeout(), TimeUnit.SECONDS);
         }
@@ -241,8 +251,10 @@ public class OkClient implements HttpClient {
             okHttpResponse = client.newCall(okHttpRequest).execute();
         } catch (IOException e) {
             // log response with error
-            httpLogger.setError(httpRequest, e);
-            httpLogger.logResponse(httpRequest, null);
+            if (apiLogger != null) {
+                apiLogger.setError(httpRequest, e);
+                apiLogger.logResponse(httpRequest, null);
+            }
             throw e;
         }
 
@@ -251,12 +263,14 @@ public class OkClient implements HttpClient {
             httpResponse = convertResponse(httpRequest, okHttpResponse,
                     endpointConfiguration.hasBinaryResponse());
         } catch (IOException e) {
-            httpLogger.setError(httpRequest, e);
+            if (apiLogger != null) {
+                apiLogger.setError(httpRequest, e);
+            }
         }
 
-        if (httpLogger != null) {
+        if (apiLogger != null) {
             // log response
-            httpLogger.logResponse(httpRequest, httpResponse);
+            apiLogger.logResponse(httpRequest, httpResponse);
         }
         return httpResponse;
     }
@@ -288,7 +302,7 @@ public class OkClient implements HttpClient {
         Response httpResponse = null;
         try {
             if (error != null) {
-                httpLogger.setError(httpRequest, error);
+                apiLogger.setError(httpRequest, error);
             }
             httpResponse = convertResponse(httpRequest, okHttpResponse, hasBinaryResponse);
 
@@ -299,10 +313,10 @@ public class OkClient implements HttpClient {
                 completionBlock.completeExceptionally(error);
             }
         } catch (IOException e) {
-            httpLogger.setError(httpRequest, e);
+            apiLogger.setError(httpRequest, e);
             completionBlock.completeExceptionally(e);
         }
-        httpLogger.logResponse(httpRequest, httpResponse);
+        apiLogger.logResponse(httpRequest, httpResponse);
         return httpResponse;
     }
 
@@ -429,8 +443,8 @@ public class OkClient implements HttpClient {
         }
 
         // log request
-        if (httpLogger != null) {
-            httpLogger.logRequest(httpRequest, httpRequest.getUrl(arraySerializationFormat));
+        if (apiLogger != null) {
+            apiLogger.logRequest(httpRequest, httpRequest.getUrl(arraySerializationFormat));
         }
 
         // build the request
