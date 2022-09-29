@@ -28,7 +28,7 @@ import io.apimatic.coreinterfaces.http.request.Request;
 import io.apimatic.coreinterfaces.http.request.configuration.EndpointSetting;
 import io.apimatic.coreinterfaces.http.response.Response;
 import io.apimatic.coreinterfaces.logger.ApiLogger;
-import io.apimatic.coreinterfaces.type.FileWrapper;
+import io.apimatic.coreinterfaces.type.CoreFileWrapper;
 import io.apimatic.okhttpclient.adapter.interceptors.HttpRedirectInterceptor;
 import io.apimatic.okhttpclient.adapter.interceptors.RetryInterceptor;
 
@@ -362,8 +362,8 @@ public class OkClient implements HttpClient {
             Object body = httpRequest.getBody();
 
             // set request body
-            if (body instanceof FileWrapper) {
-                FileWrapper file = (FileWrapper) body;
+            if (body instanceof CoreFileWrapper) {
+                CoreFileWrapper file = (CoreFileWrapper) body;
 
                 if (file.getContentType() != null && !file.getContentType().isEmpty()) {
                     contentType = file.getContentType();

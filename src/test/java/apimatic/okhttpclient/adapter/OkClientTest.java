@@ -32,7 +32,7 @@ import io.apimatic.coreinterfaces.http.request.configuration.EndpointSetting;
 import io.apimatic.coreinterfaces.http.request.configuration.RetryOption;
 import io.apimatic.coreinterfaces.http.response.Response;
 import io.apimatic.coreinterfaces.logger.ApiLogger;
-import io.apimatic.coreinterfaces.type.FileWrapper;
+import io.apimatic.coreinterfaces.type.CoreFileWrapper;
 import io.apimatic.okhttpclient.adapter.OkClient;
 
 public class OkClientTest extends OkHttpClientMock {
@@ -66,7 +66,7 @@ public class OkClientTest extends OkHttpClientMock {
     private File file;
 
     @Mock
-    private FileWrapper fileWrapper;
+    private CoreFileWrapper fileWrapper;
 
     @Before
     public void setup() {
