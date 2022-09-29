@@ -1,4 +1,4 @@
-package apimatic.okhttp_client_lib;
+package apimatic.okhttpclient.adapter;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
@@ -14,9 +14,9 @@ import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
-import io.apimatic.core_interfaces.http.ClientConfiguration;
-import io.apimatic.core_interfaces.http.Method;
-import io.apimatic.okhttp_client_lib.interceptors.HttpRedirectInterceptor;
+import io.apimatic.coreinterfaces.http.ClientConfiguration;
+import io.apimatic.coreinterfaces.http.Method;
+import io.apimatic.okhttpclient.adapter.interceptors.HttpRedirectInterceptor;
 import okhttp3.HttpUrl;
 import okhttp3.Interceptor.Chain;
 import okhttp3.Request;

@@ -1,4 +1,4 @@
-package apimatic.okhttp_client_lib.mocks;
+package apimatic.okhttpclient.adapter.mocks;
 
 import org.junit.Rule;
 import org.mockito.Mock;

@@ -6,18 +6,18 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<groupId>io.apimatic</groupId>
-	<artifactId>okhttp-client-lib</artifactId>
+	<artifactId>okhttp-client-adapter</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 
-	<name>okhttp-client-lib</name>
-	<description>A simple okhttp-client-lib.</description>
+	<name>okhttp-client-adapter</name>
+	<description>A simple okhttp-client-adapter.</description>
 	<!-- FIXME change it to the project's website -->
 	<url>http://www.example.com</url>
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<maven.compiler.source>1.7</maven.compiler.source>
-		<maven.compiler.target>1.7</maven.compiler.target>
+		<maven.compiler.source>1.8</maven.compiler.source>
+		<maven.compiler.target>1.8</maven.compiler.target>
 	</properties>
 
 	<dependencies>

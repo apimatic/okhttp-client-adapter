@@ -1,4 +1,4 @@
-package apimatic.okhttp_client_lib;
+package apimatic.okhttpclient.adapter;
 
 import static org.junit.Assert.assertFalse;
 import static org.mockito.Mockito.when;
@@ -12,12 +12,12 @@ import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
-import apimatic.okhttp_client_lib.mocks.CompatibilityFactoryMock;
-import io.apimatic.core_interfaces.http.ClientConfiguration;
-import io.apimatic.core_interfaces.http.Method;
-import io.apimatic.core_interfaces.http.request.configuration.RetryOption;
-import io.apimatic.core_interfaces.logger.ApiLogger;
-import io.apimatic.okhttp_client_lib.interceptors.RetryInterceptor;
+import apimatic.okhttpclient.adapter.mocks.CompatibilityFactoryMock;
+import io.apimatic.coreinterfaces.http.ClientConfiguration;
+import io.apimatic.coreinterfaces.http.Method;
+import io.apimatic.coreinterfaces.http.request.configuration.RetryOption;
+import io.apimatic.coreinterfaces.logger.ApiLogger;
+import io.apimatic.okhttpclient.adapter.interceptors.RetryInterceptor;
 import okhttp3.Interceptor.Chain;
 import okhttp3.Request;
 import okhttp3.Response;

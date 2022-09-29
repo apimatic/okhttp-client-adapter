@@ -4,7 +4,7 @@
  * This file was automatically generated for Stamplay by APIMATIC v3.0 ( https://www.apimatic.io ).
  */
 
-package io.apimatic.okhttp_client_lib.interceptors;
+package io.apimatic.okhttpclient.adapter.interceptors;
 
 import java.io.IOException;
 import java.net.SocketException;
@@ -15,10 +15,10 @@ import java.time.format.DateTimeFormatter;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.TimeUnit;
-import io.apimatic.core_interfaces.http.ClientConfiguration;
-import io.apimatic.core_interfaces.http.HttpMethodType;
-import io.apimatic.core_interfaces.http.request.configuration.RetryOption;
-import io.apimatic.core_interfaces.logger.ApiLogger;
+import io.apimatic.coreinterfaces.http.ClientConfiguration;
+import io.apimatic.coreinterfaces.http.HttpMethodType;
+import io.apimatic.coreinterfaces.http.request.configuration.RetryOption;
+import io.apimatic.coreinterfaces.logger.ApiLogger;
 import okhttp3.Interceptor;
 import okhttp3.Request;
 import okhttp3.Response;

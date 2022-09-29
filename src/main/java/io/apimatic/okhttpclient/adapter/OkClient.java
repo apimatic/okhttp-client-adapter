@@ -1,4 +1,4 @@
-package io.apimatic.okhttp_client_lib;
+package io.apimatic.okhttpclient.adapter;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -16,21 +16,21 @@ import javax.net.ssl.SSLSession;
 import javax.net.ssl.SSLSocketFactory;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
-import io.apimatic.core_interfaces.compatibility.CompatibilityFactory;
-import io.apimatic.core_interfaces.http.ClientConfiguration;
-import io.apimatic.core_interfaces.http.Method;
-import io.apimatic.core_interfaces.http.HttpClient;
-import io.apimatic.core_interfaces.http.HttpHeaders;
-import io.apimatic.core_interfaces.http.request.ArraySerializationFormat;
-import io.apimatic.core_interfaces.http.request.MultipartFile;
-import io.apimatic.core_interfaces.http.request.Multipart;
-import io.apimatic.core_interfaces.http.request.Request;
-import io.apimatic.core_interfaces.http.request.configuration.EndpointSetting;
-import io.apimatic.core_interfaces.http.response.Response;
-import io.apimatic.core_interfaces.logger.ApiLogger;
-import io.apimatic.core_interfaces.type.FileWrapper;
-import io.apimatic.okhttp_client_lib.interceptors.HttpRedirectInterceptor;
-import io.apimatic.okhttp_client_lib.interceptors.RetryInterceptor;
+import io.apimatic.coreinterfaces.compatibility.CompatibilityFactory;
+import io.apimatic.coreinterfaces.http.ClientConfiguration;
+import io.apimatic.coreinterfaces.http.HttpClient;
+import io.apimatic.coreinterfaces.http.HttpHeaders;
+import io.apimatic.coreinterfaces.http.Method;
+import io.apimatic.coreinterfaces.http.request.ArraySerializationFormat;
+import io.apimatic.coreinterfaces.http.request.Multipart;
+import io.apimatic.coreinterfaces.http.request.MultipartFile;
+import io.apimatic.coreinterfaces.http.request.Request;
+import io.apimatic.coreinterfaces.http.request.configuration.EndpointSetting;
+import io.apimatic.coreinterfaces.http.response.Response;
+import io.apimatic.coreinterfaces.logger.ApiLogger;
+import io.apimatic.coreinterfaces.type.FileWrapper;
+import io.apimatic.okhttpclient.adapter.interceptors.HttpRedirectInterceptor;
+import io.apimatic.okhttpclient.adapter.interceptors.RetryInterceptor;
 
 /**
  * HTTP Client class to send HTTP Requests and read the responses.
