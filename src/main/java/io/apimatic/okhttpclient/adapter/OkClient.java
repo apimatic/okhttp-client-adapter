@@ -25,7 +25,7 @@ import io.apimatic.coreinterfaces.http.request.ArraySerializationFormat;
 import io.apimatic.coreinterfaces.http.request.Multipart;
 import io.apimatic.coreinterfaces.http.request.MultipartFile;
 import io.apimatic.coreinterfaces.http.request.Request;
-import io.apimatic.coreinterfaces.http.request.configuration.EndpointSetting;
+import io.apimatic.coreinterfaces.http.request.configuration.CoreEndpointConfiguration;
 import io.apimatic.coreinterfaces.http.response.Response;
 import io.apimatic.coreinterfaces.logger.ApiLogger;
 import io.apimatic.coreinterfaces.type.CoreFileWrapper;
@@ -46,16 +46,21 @@ public class OkClient implements HttpClient {
     private okhttp3.OkHttpClient client;
 
     /**
-     * Private instance of HttpLogger.
+     * Private instance of ApiLogger.
      */
     private ApiLogger apiLogger;
 
+    /**
+     * Private instace of CompatibilityFactory
+     */
     private CompatibilityFactory compatibilityFactory;
 
     /**
-     * Default constructor.
+     * Constructor to initialize the OKClient
      * 
-     * @param httpClientConfig The specified http client configuration.
+     * @param httpClientConfig client configuration
+     * @param compatibilityFactory
+     * @param apiLogger
      */
     public OkClient(ClientConfiguration httpClientConfig, CompatibilityFactory compatibilityFactory,
             ApiLogger apiLogger) {
@@ -64,9 +69,10 @@ public class OkClient implements HttpClient {
     }
 
     /**
-     * Default constructor.
+     * Constructor to initialize the OKClient
      * 
-     * @param httpClientConfig The specified http client configuration.
+     * @param httpClientConfig
+     * @param compatibilityFactory
      */
     public OkClient(ClientConfiguration httpClientConfig,
             CompatibilityFactory compatibilityFactory) {
@@ -193,15 +199,14 @@ public class OkClient implements HttpClient {
     }
 
     /**
-     * Execute a given HttpRequest to get string/binary response back.
+     * Execute a given Request to get string/binary response back.
      * 
-     * @param httpRequest The given HttpRequest to execute.
-     * @param hasBinaryResponse Whether the response is binary or string.
-     * @param retryConfiguration The overridden retry configuration for request.
+     * @param httpRequest The given Request to execute.
+     * @param endpointConfiguration The endpointconfiguration for request.
      * @return CompletableFuture of HttpResponse after execution.
      */
     public CompletableFuture<Response> executeAsync(final Request httpRequest,
-            EndpointSetting endpointConfiguration) {
+            CoreEndpointConfiguration endpointConfiguration) {
         okhttp3.Request okHttpRequest =
                 convertRequest(httpRequest, endpointConfiguration.getArraySerializationFormat());
 
@@ -228,15 +233,14 @@ public class OkClient implements HttpClient {
     }
 
     /**
-     * Execute a given HttpRequest to get string/binary response back.
+     * Execute a given Request to get string/binary response back.
      * 
-     * @param httpRequest The given HttpRequest to execute.
-     * @param hasBinaryResponse Whether the response is binary or string.
-     * @param retryConfiguration The overridden retry configuration for request.
+     * @param httpRequest The given Request to execute.
+     * @param endpointConfiguration The endpointConfiguration for request.
      * @return The converted http response.
      * @throws IOException exception to be thrown while converting response.
      */
-    public Response execute(Request httpRequest, EndpointSetting endpointConfiguration)
+    public Response execute(Request httpRequest, CoreEndpointConfiguration endpointConfiguration)
             throws IOException {
         okhttp3.Request okHttpRequest =
                 convertRequest(httpRequest, endpointConfiguration.getArraySerializationFormat());
