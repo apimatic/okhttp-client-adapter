@@ -1,5 +1,5 @@
 # okhttp-client-adapter
-[![Tests][test-badge]][test-url]
+
 [![Licence][license-badge]][license-url]
 [![Maven Central][maven-badge]][maven-url]
 ## Introduction
@@ -26,8 +26,6 @@ To add a dependency on OkHttp client adapter using Maven, use the following:
 | [`RetryInterceptor`](./src/main/java/io/apimatic/okhttpclient/adapter/interceptors/RetryInterceptor.java)             | RetryInterceptor intercepts and retry requests if failed based on configuration                |
 
 
-[test-badge]: https://github.com/apimatic/core-lib-php/actions/workflows/test.yml/badge.svg
-[test-url]: https://github.com/apimatic/core-lib-php/actions/workflows/test.yml
 [license-badge]: https://img.shields.io/badge/licence-APIMATIC-blue
 [license-url]: LICENSE
 [maven-badge]: https://img.shields.io/maven-central/v/io.apimatic/okhttp-client-adapter?color=green
