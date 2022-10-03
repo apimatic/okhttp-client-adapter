@@ -10,7 +10,7 @@
 	<version>0.1.0</version>
 
 	<name>okhttp-client-adapter</name>
-	<description>An adapter for okhttp-client library consumed by SDKs provided by APIMatic.</description>
+	<description>An adapter for okhttp-client library consumed by the SDKs generated with APIMatic.</description>
 	<url>https://github.com/apimatic/okhttp-client-adapter</url>
 
 	<properties>
