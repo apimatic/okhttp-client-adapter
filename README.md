@@ -30,5 +30,5 @@ To add a dependency on OkHttp client adapter using Maven, use the following:
 [test-url]: https://github.com/apimatic/core-lib-php/actions/workflows/test.yml
 [license-badge]: https://img.shields.io/badge/licence-APIMATIC-blue
 [license-url]: LICENSE
-[maven-badge]: https://img.shields.io/maven-central/v/io.apimatic/core?color=green&style=plastic
+[maven-badge]: https://img.shields.io/maven-central/v/io.apimatic/okhttp-client-adapter?color=green
 [maven-url]: https://central.sonatype.dev/artifact/io.apimatic/okhttp-client-adapter/0.1.0
