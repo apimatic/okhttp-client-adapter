@@ -1,4 +1,7 @@
 # okhttp-client-adapter
+[![Tests][test-badge]][test-url]
+[![Licence][license-badge]][license-url]
+## Introduction
 This project contains OkHttp client adpater which is wrapper of Okhttp client implementation. This implementation is being provided to java core library from an APIMatic SDK.
 
 ## Prerequisites
@@ -10,7 +13,7 @@ To add a dependency on OkHttp client adapter using Maven, use the following:
 <dependency>
     <groupId>io.apimatic</groupId>
     <artifactId>okhttp-client-adapter</artifactId>
-    <version>{version}</version>
+    <version>0.1.0</version>
 </dependency>
 ```
 
@@ -20,3 +23,9 @@ To add a dependency on OkHttp client adapter using Maven, use the following:
 | [`OkClient`](./src/main/java/io/apimatic/okhttpclient/adapter/OkClient.java)                     | HTTP Client class to send HTTP Requests and read the responses |
 | [`HttpRedirectInterceptor`](./src/main/java/io/apimatic/okhttpclient/adapter/interceptors/HttpRedirectInterceptor.java)            | HttpRedirectInterceptor intercepts and complete 307 and 308 redirects as described in RFC                        |
 | [`RetryInterceptor`](./src/main/java/io/apimatic/okhttpclient/adapter/interceptors/RetryInterceptor.java)             | RetryInterceptor intercepts and retry requests if failed based on configuration                |
+
+
+[test-badge]: https://github.com/apimatic/core-lib-php/actions/workflows/test.yml/badge.svg
+[test-url]: https://github.com/apimatic/core-lib-php/actions/workflows/test.yml
+[license-badge]: https://img.shields.io/badge/licence-APIMATIC-blue
+[license-url]: LICENSE
