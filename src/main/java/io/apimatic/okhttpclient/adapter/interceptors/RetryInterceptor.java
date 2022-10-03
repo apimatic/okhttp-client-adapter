@@ -11,11 +11,12 @@ import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.TimeUnit;
 import io.apimatic.coreinterfaces.http.ClientConfiguration;
 import io.apimatic.coreinterfaces.http.HttpMethodType;
-import io.apimatic.coreinterfaces.http.request.configuration.RetryOption;
+import io.apimatic.coreinterfaces.http.request.Request;
+import io.apimatic.coreinterfaces.http.request.configuration.CoreEndpointConfiguration;
+import io.apimatic.coreinterfaces.http.response.Response;
 import io.apimatic.coreinterfaces.logger.ApiLogger;
+import io.apimatic.okhttpclient.adapter.OkClient;
 import okhttp3.Interceptor;
-import okhttp3.Request;
-import okhttp3.Response;
 
 /**
  * RetryInterceptor intercepts and retry requests if failed based on configuration.
@@ -28,22 +29,23 @@ public class RetryInterceptor implements Interceptor {
     /**
      * To keep track of requests being sent and its current state.
      */
-    private final ConcurrentMap<Request, RequestState> requestEntries;
+    private final ConcurrentMap<okhttp3.Request, RequestState> requestEntries;
 
     /**
      * User specified retry configurations.
      */
     private final ClientConfiguration httpClientConfiguration;
-    
+
     /**
      * Private instance of HttpLogger.
      */
-     private final ApiLogger httpLogger;
+    private final ApiLogger httpLogger;
 
     /**
      * Default Constructor, Initializes the httpClientConfiguration attribute.
      * 
      * @param httpClientConfig the user specified configurations.
+     * @param httpApiLogger for logging request and response.
      */
     public RetryInterceptor(ClientConfiguration httpClientConfig, ApiLogger httpApiLogger) {
         this.httpLogger = httpApiLogger;
@@ -57,15 +59,15 @@ public class RetryInterceptor implements Interceptor {
      * @see okhttp3.Interceptor#intercept(okhttp3.Interceptor.Chain)
      */
     @Override
-    public Response intercept(Chain chain) throws IOException {
+    public okhttp3.Response intercept(Chain chain) throws IOException {
 
-        Request request = chain.request();
+        okhttp3.Request request = chain.request();
         RequestState requestState = getRequestState(request);
         boolean isWhitelistedRequestMethod = this.httpClientConfiguration.getHttpMethodsToRetry()
                 .contains(HttpMethodType.valueOf(request.method()));
-        boolean isRetryAllowedForRequest = requestState.retryOption
+        boolean isRetryAllowedForRequest = requestState.endpointConfiguration.getRetryOption()
                 .isRetryAllowed(isWhitelistedRequestMethod);
-        Response response = null;
+        okhttp3.Response response = null;
         IOException timeoutException = null;
         boolean shouldRetry = false;
 
@@ -94,12 +96,20 @@ public class RetryInterceptor implements Interceptor {
                     break;
                 }
 
+                if (response == null) {
+
+                    logError(requestState, timeoutException);
+                }
                 // Waiting before making next request
                 holdExecution(requestState.currentWaitInMilliSeconds);
 
                 // Incrementing retry attempt count
                 requestState.retryCount++;
 
+                if (httpLogger != null) {
+                    httpLogger.logRequest(requestState.httpRequest, request.url().toString(),
+                            "Retry Attempt # " + requestState.retryCount);
+                }
             }
 
         } while (shouldRetry);
@@ -123,8 +133,8 @@ public class RetryInterceptor implements Interceptor {
      * @return the HTTP response.
      * @throws IOException exception to be thrown in case of timeout.
      */
-    private Response getResponse(Chain chain, Request request, Response response,
-            boolean shouldCloseResponse) throws IOException {
+    private okhttp3.Response getResponse(Chain chain, okhttp3.Request request,
+            okhttp3.Response response, boolean shouldCloseResponse) throws IOException {
 
         try {
             if (shouldCloseResponse && response != null) {
@@ -146,7 +156,7 @@ public class RetryInterceptor implements Interceptor {
      * @param response the HTTP response.
      * @return true if request is needed to be retried.
      */
-    private boolean needToRetry(RequestState requestState, Response response,
+    private boolean needToRetry(RequestState requestState, okhttp3.Response response,
             boolean isTimeoutException) {
         boolean isValidAttempt =
                 requestState.retryCount < this.httpClientConfiguration.getNumberOfRetries();
@@ -174,7 +184,7 @@ public class RetryInterceptor implements Interceptor {
      * @param requestState the current state of request entry.
      * @param response the HTTP response.
      */
-    private void calculateWaitTime(RequestState requestState, Response response) {
+    private void calculateWaitTime(RequestState requestState, okhttp3.Response response) {
         long retryAfterHeaderValue = 0;
         if (response != null && hasRetryAfterHeader(response)) {
             retryAfterHeaderValue = getCalculatedHeaderValue(response.header("Retry-After"));
@@ -191,7 +201,7 @@ public class RetryInterceptor implements Interceptor {
      * @param response the HTTP response.
      * @return true if response contains Retry-After header.
      */
-    private boolean hasRetryAfterHeader(Response response) {
+    private boolean hasRetryAfterHeader(okhttp3.Response response) {
         String retryAfter = response.header("Retry-After");
         return retryAfter != null && !retryAfter.isEmpty();
     }
@@ -254,11 +264,12 @@ public class RetryInterceptor implements Interceptor {
      * Adds entry into Request entry map.
      * 
      * @param okHttpRequest the OK HTTP Request.
-     * @param retryConfiguration The overridden retry configuration for request.
+     * @param endpointConfiguration The overridden endpointConfiguration for request.
+     * @param request The core interface Request
      */
-    public void addRequestEntry(Request okHttpRequest,
-            RetryOption retryOption) {
-        this.requestEntries.put(okHttpRequest, new RequestState(retryOption));
+    public void addRequestEntry(okhttp3.Request okHttpRequest,
+            CoreEndpointConfiguration endpointConfiguration, Request request) {
+        this.requestEntries.put(okHttpRequest, new RequestState(endpointConfiguration, request));
     }
 
     /**
@@ -267,14 +278,53 @@ public class RetryInterceptor implements Interceptor {
      * @param okHttpRequest the OK HTTP Request.
      * @return RequestEntry the current request entry.
      */
-    private RequestState getRequestState(Request okHttpRequest) {
+    private RequestState getRequestState(okhttp3.Request okHttpRequest) {
         return this.requestEntries.get(okHttpRequest);
     }
+
+    /**
+     * Logs the response.
+     * 
+     * @param requestState The current state of request.
+     * @param response The OKhttp Response.
+     */
+    @SuppressWarnings("unused")
+    private void logResponse(RequestState requestState, okhttp3.Response response) {
+        Response httpResponse = null;
+        try {
+            httpResponse = OkClient.convertResponse(requestState.httpRequest, response,
+                    requestState.endpointConfiguration.hasBinaryResponse());
+            if (httpLogger != null) {
+                httpLogger.logResponse(requestState.httpRequest, httpResponse);
+            }
+        } catch (IOException ioException) {
+            logError(requestState, ioException);
+        }
+    }
+
+    /**
+     * Logs the exception.
+     * 
+     * @param requestState The current state of request.
+     * @param response The OKhttp Response.
+     */
+    private void logError(RequestState requestState, IOException ioException) {
+        if (httpLogger != null) {
+            httpLogger.setError(requestState.httpRequest, ioException);
+            httpLogger.logResponse(requestState.httpRequest, null);
+        }
+    }
+
 
     /**
      * Class to hold the request info until request completes.
      */
     private class RequestState {
+
+        /**
+         * The internal HTTP request.
+         */
+        Request httpRequest;
 
         /**
          * To keep track of requests count.
@@ -294,7 +344,7 @@ public class RetryInterceptor implements Interceptor {
         /**
          * To keep track of request retry configurations.
          */
-        private RetryOption retryOption;
+        private CoreEndpointConfiguration endpointConfiguration;
 
         /**
          * Default Constructor.
@@ -302,8 +352,9 @@ public class RetryInterceptor implements Interceptor {
          * @param retryForAllHttpMethods Whether to bypass the HTTP method checking for the given
          *        request in retries.
          */
-        private RequestState(RetryOption retryOption) {
-            this.retryOption = retryOption;
+        private RequestState(CoreEndpointConfiguration endpointConfiguration, Request request) {
+            this.endpointConfiguration = endpointConfiguration;
+            this.httpRequest = request;
         }
     }
 }
