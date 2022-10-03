@@ -53,14 +53,14 @@ public class OkClient implements HttpClient {
     /**
      * Private instace of CompatibilityFactory
      */
-    private CompatibilityFactory compatibilityFactory;
+    private static CompatibilityFactory compatibilityFactory;
 
     /**
      * Constructor to initialize the OKClient
      * 
      * @param httpClientConfig client configuration
-     * @param compatibilityFactory
-     * @param apiLogger
+     * @param compatibilityFactory the compatibilityFactory for backward compatibility
+     * @param apiLogger the logger for logging information
      */
     public OkClient(ClientConfiguration httpClientConfig, CompatibilityFactory compatibilityFactory,
             ApiLogger apiLogger) {
@@ -71,12 +71,12 @@ public class OkClient implements HttpClient {
     /**
      * Constructor to initialize the OKClient
      * 
-     * @param httpClientConfig
-     * @param compatibilityFactory
+     * @param httpClientConfig the httpClientConfiguration
+     * @param compatibilityFactory the compatibilityFactory for backward compatibility
      */
     public OkClient(ClientConfiguration httpClientConfig,
             CompatibilityFactory compatibilityFactory) {
-        this.compatibilityFactory = compatibilityFactory;
+        OkClient.compatibilityFactory = compatibilityFactory;
         okhttp3.OkHttpClient httpClientInstance = httpClientConfig.getHttpClientInstance();
         if (httpClientInstance != null) {
             if (httpClientConfig.shouldOverrideHttpClientConfigurations()) {
@@ -212,7 +212,7 @@ public class OkClient implements HttpClient {
 
         RetryInterceptor retryInterceptor = getRetryInterceptor();
         if (retryInterceptor != null) {
-            retryInterceptor.addRequestEntry(okHttpRequest, endpointConfiguration.getRetryOption());
+            retryInterceptor.addRequestEntry(okHttpRequest, endpointConfiguration, httpRequest);
         }
 
         final CompletableFuture<Response> callBack = new CompletableFuture<>();
@@ -247,7 +247,7 @@ public class OkClient implements HttpClient {
 
         RetryInterceptor retryInterceptor = getRetryInterceptor();
         if (retryInterceptor != null) {
-            retryInterceptor.addRequestEntry(okHttpRequest, endpointConfiguration.getRetryOption());
+            retryInterceptor.addRequestEntry(okHttpRequest, endpointConfiguration, httpRequest);
         }
 
         okhttp3.Response okHttpResponse = null;
@@ -306,7 +306,9 @@ public class OkClient implements HttpClient {
         Response httpResponse = null;
         try {
             if (error != null) {
-                apiLogger.setError(httpRequest, error);
+                if (apiLogger != null) {
+                    apiLogger.setError(httpRequest, error);
+                }
             }
             httpResponse = convertResponse(httpRequest, okHttpResponse, hasBinaryResponse);
 
@@ -317,10 +319,14 @@ public class OkClient implements HttpClient {
                 completionBlock.completeExceptionally(error);
             }
         } catch (IOException e) {
-            apiLogger.setError(httpRequest, e);
+            if (apiLogger != null) {
+                apiLogger.setError(httpRequest, e);
+            }
             completionBlock.completeExceptionally(e);
         }
-        apiLogger.logResponse(httpRequest, httpResponse);
+        if (apiLogger != null) {
+            apiLogger.logResponse(httpRequest, httpResponse);
+        }
         return httpResponse;
     }
 
@@ -333,7 +339,7 @@ public class OkClient implements HttpClient {
      * @return The converted http response.
      * @throws IOException exception to be thrown while converting response.
      */
-    protected Response convertResponse(Request request, okhttp3.Response response,
+    public static Response convertResponse(Request request, okhttp3.Response response,
             boolean hasBinaryResponse) throws IOException {
         Response httpResponse = null;
 

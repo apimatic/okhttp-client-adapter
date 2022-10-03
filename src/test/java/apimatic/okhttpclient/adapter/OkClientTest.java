@@ -13,6 +13,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.AbstractMap.SimpleEntry;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import org.junit.Before;
@@ -21,6 +23,7 @@ import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
+import org.mockito.quality.Strictness;
 import apimatic.okhttpclient.adapter.mocks.OkHttpClientMock;
 import io.apimatic.coreinterfaces.http.ClientConfiguration;
 import io.apimatic.coreinterfaces.http.HttpHeaders;
@@ -38,7 +41,7 @@ public class OkClientTest extends OkHttpClientMock {
 
 
     @Rule
-    public MockitoRule initRule = MockitoJUnit.rule();
+    public MockitoRule initRule = MockitoJUnit.rule().strictness(Strictness.LENIENT);
 
     @Mock
     private ClientConfiguration clientConfiguration;
@@ -73,7 +76,7 @@ public class OkClientTest extends OkHttpClientMock {
         OkClient client = new OkClient(clientConfiguration, compatibilityFactory);
         assertNotNull(client);
     }
-    
+
     @Test
     public void testInsecureOkhttpClient() {
         when(clientConfiguration.skipSslCertVerification()).thenReturn(true);
@@ -280,13 +283,83 @@ public class OkClientTest extends OkHttpClientMock {
         assertEquals(actual, expected);
     }
 
+
     @Test
-    public void testPostFormParametersRequest() throws IOException {
+    public void testPostMultipartFileWrapperRequest1() throws IOException {
         when(clientConfiguration.getHttpClientInstance()).thenReturn(client);
         when(clientConfiguration.shouldOverrideHttpClientConfigurations()).thenReturn(true);
         when(client.newCall(any(okhttp3.Request.class))).thenReturn(call);
 
         OkClient client = new OkClient(clientConfiguration, compatibilityFactory);
+        when(coreHttpRequest.getHttpMethod()).thenReturn(Method.POST);
+        when(httpHeaders.asMultimap()).thenReturn(
+                Collections.singletonMap("custom-header", Arrays.asList("application/json")));
+
+        List<SimpleEntry<String, Object>> listP = new ArrayList<>();
+        listP.add(new SimpleEntry<String, Object>("fileWrapper", coreMultipartFileWrapper));
+
+        when(coreHttpRequest.getParameters()).thenReturn(listP);
+        when(coreMultipartFileWrapper.getFileWrapper()).thenReturn(fileWrapper);
+        when(fileWrapper.getContentType()).thenReturn("application/octet-stream");
+        when(file.getName()).thenReturn("Test\nFile\r\"Part\"");
+
+        when(call.execute()).thenReturn(okHttpResponse);
+        when(okHttpResponse.body()).thenReturn(okHttpResponseBody);
+        String serverResponseString = "File has been posted";
+        when(coreHttpResponse.getBody()).thenReturn(serverResponseString);
+        when(okHttpResponseBody.string()).thenReturn(serverResponseString);
+        when(okHttpResponse.code()).thenReturn(200);
+
+        when(compatibilityFactory.createHttpResponse(anyInt(), any(HttpHeaders.class),
+                any(InputStream.class), anyString())).thenReturn(coreHttpResponse);
+
+        Response coreHttpResponse = client.execute(coreHttpRequest, configuration);
+        String expected = serverResponseString;
+        String actual = coreHttpResponse.getBody();
+        assertEquals(actual, expected);
+    }
+
+
+    @Test
+    public void testPostMultipartRequest() throws IOException {
+        when(clientConfiguration.getHttpClientInstance()).thenReturn(client);
+        when(clientConfiguration.shouldOverrideHttpClientConfigurations()).thenReturn(true);
+        when(client.newCall(any(okhttp3.Request.class))).thenReturn(call);
+
+        OkClient client = new OkClient(clientConfiguration, compatibilityFactory);
+        when(coreHttpRequest.getHttpMethod()).thenReturn(Method.POST);
+
+        List<SimpleEntry<String, Object>> listP = new ArrayList<>();
+        listP.add(new SimpleEntry<String, Object>("fileWrapper", coreMultipartWrapper));
+
+        String serverResponseString = "File has been posted";
+        byte[] byteArray = serverResponseString.getBytes();
+        when(coreHttpRequest.getParameters()).thenReturn(listP);
+        when(coreMultipartWrapper.getByteArray()).thenReturn(byteArray);
+        when(file.getName()).thenReturn("Test\nFile\r\"Part\"");
+
+        when(call.execute()).thenReturn(okHttpResponse);
+        when(okHttpResponse.body()).thenReturn(okHttpResponseBody);
+        when(coreHttpResponse.getBody()).thenReturn(serverResponseString);
+        when(okHttpResponseBody.string()).thenReturn(serverResponseString);
+        when(okHttpResponse.code()).thenReturn(200);
+
+        when(compatibilityFactory.createHttpResponse(anyInt(), any(HttpHeaders.class),
+                any(InputStream.class), anyString())).thenReturn(coreHttpResponse);
+
+        Response coreHttpResponse = client.execute(coreHttpRequest, configuration);
+        String expected = serverResponseString;
+        String actual = coreHttpResponse.getBody();
+        assertEquals(actual, expected);
+    }
+
+    @Test
+    public void testPostFormParametersRequest() throws IOException {
+        when(clientConfiguration.getHttpClientInstance()).thenReturn(client);
+        when(clientConfiguration.shouldOverrideHttpClientConfigurations()).thenReturn(false);
+        when(client.newCall(any(okhttp3.Request.class))).thenReturn(call);
+
+        OkClient client = new OkClient(clientConfiguration, compatibilityFactory, null);
         when(coreHttpRequest.getHttpMethod()).thenReturn(Method.POST);
 
         List<SimpleEntry<String, Object>> listP = new ArrayList<>();

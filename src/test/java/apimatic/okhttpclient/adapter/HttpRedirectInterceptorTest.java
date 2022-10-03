@@ -14,6 +14,7 @@ import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
+import org.mockito.quality.Strictness;
 import io.apimatic.coreinterfaces.http.ClientConfiguration;
 import io.apimatic.coreinterfaces.http.Method;
 import io.apimatic.okhttpclient.adapter.interceptors.HttpRedirectInterceptor;
@@ -25,7 +26,7 @@ import okhttp3.Response;
 public class HttpRedirectInterceptorTest {
 
     @Rule
-    public MockitoRule initRule = MockitoJUnit.rule();
+    public MockitoRule initRule = MockitoJUnit.rule().strictness(Strictness.LENIENT);
 
     @Mock
     private ClientConfiguration clientConfiguration;
@@ -35,7 +36,7 @@ public class HttpRedirectInterceptorTest {
 
     @Mock
     private Request.Builder requestBuilder;
-    
+
     @Mock
     private Response response;
 
@@ -78,7 +79,7 @@ public class HttpRedirectInterceptorTest {
         when(url.resolve("location")).thenReturn(httpUrl);
         when(url.host()).thenReturn("localhost");
         when(url.port()).thenReturn(3000);
-     
+
         HttpRedirectInterceptor httpRedirectInterceptor = new HttpRedirectInterceptor(false);
         httpRedirectInterceptor.intercept(chain);
     }
@@ -87,7 +88,7 @@ public class HttpRedirectInterceptorTest {
     public void testInterceptWithTooManyFollowUp() throws IOException {
         when(response.code()).thenReturn(307);
         HttpRedirectInterceptor httpRedirectInterceptor = new HttpRedirectInterceptor(true);
-        Response response =  httpRedirectInterceptor.intercept(chain);
+        Response response = httpRedirectInterceptor.intercept(chain);
         assertNull(response.header("Location"));
     }
 
