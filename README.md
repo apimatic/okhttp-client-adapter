@@ -1,8 +1,8 @@
 # okhttp-client-adapter
 
-[![Licence][license-badge]][license-url]
-[![Tests][test-badge]][test-url]
 [![Maven Central][maven-badge]][maven-url]
+[![Tests][test-badge]][test-url]
+[![Licence][license-badge]][license-url]
 ## Introduction
 This project contains OkHttp client adpater which is wrapper of Okhttp client implementation. This implementation is being provided to java core library from an APIMatic SDK.
 
