@@ -1,7 +1,8 @@
 # okhttp-client-adapter
 
-[![Licence][license-badge]][license-url]
 [![Maven Central][maven-badge]][maven-url]
+[![Tests][test-badge]][test-url]
+[![Licence][license-badge]][license-url]
 ## Introduction
 This project contains OkHttp client adpater which is wrapper of Okhttp client implementation. This implementation is being provided to java core library from an APIMatic SDK.
 
@@ -30,3 +31,5 @@ To add a dependency on OkHttp client adapter using Maven, use the following:
 [license-url]: LICENSE
 [maven-badge]: https://img.shields.io/maven-central/v/io.apimatic/okhttp-client-adapter?color=green
 [maven-url]: https://central.sonatype.dev/artifact/io.apimatic/okhttp-client-adapter/0.1.0
+[test-badge]: https://github.com/apimatic/okhttp-client-adapter/actions/workflows/build-and-test.yml/badge.svg
+[test-url]: https://github.com/apimatic/okhttp-client-adapter/actions/workflows/build-and-test.yml
