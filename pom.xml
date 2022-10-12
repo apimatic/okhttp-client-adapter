@@ -7,7 +7,7 @@
 
 	<groupId>io.apimatic</groupId>
 	<artifactId>okhttp-client-adapter</artifactId>
-	<version>0.1.0</version>
+	<version>0.1.1</version>
 
 	<name>okhttp-client-adapter</name>
 	<description>An adapter for okhttp-client library consumed by the SDKs generated with APIMatic.</description>
@@ -49,12 +49,12 @@
 		<dependency>
 			<groupId>com.squareup.okhttp3</groupId>
 			<artifactId>okhttp</artifactId>
-			<version>4.9.1</version>
+			<version>4.10.0</version>
 		</dependency>
 		<dependency>
 			<groupId>io.apimatic</groupId>
 			<artifactId>core-interfaces</artifactId>
-			<version>0.1.0</version>
+			<version>0.1.2</version>
 		</dependency>
 		<dependency>
 			<groupId>junit</groupId>
