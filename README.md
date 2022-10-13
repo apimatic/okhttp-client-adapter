@@ -15,7 +15,7 @@ To add a dependency on OkHttp client adapter using Maven, use the following:
 <dependency>
     <groupId>io.apimatic</groupId>
     <artifactId>okhttp-client-adapter</artifactId>
-    <version>0.1.0</version>
+    <version>0.1.1</version>
 </dependency>
 ```
 
