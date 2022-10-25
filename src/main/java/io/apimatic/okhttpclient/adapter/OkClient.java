@@ -510,6 +510,9 @@ public class OkClient implements HttpClient {
                 wrapperHeadersBuilder.add("Content-Disposition", "form-data; name="
                         + appendQuotedStringAndEncodeEscapeCharacters(param.getKey()));
                 multipartBuilder.addPart(wrapperHeadersBuilder.build(), body);
+            } else {
+                multipartBuilder.addFormDataPart(param.getKey(),
+                        (param.getValue() == null) ? "" : param.getValue().toString());
             }
         }
         return multipartBuilder.build();
