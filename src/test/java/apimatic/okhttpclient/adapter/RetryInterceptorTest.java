@@ -1,9 +1,11 @@
 package apimatic.okhttpclient.adapter;
 
 import static org.junit.Assert.assertFalse;
+import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.Mockito.when;
 import java.io.IOException;
 import java.time.format.DateTimeParseException;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 import org.junit.Before;
@@ -13,12 +15,14 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import apimatic.okhttpclient.adapter.mocks.CompatibilityFactoryMock;
+import io.apimatic.coreinterfaces.compatibility.CompatibilityFactory;
 import io.apimatic.coreinterfaces.http.ClientConfiguration;
 import io.apimatic.coreinterfaces.http.Method;
 import io.apimatic.coreinterfaces.http.request.configuration.CoreEndpointConfiguration;
 import io.apimatic.coreinterfaces.http.request.configuration.RetryOption;
 import io.apimatic.coreinterfaces.logger.ApiLogger;
 import io.apimatic.okhttpclient.adapter.interceptors.RetryInterceptor;
+import okhttp3.Headers;
 import okhttp3.HttpUrl;
 import okhttp3.Interceptor.Chain;
 import okhttp3.Request;
@@ -34,12 +38,18 @@ public class RetryInterceptorTest extends CompatibilityFactoryMock {
 
     @Mock
     private Request request;
+    
+    @Mock
+    private CompatibilityFactory compatibilityFactory;
 
     @Mock
     private CoreEndpointConfiguration endpointConfiguration;
 
     @Mock
     private ApiLogger apiLogger;
+    
+    @Mock
+    private Headers headers;
 
     @Mock
     private Response response;
@@ -109,6 +119,7 @@ public class RetryInterceptorTest extends CompatibilityFactoryMock {
         when(clientConfiguration.getNumberOfRetries()).thenReturn(3);
         when(request.method()).thenReturn(Method.GET.toString());
         when(response.header("Retry-After")).thenReturn("3");
+        when(response.headers()).thenReturn(headers);
         when(request.url()).thenReturn(url);
         RetryInterceptor interceptor = new RetryInterceptor(clientConfiguration, apiLogger);
         interceptor.addRequestEntry(request, endpointConfiguration, null);
@@ -164,5 +175,8 @@ public class RetryInterceptorTest extends CompatibilityFactoryMock {
         when(clientConfiguration.getBackOffFactor()).thenReturn(2);
         when(clientConfiguration.getMaximumRetryWaitTime()).thenReturn(6l);
         when(endpointConfiguration.getRetryOption()).thenReturn(RetryOption.DEFAULT);
+        when(headers.toMultimap()).thenReturn(Collections.EMPTY_MAP);
+        when(compatibilityFactory.createHttpHeaders(anyMap())).thenReturn(httpHeaders);
+     
     }
 }
