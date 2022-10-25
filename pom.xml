@@ -50,6 +50,11 @@
 			<version>4.10.0</version>
 		</dependency>
 		<dependency>
+			<groupId>org.jacoco</groupId>
+			<artifactId>jacoco-maven-plugin</artifactId>
+			<version>0.8.5</version>
+		</dependency>
+		<dependency>
 			<groupId>io.apimatic</groupId>
 			<artifactId>core-interfaces</artifactId>
 			<version>[0.1, 0.2)</version>
