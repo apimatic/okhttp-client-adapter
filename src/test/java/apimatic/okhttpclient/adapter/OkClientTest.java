@@ -34,17 +34,20 @@ import io.apimatic.coreinterfaces.http.request.MultipartFile;
 import io.apimatic.coreinterfaces.http.request.configuration.CoreEndpointConfiguration;
 import io.apimatic.coreinterfaces.http.request.configuration.RetryOption;
 import io.apimatic.coreinterfaces.http.response.Response;
+import io.apimatic.coreinterfaces.logger.ApiLogger;
 import io.apimatic.coreinterfaces.type.CoreFileWrapper;
 import io.apimatic.okhttpclient.adapter.OkClient;
 
 public class OkClientTest extends OkHttpClientMock {
-
 
     @Rule
     public MockitoRule initRule = MockitoJUnit.rule().strictness(Strictness.LENIENT);
 
     @Mock
     private ClientConfiguration clientConfiguration;
+
+    @Mock
+    private ApiLogger apiLogger;
 
     @Mock
     private Response coreHttpResponse;
@@ -84,6 +87,7 @@ public class OkClientTest extends OkHttpClientMock {
         assertNotNull(client);
     }
 
+    @SuppressWarnings("static-access")
     @Test
     public void testshutDown() {
         OkClient client = new OkClient(clientConfiguration, compatibilityFactory);
@@ -250,7 +254,79 @@ public class OkClientTest extends OkHttpClientMock {
         assertEquals(actual, expected);
     }
 
+    @Test
+    public void testRequestWithNoRetries() throws IOException {
+        when(clientConfiguration.getNumberOfRetries()).thenReturn(-1);
+        when(clientConfiguration.getHttpClientInstance()).thenReturn(client);
+        when(clientConfiguration.shouldOverrideHttpClientConfigurations()).thenReturn(true);
+        when(client.newCall(any(okhttp3.Request.class))).thenReturn(call);
 
+        OkClient client = new OkClient(clientConfiguration, compatibilityFactory);
+        when(coreHttpRequest.getHttpMethod()).thenReturn(Method.POST);
+        when(coreHttpRequest.getBody()).thenReturn("bodyValue");
+
+
+        when(call.execute()).thenReturn(okHttpResponse);
+        when(okHttpResponse.body()).thenReturn(okHttpResponseBody);
+        String serverResponseString = "Get Response";
+        when(coreHttpResponse.getBody()).thenReturn(serverResponseString);
+        when(okHttpResponseBody.string()).thenReturn(serverResponseString);
+        when(okHttpResponse.code()).thenReturn(200);
+
+        when(compatibilityFactory.createHttpResponse(anyInt(), any(HttpHeaders.class),
+                any(InputStream.class), anyString())).thenReturn(coreHttpResponse);
+
+        Response coreHttpResponse = client.execute(coreHttpRequest, configuration);
+        String expected = serverResponseString;
+        String actual = coreHttpResponse.getBody();
+        assertEquals(actual, expected);
+    }
+
+    @Test
+    public void testExecuteRequestWithLogging() throws IOException {
+        when(clientConfiguration.getNumberOfRetries()).thenReturn(-1);
+        when(clientConfiguration.getHttpClientInstance()).thenReturn(client);
+        when(clientConfiguration.shouldOverrideHttpClientConfigurations()).thenReturn(true);
+        when(client.newCall(any(okhttp3.Request.class))).thenReturn(call);
+
+        OkClient client = new OkClient(clientConfiguration, compatibilityFactory, apiLogger);
+        when(coreHttpRequest.getHttpMethod()).thenReturn(Method.POST);
+        when(coreHttpRequest.getBody()).thenReturn("bodyValue");
+
+
+        when(call.execute()).thenReturn(okHttpResponse);
+        when(okHttpResponse.body()).thenReturn(okHttpResponseBody);
+        String serverResponseString = "Get Response";
+        when(coreHttpResponse.getBody()).thenReturn(serverResponseString);
+        when(okHttpResponseBody.string()).thenReturn(serverResponseString);
+        when(okHttpResponse.code()).thenReturn(200);
+
+        when(compatibilityFactory.createHttpResponse(anyInt(), any(HttpHeaders.class),
+                any(InputStream.class), anyString())).thenReturn(coreHttpResponse);
+
+        Response coreHttpResponse = client.execute(coreHttpRequest, configuration);
+        String expected = serverResponseString;
+        String actual = coreHttpResponse.getBody();
+        assertEquals(actual, expected);
+    }
+
+    @Test(expected = IOException.class)
+    public void testExecuteRequestWithLogging1() throws IOException {
+        IOException ioException = new IOException("Connection Error");
+        
+        when(clientConfiguration.getNumberOfRetries()).thenReturn(-1);
+        when(clientConfiguration.getHttpClientInstance()).thenReturn(client);
+        when(clientConfiguration.shouldOverrideHttpClientConfigurations()).thenReturn(true);
+        when(client.newCall(any(okhttp3.Request.class))).thenReturn(call);
+
+        OkClient client = new OkClient(clientConfiguration, compatibilityFactory, apiLogger);
+        when(coreHttpRequest.getHttpMethod()).thenReturn(Method.POST);
+        when(coreHttpRequest.getBody()).thenReturn("bodyValue");
+        when(call.execute()).thenThrow(ioException);
+        
+        client.execute(coreHttpRequest, configuration);
+    }
+    
     @Test
     public void testPostMultipartFileWrapperRequest() throws IOException {
         when(clientConfiguration.getHttpClientInstance()).thenReturn(client);
@@ -337,6 +413,39 @@ public class OkClientTest extends OkHttpClientMock {
         when(coreHttpRequest.getParameters()).thenReturn(listP);
         when(coreMultipartWrapper.getByteArray()).thenReturn(byteArray);
         when(file.getName()).thenReturn("Test\nFile\r\"Part\"");
+
+        when(call.execute()).thenReturn(okHttpResponse);
+        when(okHttpResponse.body()).thenReturn(okHttpResponseBody);
+        when(coreHttpResponse.getBody()).thenReturn(serverResponseString);
+        when(okHttpResponseBody.string()).thenReturn(serverResponseString);
+        when(okHttpResponse.code()).thenReturn(200);
+
+        when(compatibilityFactory.createHttpResponse(anyInt(), any(HttpHeaders.class),
+                any(InputStream.class), anyString())).thenReturn(coreHttpResponse);
+
+        Response coreHttpResponse = client.execute(coreHttpRequest, configuration);
+        String expected = serverResponseString;
+        String actual = coreHttpResponse.getBody();
+        assertEquals(actual, expected);
+    }
+    
+
+    @Test
+    public void testSimpleObjectWithMultiPart() throws IOException {
+        when(clientConfiguration.getHttpClientInstance()).thenReturn(client);
+        when(clientConfiguration.shouldOverrideHttpClientConfigurations()).thenReturn(true);
+        when(client.newCall(any(okhttp3.Request.class))).thenReturn(call);
+
+        OkClient client = new OkClient(clientConfiguration, compatibilityFactory);
+        when(coreHttpRequest.getHttpMethod()).thenReturn(Method.POST);
+
+        List<SimpleEntry<String, Object>> listP = new ArrayList<>();
+        listP.add(new SimpleEntry<String, Object>("fileWrapper", coreMultipartWrapper));
+        listP.add(new SimpleEntry<String, Object>("simple object", "object"));
+
+        String serverResponseString = "object";
+      
+        when(coreHttpRequest.getParameters()).thenReturn(listP);
 
         when(call.execute()).thenReturn(okHttpResponse);
         when(okHttpResponse.body()).thenReturn(okHttpResponseBody);
