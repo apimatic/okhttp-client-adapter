@@ -56,12 +56,12 @@ public class OkClientTest extends OkHttpClientMock {
     private static final int RETRY_INTERVAL = 3;
 
     /**
-     * Maximum wait retry time
+     * Maximum wait retry time.
      */
     private static final long MAX_WAIT_RETRY_TIME = 1L;
 
     /**
-     * Call timeout
+     * Call timeout.
      */
     private static final long CALL_TIMEOUT = 1L;
 
