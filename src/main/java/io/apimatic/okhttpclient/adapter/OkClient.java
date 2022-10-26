@@ -31,7 +31,6 @@ import io.apimatic.coreinterfaces.logger.ApiLogger;
 import io.apimatic.coreinterfaces.type.CoreFileWrapper;
 import io.apimatic.okhttpclient.adapter.interceptors.HttpRedirectInterceptor;
 import io.apimatic.okhttpclient.adapter.interceptors.RetryInterceptor;
-import okhttp3.OkHttpClient;
 
 /**
  * HTTP Client class to send HTTP Requests and read the responses.
@@ -43,12 +42,12 @@ public class OkClient implements HttpClient {
     private static final Object SYNC_OBJECT = new Object();
 
     /**
-     * A default OkHttpClient instance.
+     * A default okhttp3.OkHttpClient instance.
      */
     private static volatile okhttp3.OkHttpClient defaultOkHttpClient;
 
     /**
-     * An instance for insecure OkHttpClient
+     * An instance for insecure okhttp3.OkHttpClient.
      */
     private static okhttp3.OkHttpClient insecureOkHttpClient;
 
