@@ -23,6 +23,20 @@ import okhttp3.Interceptor;
  */
 public class RetryInterceptor implements Interceptor {
 
+    /**
+     * Maximum Back off interval
+     */
+    private final int MAXIMUM_BACK_OFF_INTERVAL = 100;
+
+    /**
+     * Maximu Retry interval
+     */
+    private final int MILISECONDS = 1000;
+
+
+    /**
+     * RFC Date Time Formatter
+     */
     private static final DateTimeFormatter RFC1123_DATE_TIME_FORMATTER =
             DateTimeFormatter.ofPattern("EEE, dd MMM yyyy HH:mm:ss z").withZone(ZoneId.of("GMT"));
 
@@ -47,7 +61,8 @@ public class RetryInterceptor implements Interceptor {
      * @param httpClientConfig the user specified configurations.
      * @param httpApiLogger for logging request and response.
      */
-    public RetryInterceptor(ClientConfiguration httpClientConfig, ApiLogger httpApiLogger) {
+    public RetryInterceptor(final ClientConfiguration httpClientConfig,
+            final ApiLogger httpApiLogger) {
         this.httpLogger = httpApiLogger;
         this.httpClientConfiguration = httpClientConfig;
         requestEntries = new ConcurrentHashMap<>();
@@ -232,9 +247,9 @@ public class RetryInterceptor implements Interceptor {
      * @return long value of back-off time based on formula in milliseconds.
      */
     private long getCalculatedBackOffValue(RequestState requestState) {
-        return (long) (1000 * this.httpClientConfiguration.getRetryInterval()
+        return (long) (MILISECONDS * this.httpClientConfiguration.getRetryInterval()
                 * Math.pow(this.httpClientConfiguration.getBackOffFactor(), requestState.retryCount)
-                + Math.random() * 100);
+                + Math.random() * MAXIMUM_BACK_OFF_INTERVAL);
     }
 
     /**
@@ -257,7 +272,7 @@ public class RetryInterceptor implements Interceptor {
      * @return long value of milliseconds.
      */
     private long toMilliseconds(long seconds) {
-        return seconds * 1000;
+        return seconds * MILISECONDS;
     }
 
     /**
@@ -306,7 +321,7 @@ public class RetryInterceptor implements Interceptor {
      * Logs the exception.
      * 
      * @param requestState The current state of request.
-     * @param response The OKhttp Response.
+     * @param ioException the exception
      */
     private void logError(RequestState requestState, IOException ioException) {
         if (httpLogger != null) {
@@ -319,12 +334,12 @@ public class RetryInterceptor implements Interceptor {
     /**
      * Class to hold the request info until request completes.
      */
-    private class RequestState {
+    private final class RequestState {
 
         /**
          * The internal HTTP request.
          */
-        Request httpRequest;
+        private Request httpRequest;
 
         /**
          * To keep track of requests count.
@@ -342,15 +357,15 @@ public class RetryInterceptor implements Interceptor {
         private long totalWaitTimeInMilliSeconds = 0;
 
         /**
-         * To keep track of request retry configurations.
+         * To keep track of request endpoint configurations.
          */
         private CoreEndpointConfiguration endpointConfiguration;
 
         /**
          * Default Constructor.
          * 
-         * @param retryForAllHttpMethods Whether to bypass the HTTP method checking for the given
-         *        request in retries.
+         * @param endpointConfiguration the end point configuration
+         * @param request the client request
          */
         private RequestState(CoreEndpointConfiguration endpointConfiguration, Request request) {
             this.endpointConfiguration = endpointConfiguration;

@@ -12,7 +12,26 @@ import okhttp3.Response;
  * HttpRedirectInterceptor intercepts and complete 307 and 308 redirects as described in RFC.
  */
 public class HttpRedirectInterceptor implements Interceptor {
+    /**
+     * Maximum follow ups
+     */
     private static final int MAX_FOLLOW_UPS = 20;
+
+    /**
+     * HTTP 307 Temporary Redirect redirect status response code indicates that the resource
+     * requested has been temporarily moved to the URL given by the Location headers.
+     */
+    private static final int TEMPORARY_REDIRECT = 307;
+
+    /**
+     * Permanent Redirect redirect status response code indicates that the resource requested has
+     * been definitively moved to the URL given by the Location headers.
+     */
+    private static final int PERMENANT_REDIRECT = 308;
+
+    /**
+     * boolean which directs to follow SSL Redirect
+     */
     private boolean followSslRedirects;
 
     /**
@@ -40,7 +59,8 @@ public class HttpRedirectInterceptor implements Interceptor {
         }
 
         int followUpCount = 0;
-        while (response != null && (response.code() == 307 || response.code() == 308)) {
+        while (response != null && (response.code() == TEMPORARY_REDIRECT
+                || response.code() == PERMENANT_REDIRECT)) {
             if (++followUpCount > MAX_FOLLOW_UPS) {
                 throw new ProtocolException("Too many follow-up requests: " + followUpCount);
             }

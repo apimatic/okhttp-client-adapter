@@ -40,32 +40,70 @@ import io.apimatic.okhttpclient.adapter.OkClient;
 
 public class OkClientTest extends OkHttpClientMock {
 
+    /**
+     * timeout
+     */
+    private static final long DEFAULT_TIME_OUT = 30L;
+
+    /**
+     * Success status code
+     */
+    private static final int SUCCESS_STATUS_CODE = 200;
+
+    /**
+     * Initializes mocks annotated with Mock.
+     */
     @Rule
     public MockitoRule initRule = MockitoJUnit.rule().strictness(Strictness.LENIENT);
 
+    /**
+     * Mock of {@link ClientConfiguration}
+     */
     @Mock
     private ClientConfiguration clientConfiguration;
 
+    /**
+     * Mock of {@link Response}
+     */
     @Mock
     private ApiLogger apiLogger;
 
     @Mock
     private Response coreHttpResponse;
 
+    /**
+     * Mock of List
+     */
     @Mock
     private List<SimpleEntry<String, Object>> parametersList;
 
+    /**
+     * Mock of {@link MultipartFile}
+     */
     @Mock
     private MultipartFile coreMultipartFileWrapper;
 
+    /**
+     * Mock of {@link MultipartFile}
+     */
     @Mock
     private Multipart coreMultipartWrapper;
+
+    /**
+     * Mock of {@link CoreEndpointConfiguration}
+     */
     @Mock
     private CoreEndpointConfiguration configuration;
 
+    /**
+     * Mock of {@link File}
+     */
     @Mock
     private File file;
 
+    /**
+     * Mock of {@link CoreFileWrapper}
+     */
     @Mock
     private CoreFileWrapper fileWrapper;
 
@@ -99,9 +137,12 @@ public class OkClientTest extends OkHttpClientMock {
         when(clientConfiguration.getHttpClientInstance()).thenReturn(client);
         when(clientConfiguration.shouldOverrideHttpClientConfigurations()).thenReturn(true);
         when(client.newBuilder()).thenReturn(clientBuilder);
-        when(clientBuilder.readTimeout(30l, TimeUnit.SECONDS)).thenReturn(clientBuilder);
-        when(clientBuilder.writeTimeout(30l, TimeUnit.SECONDS)).thenReturn(clientBuilder);
-        when(clientBuilder.connectTimeout(30l, TimeUnit.SECONDS)).thenReturn(clientBuilder);
+        when(clientBuilder.readTimeout(DEFAULT_TIME_OUT, TimeUnit.SECONDS))
+                .thenReturn(clientBuilder);
+        when(clientBuilder.writeTimeout(DEFAULT_TIME_OUT, TimeUnit.SECONDS))
+                .thenReturn(clientBuilder);
+        when(clientBuilder.connectTimeout(DEFAULT_TIME_OUT, TimeUnit.SECONDS))
+                .thenReturn(clientBuilder);
 
         OkClient client = new OkClient(clientConfiguration, compatibilityFactory);
         assertNotNull(client);
@@ -126,7 +167,7 @@ public class OkClientTest extends OkHttpClientMock {
         String fileWrapperString = fileWrapper.toString();
         when(coreHttpResponse.getBody()).thenReturn(fileWrapperString);
         when(okHttpResponseBody.string()).thenReturn(fileWrapperString);
-        when(okHttpResponse.code()).thenReturn(200);
+        when(okHttpResponse.code()).thenReturn(SUCCESS_STATUS_CODE);
 
         when(compatibilityFactory.createHttpResponse(anyInt(), any(HttpHeaders.class),
                 any(InputStream.class), anyString())).thenReturn(coreHttpResponse);
@@ -158,7 +199,7 @@ public class OkClientTest extends OkHttpClientMock {
         String fileWrapperString = fileWrapper.toString();
         when(coreHttpResponse.getBody()).thenReturn(fileWrapperString);
         when(okHttpResponseBody.string()).thenReturn(fileWrapperString);
-        when(okHttpResponse.code()).thenReturn(200);
+        when(okHttpResponse.code()).thenReturn(SUCCESS_STATUS_CODE);
 
         when(compatibilityFactory.createHttpResponse(anyInt(), any(HttpHeaders.class),
                 any(InputStream.class), anyString())).thenReturn(coreHttpResponse);
@@ -189,7 +230,7 @@ public class OkClientTest extends OkHttpClientMock {
         String fileWrapperString = fileWrapper.toString();
         when(coreHttpResponse.getBody()).thenReturn(fileWrapperString);
         when(okHttpResponseBody.string()).thenReturn(fileWrapperString);
-        when(okHttpResponse.code()).thenReturn(200);
+        when(okHttpResponse.code()).thenReturn(SUCCESS_STATUS_CODE);
 
         when(compatibilityFactory.createHttpResponse(anyInt(), any(HttpHeaders.class),
                 any(InputStream.class), anyString())).thenReturn(coreHttpResponse);
@@ -216,7 +257,7 @@ public class OkClientTest extends OkHttpClientMock {
         String serverResponseString = "Get Response";
         when(coreHttpResponse.getBody()).thenReturn(serverResponseString);
         when(okHttpResponseBody.string()).thenReturn(serverResponseString);
-        when(okHttpResponse.code()).thenReturn(200);
+        when(okHttpResponse.code()).thenReturn(SUCCESS_STATUS_CODE);
 
         when(compatibilityFactory.createHttpResponse(anyInt(), any(HttpHeaders.class),
                 any(InputStream.class), anyString())).thenReturn(coreHttpResponse);
@@ -243,7 +284,7 @@ public class OkClientTest extends OkHttpClientMock {
         String serverResponseString = "Get Response";
         when(coreHttpResponse.getBody()).thenReturn(serverResponseString);
         when(okHttpResponseBody.string()).thenReturn(serverResponseString);
-        when(okHttpResponse.code()).thenReturn(200);
+        when(okHttpResponse.code()).thenReturn(SUCCESS_STATUS_CODE);
 
         when(compatibilityFactory.createHttpResponse(anyInt(), any(HttpHeaders.class),
                 any(InputStream.class), anyString())).thenReturn(coreHttpResponse);
@@ -348,7 +389,7 @@ public class OkClientTest extends OkHttpClientMock {
         String serverResponseString = "File has been posted";
         when(coreHttpResponse.getBody()).thenReturn(serverResponseString);
         when(okHttpResponseBody.string()).thenReturn(serverResponseString);
-        when(okHttpResponse.code()).thenReturn(200);
+        when(okHttpResponse.code()).thenReturn(SUCCESS_STATUS_CODE);
 
         when(compatibilityFactory.createHttpResponse(anyInt(), any(HttpHeaders.class),
                 any(InputStream.class), anyString())).thenReturn(coreHttpResponse);
@@ -358,7 +399,6 @@ public class OkClientTest extends OkHttpClientMock {
         String actual = coreHttpResponse.getBody();
         assertEquals(actual, expected);
     }
-
 
     @Test
     public void testPostMultipartFileWrapperRequest1() throws IOException {
@@ -384,7 +424,7 @@ public class OkClientTest extends OkHttpClientMock {
         String serverResponseString = "File has been posted";
         when(coreHttpResponse.getBody()).thenReturn(serverResponseString);
         when(okHttpResponseBody.string()).thenReturn(serverResponseString);
-        when(okHttpResponse.code()).thenReturn(200);
+        when(okHttpResponse.code()).thenReturn(SUCCESS_STATUS_CODE);
 
         when(compatibilityFactory.createHttpResponse(anyInt(), any(HttpHeaders.class),
                 any(InputStream.class), anyString())).thenReturn(coreHttpResponse);
@@ -394,7 +434,6 @@ public class OkClientTest extends OkHttpClientMock {
         String actual = coreHttpResponse.getBody();
         assertEquals(actual, expected);
     }
-
 
     @Test
     public void testPostMultipartRequest() throws IOException {
@@ -418,7 +457,7 @@ public class OkClientTest extends OkHttpClientMock {
         when(okHttpResponse.body()).thenReturn(okHttpResponseBody);
         when(coreHttpResponse.getBody()).thenReturn(serverResponseString);
         when(okHttpResponseBody.string()).thenReturn(serverResponseString);
-        when(okHttpResponse.code()).thenReturn(200);
+        when(okHttpResponse.code()).thenReturn(SUCCESS_STATUS_CODE);
 
         when(compatibilityFactory.createHttpResponse(anyInt(), any(HttpHeaders.class),
                 any(InputStream.class), anyString())).thenReturn(coreHttpResponse);
@@ -429,7 +468,6 @@ public class OkClientTest extends OkHttpClientMock {
         assertEquals(actual, expected);
     }
     
-
     @Test
     public void testSimpleObjectWithMultiPart() throws IOException {
         when(clientConfiguration.getHttpClientInstance()).thenReturn(client);
@@ -482,7 +520,7 @@ public class OkClientTest extends OkHttpClientMock {
         String serverResponseString = "form paramaters";
         when(coreHttpResponse.getBody()).thenReturn(serverResponseString);
         when(okHttpResponseBody.string()).thenReturn(serverResponseString);
-        when(okHttpResponse.code()).thenReturn(200);
+        when(okHttpResponse.code()).thenReturn(SUCCESS_STATUS_CODE);
 
         when(compatibilityFactory.createHttpResponse(anyInt(), any(HttpHeaders.class),
                 any(InputStream.class), anyString())).thenReturn(coreHttpResponse);
@@ -492,7 +530,6 @@ public class OkClientTest extends OkHttpClientMock {
         String actual = coreHttpResponse.getBody();
         assertEquals(actual, expected);
     }
-
 
     @Test
     public void testPostEmptyBodyRequest() throws IOException {
@@ -508,7 +545,7 @@ public class OkClientTest extends OkHttpClientMock {
         String serverResponseString = "empty body";
         when(coreHttpResponse.getBody()).thenReturn(serverResponseString);
         when(okHttpResponseBody.string()).thenReturn(serverResponseString);
-        when(okHttpResponse.code()).thenReturn(200);
+        when(okHttpResponse.code()).thenReturn(SUCCESS_STATUS_CODE);
 
         when(compatibilityFactory.createHttpResponse(anyInt(), any(HttpHeaders.class),
                 any(InputStream.class), anyString())).thenReturn(coreHttpResponse);
@@ -538,7 +575,7 @@ public class OkClientTest extends OkHttpClientMock {
         String serverResponseString = "form parameters sent";
         when(coreHttpResponse.getBody()).thenReturn(serverResponseString);
         when(okHttpResponseBody.string()).thenReturn(serverResponseString);
-        when(okHttpResponse.code()).thenReturn(200);
+        when(okHttpResponse.code()).thenReturn(SUCCESS_STATUS_CODE);
 
         when(compatibilityFactory.createHttpResponse(anyInt(), any(HttpHeaders.class),
                 any(InputStream.class), anyString())).thenReturn(coreHttpResponse);
@@ -548,7 +585,6 @@ public class OkClientTest extends OkHttpClientMock {
         String actual = coreHttpResponse.getBody();
         assertEquals(actual, expected);
     }
-
 
     @Test
     public void testFileWrapperMockClientBinaryResponse() throws IOException {
@@ -574,7 +610,7 @@ public class OkClientTest extends OkHttpClientMock {
 
         when(coreHttpResponse.getRawBody()).thenReturn(serverResponseStream);
         when(okHttpResponseBody.byteStream()).thenReturn(serverResponseStream);
-        when(okHttpResponse.code()).thenReturn(200);
+        when(okHttpResponse.code()).thenReturn(SUCCESS_STATUS_CODE);
 
         when(compatibilityFactory.createHttpResponse(anyInt(), any(HttpHeaders.class),
                 any(InputStream.class))).thenReturn(coreHttpResponse);
@@ -585,22 +621,24 @@ public class OkClientTest extends OkHttpClientMock {
         assertEquals(actual, expected);
     }
 
-
     private void prepareStub() {
         when(configuration.getArraySerializationFormat())
                 .thenReturn(ArraySerializationFormat.INDEXED);
         when(configuration.getRetryOption()).thenReturn(RetryOption.DEFAULT);
 
         when(clientConfiguration.getNumberOfRetries()).thenReturn(3);
-        when(clientConfiguration.getTimeout()).thenReturn(30l);
+        when(clientConfiguration.getTimeout()).thenReturn(DEFAULT_TIME_OUT);
         when(clientConfiguration.getMaximumRetryWaitTime()).thenReturn(1l);
         when(compatibilityFactory.createHttpHeaders(anyMap())).thenReturn(httpHeaders);
         when(compatibilityFactory.createHttpHeaders(httpHeaders)).thenReturn(httpHeaders);
         when(httpHeaders.value("content-type")).thenReturn("application/octet-stream");
         when(client.newBuilder()).thenReturn(clientBuilder);
-        when(clientBuilder.readTimeout(30l, TimeUnit.SECONDS)).thenReturn(clientBuilder);
-        when(clientBuilder.writeTimeout(30l, TimeUnit.SECONDS)).thenReturn(clientBuilder);
-        when(clientBuilder.connectTimeout(30l, TimeUnit.SECONDS)).thenReturn(clientBuilder);
+        when(clientBuilder.readTimeout(DEFAULT_TIME_OUT, TimeUnit.SECONDS))
+                .thenReturn(clientBuilder);
+        when(clientBuilder.writeTimeout(DEFAULT_TIME_OUT, TimeUnit.SECONDS))
+                .thenReturn(clientBuilder);
+        when(clientBuilder.connectTimeout(DEFAULT_TIME_OUT, TimeUnit.SECONDS))
+                .thenReturn(clientBuilder);
         when(clientBuilder.callTimeout(1l, TimeUnit.SECONDS)).thenReturn(clientBuilder);
         when(clientBuilder.build()).thenReturn(client);
         when(configuration.getArraySerializationFormat())

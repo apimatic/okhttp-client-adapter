@@ -30,36 +30,90 @@ import okhttp3.Response;
 
 public class RetryInterceptorTest extends CompatibilityFactoryMock {
 
+    /**
+     * Retry interval
+     */
+    private static final Long RETRY_INTERVAL = 1L;
+    
+    /**
+     * Status code of bad request
+     */
+    private static final int BAD_REQUET_STATUS_CODE = 400;
+
+    /**
+     * Status code of resource not found
+     */
+    private static final int NOT_FOUND_STATUS_CODE = 404;
+
+    /**
+     * back off interval
+     */
+    private static final int BACK_OFF_FACTOR = 2;
+    
+    /**
+     * number of retries
+     */
+    private static final int NO_OF_RETRIES = 3;
+    
+    /**
+     * Maximum retry wait time
+     */
+    private static final long MAX_RETRY_WAIT_TIME = 6L;
+
+    /**
+     * Initializes mocks annotated with Mock.
+     */
     @Rule
     public MockitoRule initRule = MockitoJUnit.rule().silent();
 
+    /**
+     * Mock of {@link ClientConfiguration}
+     */
     @Mock
     private ClientConfiguration clientConfiguration;
 
+    /**
+     * Mock of {@link Request}
+     */
     @Mock
     private Request request;
     
     @Mock
     private CompatibilityFactory compatibilityFactory;
 
+    /**
+     * Mock of {@link CoreEndpointConfiguration}
+     */
     @Mock
     private CoreEndpointConfiguration endpointConfiguration;
 
+    /**
+     * Mock of {@link ApiLogger}
+     */
     @Mock
     private ApiLogger apiLogger;
     
     @Mock
     private Headers headers;
 
+    /**
+     * Mock of {@link Response}
+     */
     @Mock
     private Response response;
 
+    /**
+     * Mock of {@link Chain}
+     */
     @Mock
     private Chain chain;
 
+    /**
+     * Mock of {@link HttpUrl}
+     */
     @Mock
     private HttpUrl url;
-
+    
     @Before
     public void setup() throws IOException {
         prepareStub();
@@ -67,9 +121,9 @@ public class RetryInterceptorTest extends CompatibilityFactoryMock {
 
     @Test
     public void testRetryUsingCode() throws IOException {
-        when(clientConfiguration.getNumberOfRetries()).thenReturn(3);
+        when(clientConfiguration.getNumberOfRetries()).thenReturn(NO_OF_RETRIES);
         when(request.method()).thenReturn(Method.GET.toString());
-        when(response.code()).thenReturn(400);
+        when(response.code()).thenReturn(BAD_REQUET_STATUS_CODE);
         when(request.url()).thenReturn(url);
         RetryInterceptor interceptor = new RetryInterceptor(clientConfiguration, apiLogger);
         interceptor.addRequestEntry(request, endpointConfiguration, null);
@@ -79,10 +133,10 @@ public class RetryInterceptorTest extends CompatibilityFactoryMock {
 
     @Test(expected = IOException.class)
     public void testTimeOutException() throws IOException {
-        when(clientConfiguration.getNumberOfRetries()).thenReturn(3);
+        when(clientConfiguration.getNumberOfRetries()).thenReturn(NO_OF_RETRIES);
         when(chain.proceed(request)).thenThrow(IOException.class);
         when(request.method()).thenReturn(Method.GET.toString());
-        when(response.code()).thenReturn(400);
+        when(response.code()).thenReturn(BAD_REQUET_STATUS_CODE);
         RetryInterceptor interceptor = new RetryInterceptor(clientConfiguration, apiLogger);
         interceptor.addRequestEntry(request, endpointConfiguration, null);
         interceptor.intercept(chain);
@@ -90,12 +144,12 @@ public class RetryInterceptorTest extends CompatibilityFactoryMock {
 
     @Test(expected = IOException.class)
     public void testShouldRetyOnTimeOutException() throws IOException {
-        when(clientConfiguration.getNumberOfRetries()).thenReturn(3);
+        when(clientConfiguration.getNumberOfRetries()).thenReturn(NO_OF_RETRIES);
         when(clientConfiguration.shouldRetryOnTimeout()).thenReturn(true);
         when(chain.proceed(request)).thenThrow(IOException.class);
         when(request.method()).thenReturn(Method.GET.toString());
         when(request.url()).thenReturn(url);
-        when(response.code()).thenReturn(400);
+        when(response.code()).thenReturn(BAD_REQUET_STATUS_CODE);
         RetryInterceptor interceptor = new RetryInterceptor(clientConfiguration, apiLogger);
         interceptor.addRequestEntry(request, endpointConfiguration, null);
         interceptor.intercept(chain);
@@ -103,10 +157,10 @@ public class RetryInterceptorTest extends CompatibilityFactoryMock {
 
     @Test
     public void testRetryHttpMethodsUsingCode() throws IOException {
-        when(clientConfiguration.getNumberOfRetries()).thenReturn(3);
+        when(clientConfiguration.getNumberOfRetries()).thenReturn(NO_OF_RETRIES);
         when(request.method()).thenReturn(Method.GET.toString());
         when(request.url()).thenReturn(url);
-        when(response.code()).thenReturn(400);
+        when(response.code()).thenReturn(BAD_REQUET_STATUS_CODE);
         RetryInterceptor interceptor = new RetryInterceptor(clientConfiguration, apiLogger);
         interceptor.addRequestEntry(request, endpointConfiguration, null);
         Response response = interceptor.intercept(chain);
@@ -116,7 +170,7 @@ public class RetryInterceptorTest extends CompatibilityFactoryMock {
 
     @Test
     public void testRetryWithHeader() throws IOException {
-        when(clientConfiguration.getNumberOfRetries()).thenReturn(3);
+        when(clientConfiguration.getNumberOfRetries()).thenReturn(NO_OF_RETRIES);
         when(request.method()).thenReturn(Method.GET.toString());
         when(response.header("Retry-After")).thenReturn("3");
         when(response.headers()).thenReturn(headers);
@@ -130,7 +184,7 @@ public class RetryInterceptorTest extends CompatibilityFactoryMock {
 
     @Test(expected = DateTimeParseException.class)
     public void testRetryWithWrongHeaderValue() throws IOException {
-        when(clientConfiguration.getNumberOfRetries()).thenReturn(3);
+        when(clientConfiguration.getNumberOfRetries()).thenReturn(NO_OF_RETRIES);
         when(request.method()).thenReturn(Method.GET.toString());
         when(response.header("Retry-After")).thenReturn("3N");
         RetryInterceptor interceptor = new RetryInterceptor(clientConfiguration, apiLogger);
@@ -140,7 +194,7 @@ public class RetryInterceptorTest extends CompatibilityFactoryMock {
 
     @Test
     public void testRetryWithDateHeaderValue() throws IOException {
-        when(clientConfiguration.getNumberOfRetries()).thenReturn(3);
+        when(clientConfiguration.getNumberOfRetries()).thenReturn(NO_OF_RETRIES);
         when(request.url()).thenReturn(url);
         when(request.method()).thenReturn(Method.GET.toString());
         when(response.header("Retry-After")).thenReturn("Wed, 13 Jul 2022 06:10:00 GMT");
@@ -164,16 +218,16 @@ public class RetryInterceptorTest extends CompatibilityFactoryMock {
         methodToRetry.add(Method.GET);
         methodToRetry.add(Method.PUT);
         Set<Integer> statusCodeToRetry = new HashSet<>();
-        statusCodeToRetry.add(400);
-        statusCodeToRetry.add(404);
+        statusCodeToRetry.add(BAD_REQUET_STATUS_CODE);
+        statusCodeToRetry.add(NOT_FOUND_STATUS_CODE);
 
         when(chain.request()).thenReturn(request);
         when(chain.proceed(request)).thenReturn(response);
         when(clientConfiguration.getHttpMethodsToRetry()).thenReturn(methodToRetry);
         when(clientConfiguration.getHttpStatusCodesToRetry()).thenReturn(statusCodeToRetry);
-        when(clientConfiguration.getRetryInterval()).thenReturn(1l);
-        when(clientConfiguration.getBackOffFactor()).thenReturn(2);
-        when(clientConfiguration.getMaximumRetryWaitTime()).thenReturn(6l);
+        when(clientConfiguration.getRetryInterval()).thenReturn(RETRY_INTERVAL);
+        when(clientConfiguration.getBackOffFactor()).thenReturn(BACK_OFF_FACTOR);
+        when(clientConfiguration.getMaximumRetryWaitTime()).thenReturn(MAX_RETRY_WAIT_TIME);
         when(endpointConfiguration.getRetryOption()).thenReturn(RetryOption.DEFAULT);
         when(headers.toMultimap()).thenReturn(Collections.EMPTY_MAP);
         when(compatibilityFactory.createHttpHeaders(anyMap())).thenReturn(httpHeaders);
