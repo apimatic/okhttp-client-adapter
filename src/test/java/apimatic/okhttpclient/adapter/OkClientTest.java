@@ -72,7 +72,7 @@ public class OkClientTest extends OkHttpClientMock {
      * Mock of {@link Response}
      */
     @Mock
-    private Response coreHttpResponse;
+    private Response httpResponse;
 
     /**
      * Mock of List.
@@ -168,23 +168,21 @@ public class OkClientTest extends OkHttpClientMock {
 
         when(getRequest().getHttpMethod()).thenReturn(Method.POST);
 
-
         when(getCall().execute()).thenReturn(getOkhttp3Response());
         when(getOkhttp3Response().body()).thenReturn(getOkhttp3ResponseBody());
         String fileWrapperString = fileWrapper.toString();
-        when(coreHttpResponse.getBody()).thenReturn(fileWrapperString);
+        when(httpResponse.getBody()).thenReturn(fileWrapperString);
         when(getOkhttp3ResponseBody().string()).thenReturn(fileWrapperString);
         when(getOkhttp3Response().code()).thenReturn(SUCCESS_STATUS_CODE);
 
         when(getCompatibilityFactory().createHttpResponse(anyInt(), any(HttpHeaders.class),
-                any(InputStream.class), anyString())).thenReturn(coreHttpResponse);
+                any(InputStream.class), anyString())).thenReturn(httpResponse);
 
         Response coreHttpResponse = client.execute(getRequest(), configuration);
         String expected = fileWrapper.toString();
         String actual = coreHttpResponse.getBody();
         assertEquals(actual, expected);
     }
-
 
     @Test
     public void testFileWrapperMockClient1() throws IOException {
@@ -204,19 +202,18 @@ public class OkClientTest extends OkHttpClientMock {
         when(getCall().execute()).thenReturn(getOkhttp3Response());
         when(getOkhttp3Response().body()).thenReturn(getOkhttp3ResponseBody());
         String fileWrapperString = fileWrapper.toString();
-        when(coreHttpResponse.getBody()).thenReturn(fileWrapperString);
+        when(httpResponse.getBody()).thenReturn(fileWrapperString);
         when(getOkhttp3ResponseBody().string()).thenReturn(fileWrapperString);
         when(getOkhttp3Response().code()).thenReturn(SUCCESS_STATUS_CODE);
 
         when(getCompatibilityFactory().createHttpResponse(anyInt(), any(HttpHeaders.class),
-                any(InputStream.class), anyString())).thenReturn(coreHttpResponse);
+                any(InputStream.class), anyString())).thenReturn(httpResponse);
 
         Response coreHttpResponse = client.execute(getRequest(), configuration);
         String expected = fileWrapper.toString();
         String actual = coreHttpResponse.getBody();
         assertEquals(actual, expected);
     }
-
 
     @Test
     public void testFileWrapperMockClient2() throws IOException {
@@ -228,19 +225,15 @@ public class OkClientTest extends OkHttpClientMock {
 
         when(getRequest().getBody()).thenReturn(fileWrapper);
 
-
         when(getRequest().getHttpMethod()).thenReturn(Method.POST);
-
-
         when(getCall().execute()).thenReturn(getOkhttp3Response());
         when(getOkhttp3Response().body()).thenReturn(getOkhttp3ResponseBody());
         String fileWrapperString = fileWrapper.toString();
-        when(coreHttpResponse.getBody()).thenReturn(fileWrapperString);
+        when(httpResponse.getBody()).thenReturn(fileWrapperString);
         when(getOkhttp3ResponseBody().string()).thenReturn(fileWrapperString);
         when(getOkhttp3Response().code()).thenReturn(SUCCESS_STATUS_CODE);
-
         when(getCompatibilityFactory().createHttpResponse(anyInt(), any(HttpHeaders.class),
-                any(InputStream.class), anyString())).thenReturn(coreHttpResponse);
+                any(InputStream.class), anyString())).thenReturn(httpResponse);
 
         Response coreHttpResponse = client.execute(getRequest(), configuration);
         String expected = fileWrapper.toString();
@@ -262,12 +255,11 @@ public class OkClientTest extends OkHttpClientMock {
         when(getCall().execute()).thenReturn(getOkhttp3Response());
         when(getOkhttp3Response().body()).thenReturn(getOkhttp3ResponseBody());
         String serverResponseString = "Get Response";
-        when(coreHttpResponse.getBody()).thenReturn(serverResponseString);
+        when(httpResponse.getBody()).thenReturn(serverResponseString);
         when(getOkhttp3ResponseBody().string()).thenReturn(serverResponseString);
         when(getOkhttp3Response().code()).thenReturn(SUCCESS_STATUS_CODE);
-
         when(getCompatibilityFactory().createHttpResponse(anyInt(), any(HttpHeaders.class),
-                any(InputStream.class), anyString())).thenReturn(coreHttpResponse);
+                any(InputStream.class), anyString())).thenReturn(httpResponse);
 
         Response coreHttpResponse = client.execute(getRequest(), configuration);
         String expected = serverResponseString;
@@ -289,12 +281,12 @@ public class OkClientTest extends OkHttpClientMock {
         when(getCall().execute()).thenReturn(getOkhttp3Response());
         when(getOkhttp3Response().body()).thenReturn(getOkhttp3ResponseBody());
         String serverResponseString = "Get Response";
-        when(coreHttpResponse.getBody()).thenReturn(serverResponseString);
+        when(httpResponse.getBody()).thenReturn(serverResponseString);
         when(getOkhttp3ResponseBody().string()).thenReturn(serverResponseString);
         when(getOkhttp3Response().code()).thenReturn(SUCCESS_STATUS_CODE);
 
         when(getCompatibilityFactory().createHttpResponse(anyInt(), any(HttpHeaders.class),
-                any(InputStream.class), anyString())).thenReturn(coreHttpResponse);
+                any(InputStream.class), anyString())).thenReturn(httpResponse);
 
         Response coreHttpResponse = client.execute(getRequest(), configuration);
         String expected = serverResponseString;
@@ -317,12 +309,12 @@ public class OkClientTest extends OkHttpClientMock {
         when(getCall().execute()).thenReturn(getOkhttp3Response());
         when(getOkhttp3Response().body()).thenReturn(getOkhttp3ResponseBody());
         String serverResponseString = "Get Response";
-        when(coreHttpResponse.getBody()).thenReturn(serverResponseString);
+        when(httpResponse.getBody()).thenReturn(serverResponseString);
         when(getOkhttp3ResponseBody().string()).thenReturn(serverResponseString);
         when(getOkhttp3Response().code()).thenReturn(SUCCESS_STATUS_CODE);
 
         when(getCompatibilityFactory().createHttpResponse(anyInt(), any(HttpHeaders.class),
-                any(InputStream.class), anyString())).thenReturn(coreHttpResponse);
+                any(InputStream.class), anyString())).thenReturn(httpResponse);
 
         Response coreHttpResponse = client.execute(getRequest(), configuration);
         String expected = serverResponseString;
@@ -345,12 +337,12 @@ public class OkClientTest extends OkHttpClientMock {
         when(getCall().execute()).thenReturn(getOkhttp3Response());
         when(getOkhttp3Response().body()).thenReturn(getOkhttp3ResponseBody());
         String serverResponseString = "Get Response";
-        when(coreHttpResponse.getBody()).thenReturn(serverResponseString);
+        when(httpResponse.getBody()).thenReturn(serverResponseString);
         when(getOkhttp3ResponseBody().string()).thenReturn(serverResponseString);
         when(getOkhttp3Response().code()).thenReturn(SUCCESS_STATUS_CODE);
 
         when(getCompatibilityFactory().createHttpResponse(anyInt(), any(HttpHeaders.class),
-                any(InputStream.class), anyString())).thenReturn(coreHttpResponse);
+                any(InputStream.class), anyString())).thenReturn(httpResponse);
 
         Response coreHttpResponse = client.execute(getRequest(), configuration);
         String expected = serverResponseString;
@@ -394,12 +386,12 @@ public class OkClientTest extends OkHttpClientMock {
         when(getCall().execute()).thenReturn(getOkhttp3Response());
         when(getOkhttp3Response().body()).thenReturn(getOkhttp3ResponseBody());
         String serverResponseString = "File has been posted";
-        when(coreHttpResponse.getBody()).thenReturn(serverResponseString);
+        when(httpResponse.getBody()).thenReturn(serverResponseString);
         when(getOkhttp3ResponseBody().string()).thenReturn(serverResponseString);
         when(getOkhttp3Response().code()).thenReturn(SUCCESS_STATUS_CODE);
 
         when(getCompatibilityFactory().createHttpResponse(anyInt(), any(HttpHeaders.class),
-                any(InputStream.class), anyString())).thenReturn(coreHttpResponse);
+                any(InputStream.class), anyString())).thenReturn(httpResponse);
 
         Response coreHttpResponse = client.execute(getRequest(), configuration);
         String expected = serverResponseString;
@@ -429,12 +421,12 @@ public class OkClientTest extends OkHttpClientMock {
         when(getCall().execute()).thenReturn(getOkhttp3Response());
         when(getOkhttp3Response().body()).thenReturn(getOkhttp3ResponseBody());
         String serverResponseString = "File has been posted";
-        when(coreHttpResponse.getBody()).thenReturn(serverResponseString);
+        when(httpResponse.getBody()).thenReturn(serverResponseString);
         when(getOkhttp3ResponseBody().string()).thenReturn(serverResponseString);
         when(getOkhttp3Response().code()).thenReturn(SUCCESS_STATUS_CODE);
 
         when(getCompatibilityFactory().createHttpResponse(anyInt(), any(HttpHeaders.class),
-                any(InputStream.class), anyString())).thenReturn(coreHttpResponse);
+                any(InputStream.class), anyString())).thenReturn(httpResponse);
 
         Response coreHttpResponse = client.execute(getRequest(), configuration);
         String expected = serverResponseString;
@@ -462,12 +454,12 @@ public class OkClientTest extends OkHttpClientMock {
 
         when(getCall().execute()).thenReturn(getOkhttp3Response());
         when(getOkhttp3Response().body()).thenReturn(getOkhttp3ResponseBody());
-        when(coreHttpResponse.getBody()).thenReturn(serverResponseString);
+        when(httpResponse.getBody()).thenReturn(serverResponseString);
         when(getOkhttp3ResponseBody().string()).thenReturn(serverResponseString);
         when(getOkhttp3Response().code()).thenReturn(SUCCESS_STATUS_CODE);
 
         when(getCompatibilityFactory().createHttpResponse(anyInt(), any(HttpHeaders.class),
-                any(InputStream.class), anyString())).thenReturn(coreHttpResponse);
+                any(InputStream.class), anyString())).thenReturn(httpResponse);
 
         Response coreHttpResponse = client.execute(getRequest(), configuration);
         String expected = serverResponseString;
@@ -494,12 +486,12 @@ public class OkClientTest extends OkHttpClientMock {
 
         when(getCall().execute()).thenReturn(getOkhttp3Response());
         when(getOkhttp3Response().body()).thenReturn(getOkhttp3ResponseBody());
-        when(coreHttpResponse.getBody()).thenReturn(serverResponseString);
+        when(httpResponse.getBody()).thenReturn(serverResponseString);
         when(getOkhttp3ResponseBody().string()).thenReturn(serverResponseString);
         when(getOkhttp3Response().code()).thenReturn(SUCCESS_STATUS_CODE);
 
         when(getCompatibilityFactory().createHttpResponse(anyInt(), any(HttpHeaders.class),
-                any(InputStream.class), anyString())).thenReturn(coreHttpResponse);
+                any(InputStream.class), anyString())).thenReturn(httpResponse);
 
         Response coreHttpResponse = client.execute(getRequest(), configuration);
         String expected = serverResponseString;
@@ -525,12 +517,12 @@ public class OkClientTest extends OkHttpClientMock {
         when(getCall().execute()).thenReturn(getOkhttp3Response());
         when(getOkhttp3Response().body()).thenReturn(getOkhttp3ResponseBody());
         String serverResponseString = "form paramaters";
-        when(coreHttpResponse.getBody()).thenReturn(serverResponseString);
+        when(httpResponse.getBody()).thenReturn(serverResponseString);
         when(getOkhttp3ResponseBody().string()).thenReturn(serverResponseString);
         when(getOkhttp3Response().code()).thenReturn(SUCCESS_STATUS_CODE);
 
         when(getCompatibilityFactory().createHttpResponse(anyInt(), any(HttpHeaders.class),
-                any(InputStream.class), anyString())).thenReturn(coreHttpResponse);
+                any(InputStream.class), anyString())).thenReturn(httpResponse);
 
         Response coreHttpResponse = client.execute(getRequest(), configuration);
         String expected = serverResponseString;
@@ -550,12 +542,12 @@ public class OkClientTest extends OkHttpClientMock {
         when(getCall().execute()).thenReturn(getOkhttp3Response());
         when(getOkhttp3Response().body()).thenReturn(getOkhttp3ResponseBody());
         String serverResponseString = "empty body";
-        when(coreHttpResponse.getBody()).thenReturn(serverResponseString);
+        when(httpResponse.getBody()).thenReturn(serverResponseString);
         when(getOkhttp3ResponseBody().string()).thenReturn(serverResponseString);
         when(getOkhttp3Response().code()).thenReturn(SUCCESS_STATUS_CODE);
 
         when(getCompatibilityFactory().createHttpResponse(anyInt(), any(HttpHeaders.class),
-                any(InputStream.class), anyString())).thenReturn(coreHttpResponse);
+                any(InputStream.class), anyString())).thenReturn(httpResponse);
 
         Response coreHttpResponse = client.execute(getRequest(), configuration);
         String expected = serverResponseString;
@@ -580,12 +572,12 @@ public class OkClientTest extends OkHttpClientMock {
         when(getCall().execute()).thenReturn(getOkhttp3Response());
         when(getOkhttp3Response().body()).thenReturn(getOkhttp3ResponseBody());
         String serverResponseString = "form parameters sent";
-        when(coreHttpResponse.getBody()).thenReturn(serverResponseString);
+        when(httpResponse.getBody()).thenReturn(serverResponseString);
         when(getOkhttp3ResponseBody().string()).thenReturn(serverResponseString);
         when(getOkhttp3Response().code()).thenReturn(SUCCESS_STATUS_CODE);
 
         when(getCompatibilityFactory().createHttpResponse(anyInt(), any(HttpHeaders.class),
-                any(InputStream.class), anyString())).thenReturn(coreHttpResponse);
+                any(InputStream.class), anyString())).thenReturn(httpResponse);
 
         Response coreHttpResponse = client.execute(getRequest(), configuration);
         String expected = serverResponseString;
@@ -615,12 +607,12 @@ public class OkClientTest extends OkHttpClientMock {
                 "{\"ServerMessage\" : \"This is a message from server\" , \"ServerCode\" : 5000 }";
         InputStream serverResponseStream = new ByteArrayInputStream(serverResponse.getBytes());
 
-        when(coreHttpResponse.getRawBody()).thenReturn(serverResponseStream);
+        when(httpResponse.getRawBody()).thenReturn(serverResponseStream);
         when(getOkhttp3ResponseBody().byteStream()).thenReturn(serverResponseStream);
         when(getOkhttp3Response().code()).thenReturn(SUCCESS_STATUS_CODE);
 
         when(getCompatibilityFactory().createHttpResponse(anyInt(), any(HttpHeaders.class),
-                any(InputStream.class))).thenReturn(coreHttpResponse);
+                any(InputStream.class))).thenReturn(httpResponse);
 
         Response coreHttpResponse = client.execute(getRequest(), configuration);
         InputStream expected = serverResponseStream;

@@ -19,9 +19,8 @@ public class CompatibilityFactoryMock extends CoreHttpRequestMock {
      */
     @Mock
     private CompatibilityFactory compatibilityFactory;
-    
+
     /**
-     * 
      * @return {@link CompatibilityFactory}
      */
     protected CompatibilityFactory getCompatibilityFactory() {

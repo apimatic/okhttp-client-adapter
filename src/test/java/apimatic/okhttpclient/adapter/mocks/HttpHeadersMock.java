@@ -21,7 +21,6 @@ public class HttpHeadersMock {
     private HttpHeaders httpHeaders;
 
     /**
-     * 
      * @return {@link HttpHeaders}
      */
     protected HttpHeaders getHttpHeaders() {

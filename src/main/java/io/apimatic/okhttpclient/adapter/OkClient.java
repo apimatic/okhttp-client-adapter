@@ -67,7 +67,7 @@ public class OkClient implements HttpClient {
     private static CompatibilityFactory compatibilityFactory;
 
     /**
-     * Constructor to initialize the OKClient
+     * Constructor to initialize the OKClient.
      * @param httpClientConfig client configuration
      * @param compatibilityFactoryImpl the compatibilityFactory for backward compatibility
      * @param httpLogger the logger for logging information
@@ -79,7 +79,7 @@ public class OkClient implements HttpClient {
     }
 
     /**
-     * Constructor to initialize the OKClient
+     * Constructor to initialize the OKClient.
      * @param httpClientConfig the httpClientConfiguration
      * @param compatibilityFactoryImpl the compatibilityFactory for backward compatibility
      */
@@ -182,7 +182,6 @@ public class OkClient implements HttpClient {
 
     /**
      * Getter for the default static instance of the okhttp3.OkHttpClient.
-     * 
      * @return {@link OkHttpClient}
      */
     private okhttp3.OkHttpClient getDefaultOkHttpClient() {

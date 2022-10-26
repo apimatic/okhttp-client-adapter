@@ -53,17 +53,17 @@ public class HttpRedirectInterceptorTest {
     private static final int PORT = 3000;
 
     /**
-     * Retry interval
+     * Retry interval.
      */
     private static final long RETRY_INTERVAL = 1L;
 
     /**
-     * Back off factor
+     * Back off factor.
      */
     private static final int BACK_OFF_FACTOR = 2;
 
     /**
-     * Maximum retry wait time
+     * Maximum retry wait time.
      */
     private static final long MAX_RETRY_WAIT_TIME = 6L;
 
@@ -111,7 +111,7 @@ public class HttpRedirectInterceptorTest {
 
 
     /**
-     * Setup the test setup
+     * Setup the test setup.
      * @throws IOException in case of I/O Exception occurred
      */
     @Before
@@ -129,8 +129,8 @@ public class HttpRedirectInterceptorTest {
     public void testResponseWithRedirectCodeNullHeader() throws IOException {
         when(response.code()).thenReturn(TEMPORARY_REDIRECT_STATUS_CODE);
         HttpRedirectInterceptor httpRedirectInterceptor = new HttpRedirectInterceptor(false);
-        Response response = httpRedirectInterceptor.intercept(chain);
-        assertFalse(response.isRedirect());
+        Response httpResponse = httpRedirectInterceptor.intercept(chain);
+        assertFalse(httpResponse.isRedirect());
     }
 
     @Test(expected = ProtocolException.class)
@@ -152,8 +152,8 @@ public class HttpRedirectInterceptorTest {
     public void testInterceptWithTooManyFollowUp() throws IOException {
         when(response.code()).thenReturn(TEMPORARY_REDIRECT_STATUS_CODE);
         HttpRedirectInterceptor httpRedirectInterceptor = new HttpRedirectInterceptor(true);
-        Response response = httpRedirectInterceptor.intercept(chain);
-        assertNull(response.header("Location"));
+        Response httpResponse = httpRedirectInterceptor.intercept(chain);
+        assertNull(httpResponse.header("Location"));
     }
 
     private void prepareStub() throws IOException {

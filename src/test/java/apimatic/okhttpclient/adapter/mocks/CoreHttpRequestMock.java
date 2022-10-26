@@ -7,7 +7,7 @@ import org.mockito.junit.MockitoRule;
 import io.apimatic.coreinterfaces.http.request.Request;
 
 public class CoreHttpRequestMock extends HttpHeadersMock {
-    
+
     /**
      * Initializes mocks annotated with Mock.
      */
@@ -19,9 +19,8 @@ public class CoreHttpRequestMock extends HttpHeadersMock {
      */
     @Mock
     private Request coreHttpRequest;
-    
+
     /**
-     * 
      * @return {@link Request}
      */
     protected Request getRequest() {

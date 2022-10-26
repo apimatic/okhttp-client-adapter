@@ -51,7 +51,6 @@ public class OkHttpClientMock extends CompatibilityFactoryMock {
     private okhttp3.Headers okHttpHeaders;
 
     /**
-     * 
      * @return {@link okhttp3.OkHttpClient.Builder}.
      */
     protected okhttp3.OkHttpClient.Builder getOkHttpClientBuilder() {
@@ -59,7 +58,6 @@ public class OkHttpClientMock extends CompatibilityFactoryMock {
     }
 
     /**
-     * 
      * @return {@link okhttp3.Response}.
      */
     protected okhttp3.Response getOkhttp3Response() {
@@ -67,7 +65,6 @@ public class OkHttpClientMock extends CompatibilityFactoryMock {
     }
 
     /**
-     * 
      * @return {@link okhttp3.ResponseBody}.
      */
     protected okhttp3.ResponseBody getOkhttp3ResponseBody() {
@@ -75,7 +72,6 @@ public class OkHttpClientMock extends CompatibilityFactoryMock {
     }
 
     /**
-     * 
      * @return {@link okhttp3.Headers}.
      */
     protected okhttp3.Headers getOkhttpHeaders() {
@@ -83,7 +79,6 @@ public class OkHttpClientMock extends CompatibilityFactoryMock {
     }
 
     /**
-     * 
      * @return {@link okhttp3.OkHttpClient}.
      */
     protected okhttp3.OkHttpClient getClient() {
@@ -91,7 +86,6 @@ public class OkHttpClientMock extends CompatibilityFactoryMock {
     }
 
     /**
-     * 
      * @return {@link Call}.
      */
     protected Call getCall() {
