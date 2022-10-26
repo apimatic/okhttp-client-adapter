@@ -428,6 +428,39 @@ public class OkClientTest extends OkHttpClientMock {
         String actual = coreHttpResponse.getBody();
         assertEquals(actual, expected);
     }
+    
+
+    @Test
+    public void testSimpleObjectWithMultiPart() throws IOException {
+        when(clientConfiguration.getHttpClientInstance()).thenReturn(client);
+        when(clientConfiguration.shouldOverrideHttpClientConfigurations()).thenReturn(true);
+        when(client.newCall(any(okhttp3.Request.class))).thenReturn(call);
+
+        OkClient client = new OkClient(clientConfiguration, compatibilityFactory);
+        when(coreHttpRequest.getHttpMethod()).thenReturn(Method.POST);
+
+        List<SimpleEntry<String, Object>> listP = new ArrayList<>();
+        listP.add(new SimpleEntry<String, Object>("fileWrapper", coreMultipartWrapper));
+        listP.add(new SimpleEntry<String, Object>("simple object", "object"));
+
+        String serverResponseString = "object";
+      
+        when(coreHttpRequest.getParameters()).thenReturn(listP);
+
+        when(call.execute()).thenReturn(okHttpResponse);
+        when(okHttpResponse.body()).thenReturn(okHttpResponseBody);
+        when(coreHttpResponse.getBody()).thenReturn(serverResponseString);
+        when(okHttpResponseBody.string()).thenReturn(serverResponseString);
+        when(okHttpResponse.code()).thenReturn(200);
+
+        when(compatibilityFactory.createHttpResponse(anyInt(), any(HttpHeaders.class),
+                any(InputStream.class), anyString())).thenReturn(coreHttpResponse);
+
+        Response coreHttpResponse = client.execute(coreHttpRequest, configuration);
+        String expected = serverResponseString;
+        String actual = coreHttpResponse.getBody();
+        assertEquals(actual, expected);
+    }
 
     @Test
     public void testPostFormParametersRequest() throws IOException {
