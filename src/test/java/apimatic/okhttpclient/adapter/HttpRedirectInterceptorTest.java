@@ -119,12 +119,18 @@ public class HttpRedirectInterceptorTest {
         prepareStub();
     }
 
+    /**
+     * @throws IOException Signals that an I/O exception of some sort has occurred.
+     */
     @Test
     public void testResponseWithSuccessCode() throws IOException {
         HttpRedirectInterceptor httpRedirectInterceptor = new HttpRedirectInterceptor(false);
         httpRedirectInterceptor.intercept(chain);
     }
 
+    /**
+     * @throws IOException Signals that an I/O exception of some sort has occurred.
+     */
     @Test
     public void testResponseWithRedirectCodeNullHeader() throws IOException {
         when(response.code()).thenReturn(TEMPORARY_REDIRECT_STATUS_CODE);
@@ -133,6 +139,9 @@ public class HttpRedirectInterceptorTest {
         assertFalse(httpResponse.isRedirect());
     }
 
+    /**
+     * @throws IOException Signals that an I/O exception of some sort has occurred.
+     */
     @Test(expected = ProtocolException.class)
     public void testResponseWithRedirectCodeHeader() throws IOException {
         when(response.header("Location")).thenReturn("location");
@@ -148,6 +157,9 @@ public class HttpRedirectInterceptorTest {
         httpRedirectInterceptor.intercept(chain);
     }
 
+    /**
+     * @throws IOException Signals that an I/O exception of some sort has occurred.
+     */
     @Test
     public void testInterceptWithTooManyFollowUp() throws IOException {
         when(response.code()).thenReturn(TEMPORARY_REDIRECT_STATUS_CODE);

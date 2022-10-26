@@ -21,7 +21,7 @@ public class OkHttpClientMock extends CompatibilityFactoryMock {
     private okhttp3.OkHttpClient client;
 
     /**
-     * Mock of {@link Call}
+     * Mock of {@link Call}.
      */
     @Mock
     private Call call;

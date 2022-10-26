@@ -51,6 +51,16 @@ public class OkClientTest extends OkHttpClientMock {
     private static final int SUCCESS_STATUS_CODE = 200;
 
     /**
+     * Retry interval.
+     */
+    private static final int RETRY_INTERVAL = 3;
+
+    /**
+     * Maximum wait retry time
+     */
+    private static final long MAX_WAIT_RETRY_TIME = 1L;
+
+    /**
      * Initializes mocks annotated with Mock.
      */
     @Rule
@@ -69,7 +79,7 @@ public class OkClientTest extends OkHttpClientMock {
     private ApiLogger apiLogger;
 
     /**
-     * Mock of {@link Response}
+     * Mock of {@link Response}.
      */
     @Mock
     private Response httpResponse;
@@ -111,7 +121,7 @@ public class OkClientTest extends OkHttpClientMock {
     private CoreFileWrapper fileWrapper;
 
     /**
-     * Setup the test setup
+     * Setup the test setup.
      * @throws IOException in case of I/O Exception occurred
      */
     @Before
@@ -119,12 +129,18 @@ public class OkClientTest extends OkHttpClientMock {
         prepareStub();
     }
 
+    /**
+     * Test the default OkHttpClient
+     */
     @Test
     public void testDefaultOkHttpClient() {
         OkClient client = new OkClient(clientConfiguration, getCompatibilityFactory());
         assertNotNull(getClient());
     }
 
+    /**
+     * Test the Skip SSL client configuration
+     */
     @Test
     public void testInsecureOkhttpClient() {
         when(clientConfiguration.skipSslCertVerification()).thenReturn(true);
@@ -132,6 +148,9 @@ public class OkClientTest extends OkHttpClientMock {
         assertNotNull(getClient());
     }
 
+    /**
+     * test the client shutdown behaviour
+     */
     @SuppressWarnings("static-access")
     @Test
     public void testshutDown() {
@@ -139,6 +158,9 @@ public class OkClientTest extends OkHttpClientMock {
         client.shutdown();
     }
 
+    /**
+     * test the OK client constructor variant
+     */
     @Test
     public void testOkClientConstructor1() {
         when(clientConfiguration.getHttpClientInstance()).thenReturn(getClient());
@@ -155,6 +177,9 @@ public class OkClientTest extends OkHttpClientMock {
         assertNotNull(getClient());
     }
 
+    /**
+     * @throws IOException Signals that an I/O exception of some sort has occurred.
+     */
     @Test
     public void testFileWrapperMockClient() throws IOException {
         when(clientConfiguration.getHttpClientInstance()).thenReturn(getClient());
@@ -184,6 +209,9 @@ public class OkClientTest extends OkHttpClientMock {
         assertEquals(actual, expected);
     }
 
+    /**
+     * @throws IOException Signals that an I/O exception of some sort has occurred.
+     */
     @Test
     public void testFileWrapperMockClient1() throws IOException {
         when(clientConfiguration.getHttpClientInstance()).thenReturn(getClient());
@@ -215,6 +243,9 @@ public class OkClientTest extends OkHttpClientMock {
         assertEquals(actual, expected);
     }
 
+    /**
+     * @throws IOException Signals that an I/O exception of some sort has occurred.
+     */
     @Test
     public void testFileWrapperMockClient2() throws IOException {
         when(clientConfiguration.getHttpClientInstance()).thenReturn(getClient());
@@ -241,7 +272,9 @@ public class OkClientTest extends OkHttpClientMock {
         assertEquals(actual, expected);
     }
 
-
+    /**
+     * @throws IOException Signals that an I/O exception of some sort has occurred.
+     */
     @Test
     public void testGetRequestMockClient() throws IOException {
         when(clientConfiguration.getHttpClientInstance()).thenReturn(getClient());
@@ -267,6 +300,9 @@ public class OkClientTest extends OkHttpClientMock {
         assertEquals(actual, expected);
     }
 
+    /**
+     * @throws IOException Signals that an I/O exception of some sort has occurred.
+     */
     @Test
     public void testSimplePostRequestMockClient() throws IOException {
         when(clientConfiguration.getHttpClientInstance()).thenReturn(getClient());
@@ -294,6 +330,9 @@ public class OkClientTest extends OkHttpClientMock {
         assertEquals(actual, expected);
     }
 
+    /**
+     * @throws IOException Signals that an I/O exception of some sort has occurred.
+     */
     @Test
     public void testRequestWithNoRetries() throws IOException {
         when(clientConfiguration.getNumberOfRetries()).thenReturn(-1);
@@ -322,6 +361,9 @@ public class OkClientTest extends OkHttpClientMock {
         assertEquals(actual, expected);
     }
 
+    /**
+     * @throws IOException Signals that an I/O exception of some sort has occurred.
+     */
     @Test
     public void testExecuteRequestWithLogging() throws IOException {
         when(clientConfiguration.getNumberOfRetries()).thenReturn(-1);
@@ -350,6 +392,9 @@ public class OkClientTest extends OkHttpClientMock {
         assertEquals(actual, expected);
     }
 
+    /**
+     * @throws IOException Signals that an I/O exception of some sort has occurred.
+     */
     @Test(expected = IOException.class)
     public void testExecuteRequestWithLogging1() throws IOException {
         IOException ioException = new IOException("Connection Error");
@@ -367,6 +412,9 @@ public class OkClientTest extends OkHttpClientMock {
         client.execute(getRequest(), configuration);
     }
 
+    /**
+     * @throws IOException Signals that an I/O exception of some sort has occurred.
+     */
     @Test
     public void testPostMultipartFileWrapperRequest() throws IOException {
         when(clientConfiguration.getHttpClientInstance()).thenReturn(getClient());
@@ -399,6 +447,9 @@ public class OkClientTest extends OkHttpClientMock {
         assertEquals(actual, expected);
     }
 
+    /**
+     * @throws IOException Signals that an I/O exception of some sort has occurred.
+     */
     @Test
     public void testPostMultipartFileWrapperRequest1() throws IOException {
         when(clientConfiguration.getHttpClientInstance()).thenReturn(getClient());
@@ -434,6 +485,9 @@ public class OkClientTest extends OkHttpClientMock {
         assertEquals(actual, expected);
     }
 
+    /**
+     * @throws IOException Signals that an I/O exception of some sort has occurred.
+     */
     @Test
     public void testPostMultipartRequest() throws IOException {
         when(clientConfiguration.getHttpClientInstance()).thenReturn(getClient());
@@ -467,6 +521,9 @@ public class OkClientTest extends OkHttpClientMock {
         assertEquals(actual, expected);
     }
 
+    /**
+     * @throws IOException Signals that an I/O exception of some sort has occurred.
+     */
     @Test
     public void testSimpleObjectWithMultiPart() throws IOException {
         when(clientConfiguration.getHttpClientInstance()).thenReturn(getClient());
@@ -499,6 +556,9 @@ public class OkClientTest extends OkHttpClientMock {
         assertEquals(actual, expected);
     }
 
+    /**
+     * @throws IOException Signals that an I/O exception of some sort has occurred.
+     */
     @Test
     public void testPostFormParametersRequest() throws IOException {
         when(clientConfiguration.getHttpClientInstance()).thenReturn(getClient());
@@ -530,6 +590,9 @@ public class OkClientTest extends OkHttpClientMock {
         assertEquals(actual, expected);
     }
 
+    /**
+     * @throws IOException Signals that an I/O exception of some sort has occurred.F
+     */
     @Test
     public void testPostEmptyBodyRequest() throws IOException {
         when(clientConfiguration.getHttpClientInstance()).thenReturn(getClient());
@@ -555,6 +618,9 @@ public class OkClientTest extends OkHttpClientMock {
         assertEquals(actual, expected);
     }
 
+    /**
+     * @throws IOException Signals that an I/O exception of some sort has occurred.
+     */
     @Test
     public void testPostMultipartWrapperRequest() throws IOException {
         when(clientConfiguration.getHttpClientInstance()).thenReturn(getClient());
@@ -585,6 +651,9 @@ public class OkClientTest extends OkHttpClientMock {
         assertEquals(actual, expected);
     }
 
+    /**
+     * @throws IOException Signals that an I/O exception of some sort has occurred.
+     */
     @Test
     public void testFileWrapperMockClientBinaryResponse() throws IOException {
         when(clientConfiguration.getHttpClientInstance()).thenReturn(getClient());
@@ -625,9 +694,9 @@ public class OkClientTest extends OkHttpClientMock {
                 .thenReturn(ArraySerializationFormat.INDEXED);
         when(configuration.getRetryOption()).thenReturn(RetryOption.DEFAULT);
 
-        when(clientConfiguration.getNumberOfRetries()).thenReturn(3);
+        when(clientConfiguration.getNumberOfRetries()).thenReturn(RETRY_INTERVAL);
         when(clientConfiguration.getTimeout()).thenReturn(DEFAULT_TIME_OUT);
-        when(clientConfiguration.getMaximumRetryWaitTime()).thenReturn(1l);
+        when(clientConfiguration.getMaximumRetryWaitTime()).thenReturn(MAX_WAIT_RETRY_TIME);
         when(getCompatibilityFactory().createHttpHeaders(anyMap())).thenReturn(getHttpHeaders());
         when(getCompatibilityFactory().createHttpHeaders(getHttpHeaders()))
                 .thenReturn(getHttpHeaders());

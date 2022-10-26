@@ -121,7 +121,7 @@ public class RetryInterceptorTest extends CompatibilityFactoryMock {
     private HttpUrl url;
 
     /**
-     * Setup the test setup
+     * Setup the test setup.
      * @throws IOException in case of I/O Exception occurred
      */
     @Before
@@ -129,6 +129,9 @@ public class RetryInterceptorTest extends CompatibilityFactoryMock {
         prepareStub();
     }
 
+    /**
+     * @throws IOException Signals that an I/O exception of some sort has occurred.
+     */
     @Test
     public void testRetryUsingCode() throws IOException {
         when(clientConfiguration.getNumberOfRetries()).thenReturn(NO_OF_RETRIES);
@@ -137,10 +140,13 @@ public class RetryInterceptorTest extends CompatibilityFactoryMock {
         when(request.url()).thenReturn(url);
         RetryInterceptor interceptor = new RetryInterceptor(clientConfiguration, apiLogger);
         interceptor.addRequestEntry(request, endpointConfiguration, null);
-        Response response = interceptor.intercept(chain);
-        assertFalse(response.isSuccessful());
+        Response httpResponse = interceptor.intercept(chain);
+        assertFalse(httpResponse.isSuccessful());
     }
 
+    /**
+     * @throws IOException Signals that an I/O exception of some sort has occurred.
+     */
     @Test(expected = IOException.class)
     public void testTimeOutException() throws IOException {
         when(clientConfiguration.getNumberOfRetries()).thenReturn(NO_OF_RETRIES);
@@ -152,6 +158,9 @@ public class RetryInterceptorTest extends CompatibilityFactoryMock {
         interceptor.intercept(chain);
     }
 
+    /**
+     * @throws IOException Signals that an I/O exception of some sort has occurred.
+     */
     @Test(expected = IOException.class)
     public void testShouldRetyOnTimeOutException() throws IOException {
         when(clientConfiguration.getNumberOfRetries()).thenReturn(NO_OF_RETRIES);
@@ -173,11 +182,14 @@ public class RetryInterceptorTest extends CompatibilityFactoryMock {
         when(response.code()).thenReturn(BAD_REQUET_STATUS_CODE);
         RetryInterceptor interceptor = new RetryInterceptor(clientConfiguration, apiLogger);
         interceptor.addRequestEntry(request, endpointConfiguration, null);
-        Response response = interceptor.intercept(chain);
-        assertFalse(response.isSuccessful());
+        Response httpResponse = interceptor.intercept(chain);
+        assertFalse(httpResponse.isSuccessful());
     }
 
 
+    /**
+     * @throws IOException Signals that an I/O exception of some sort has occurred.
+     */
     @Test
     public void testRetryWithHeader() throws IOException {
         when(clientConfiguration.getNumberOfRetries()).thenReturn(NO_OF_RETRIES);
@@ -187,11 +199,13 @@ public class RetryInterceptorTest extends CompatibilityFactoryMock {
         when(request.url()).thenReturn(url);
         RetryInterceptor interceptor = new RetryInterceptor(clientConfiguration, apiLogger);
         interceptor.addRequestEntry(request, endpointConfiguration, null);
-        Response response = interceptor.intercept(chain);
-        assertFalse(response.isSuccessful());
+        Response httpResponse = interceptor.intercept(chain);
+        assertFalse(httpResponse.isSuccessful());
     }
 
-
+    /**
+     * @throws IOException Signals that an I/O exception of some sort has occurred.
+     */
     @Test(expected = DateTimeParseException.class)
     public void testRetryWithWrongHeaderValue() throws IOException {
         when(clientConfiguration.getNumberOfRetries()).thenReturn(NO_OF_RETRIES);
@@ -202,6 +216,9 @@ public class RetryInterceptorTest extends CompatibilityFactoryMock {
         interceptor.intercept(chain);
     }
 
+    /**
+     * @throws IOException Signals that an I/O exception of some sort has occurred.
+     */
     @Test
     public void testRetryWithDateHeaderValue() throws IOException {
         when(clientConfiguration.getNumberOfRetries()).thenReturn(NO_OF_RETRIES);
@@ -213,14 +230,17 @@ public class RetryInterceptorTest extends CompatibilityFactoryMock {
         interceptor.intercept(chain);
     }
 
+    /**
+     * @throws IOException Signals that an I/O exception of some sort has occurred.
+     */
     @Test
     public void testZeroRetry() throws IOException {
         when(clientConfiguration.getNumberOfRetries()).thenReturn(0);
         when(request.method()).thenReturn(Method.GET.toString());
         RetryInterceptor interceptor = new RetryInterceptor(clientConfiguration, apiLogger);
         interceptor.addRequestEntry(request, endpointConfiguration, null);
-        Response response = interceptor.intercept(chain);
-        assertFalse(response.isSuccessful());
+        Response httpResponse = interceptor.intercept(chain);
+        assertFalse(httpResponse.isSuccessful());
     }
 
     private void prepareStub() throws IOException {
