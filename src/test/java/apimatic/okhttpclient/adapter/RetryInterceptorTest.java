@@ -174,6 +174,9 @@ public class RetryInterceptorTest extends CompatibilityFactoryMock {
         interceptor.intercept(chain);
     }
 
+    /**
+     * @throws IOException Signals that an I/O exception of some sort has occurred.
+     */
     @Test
     public void testRetryHttpMethodsUsingCode() throws IOException {
         when(clientConfiguration.getNumberOfRetries()).thenReturn(NO_OF_RETRIES);

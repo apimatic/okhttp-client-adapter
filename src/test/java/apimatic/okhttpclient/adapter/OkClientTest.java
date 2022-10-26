@@ -61,6 +61,11 @@ public class OkClientTest extends OkHttpClientMock {
     private static final long MAX_WAIT_RETRY_TIME = 1L;
 
     /**
+     * Call timeout
+     */
+    private static final long CALL_TIMEOUT = 1L;
+
+    /**
      * Initializes mocks annotated with Mock.
      */
     @Rule
@@ -122,7 +127,7 @@ public class OkClientTest extends OkHttpClientMock {
 
     /**
      * Setup the test setup.
-     * @throws IOException in case of I/O Exception occurred
+     * @throws IOException in case of I/O Exception occurred.
      */
     @Before
     public void setup() {
@@ -130,7 +135,7 @@ public class OkClientTest extends OkHttpClientMock {
     }
 
     /**
-     * Test the default OkHttpClient
+     * Test the default OkHttpClient.
      */
     @Test
     public void testDefaultOkHttpClient() {
@@ -139,7 +144,7 @@ public class OkClientTest extends OkHttpClientMock {
     }
 
     /**
-     * Test the Skip SSL client configuration
+     * Test the Skip SSL client configuration.
      */
     @Test
     public void testInsecureOkhttpClient() {
@@ -149,7 +154,7 @@ public class OkClientTest extends OkHttpClientMock {
     }
 
     /**
-     * test the client shutdown behaviour
+     * test the client shutdown behaviour.
      */
     @SuppressWarnings("static-access")
     @Test
@@ -159,7 +164,7 @@ public class OkClientTest extends OkHttpClientMock {
     }
 
     /**
-     * test the OK client constructor variant
+     * test the OK client constructor variant.
      */
     @Test
     public void testOkClientConstructor1() {
@@ -591,7 +596,7 @@ public class OkClientTest extends OkHttpClientMock {
     }
 
     /**
-     * @throws IOException Signals that an I/O exception of some sort has occurred.F
+     * @throws IOException Signals that an I/O exception of some sort has occurred.
      */
     @Test
     public void testPostEmptyBodyRequest() throws IOException {
@@ -708,7 +713,7 @@ public class OkClientTest extends OkHttpClientMock {
                 .thenReturn(getOkHttpClientBuilder());
         when(getOkHttpClientBuilder().connectTimeout(DEFAULT_TIME_OUT, TimeUnit.SECONDS))
                 .thenReturn(getOkHttpClientBuilder());
-        when(getOkHttpClientBuilder().callTimeout(1l, TimeUnit.SECONDS))
+        when(getOkHttpClientBuilder().callTimeout(CALL_TIMEOUT, TimeUnit.SECONDS))
                 .thenReturn(getOkHttpClientBuilder());
         when(getOkHttpClientBuilder().build()).thenReturn(getClient());
         when(configuration.getArraySerializationFormat())
