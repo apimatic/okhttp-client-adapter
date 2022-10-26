@@ -24,18 +24,18 @@ import okhttp3.Interceptor;
 public class RetryInterceptor implements Interceptor {
 
     /**
-     * Maximum Back off interval
+     * Maximum Back off interval.
      */
-    private final int MAXIMUM_BACK_OFF_INTERVAL = 100;
+    private static final int MAXIMUM_BACK_OFF_INTERVAL = 100;
 
     /**
-     * Maximu Retry interval
+     * Maximu Retry interval.
      */
-    private final int MILISECONDS = 1000;
+    private static final int MILISECONDS = 1000;
 
 
     /**
-     * RFC Date Time Formatter
+     * RFC Date Time Formatter.
      */
     private static final DateTimeFormatter RFC1123_DATE_TIME_FORMATTER =
             DateTimeFormatter.ofPattern("EEE, dd MMM yyyy HH:mm:ss z").withZone(ZoneId.of("GMT"));

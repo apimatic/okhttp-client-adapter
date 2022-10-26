@@ -31,32 +31,32 @@ import okhttp3.Response;
 public class RetryInterceptorTest extends CompatibilityFactoryMock {
 
     /**
-     * Retry interval
+     * Retry interval.
      */
     private static final Long RETRY_INTERVAL = 1L;
     
     /**
-     * Status code of bad request
+     * Status code of bad request.
      */
     private static final int BAD_REQUET_STATUS_CODE = 400;
 
     /**
-     * Status code of resource not found
+     * Status code of resource not found.
      */
     private static final int NOT_FOUND_STATUS_CODE = 404;
 
     /**
-     * back off interval
+     * back off interval.
      */
     private static final int BACK_OFF_FACTOR = 2;
     
     /**
-     * number of retries
+     * number of retries.
      */
     private static final int NO_OF_RETRIES = 3;
     
     /**
-     * Maximum retry wait time
+     * Maximum retry wait time.
      */
     private static final long MAX_RETRY_WAIT_TIME = 6L;
 
@@ -67,13 +67,13 @@ public class RetryInterceptorTest extends CompatibilityFactoryMock {
     public MockitoRule initRule = MockitoJUnit.rule().silent();
 
     /**
-     * Mock of {@link ClientConfiguration}
+     * Mock of {@link ClientConfiguration}.
      */
     @Mock
     private ClientConfiguration clientConfiguration;
 
     /**
-     * Mock of {@link Request}
+     * Mock of {@link Request}.
      */
     @Mock
     private Request request;
@@ -82,34 +82,37 @@ public class RetryInterceptorTest extends CompatibilityFactoryMock {
     private CompatibilityFactory compatibilityFactory;
 
     /**
-     * Mock of {@link CoreEndpointConfiguration}
+     * Mock of {@link CoreEndpointConfiguration}.
      */
     @Mock
     private CoreEndpointConfiguration endpointConfiguration;
 
     /**
-     * Mock of {@link ApiLogger}
+     * Mock of {@link ApiLogger}.
      */
     @Mock
     private ApiLogger apiLogger;
     
+    /**
+     * Mock of {@link Headers}.
+     */
     @Mock
     private Headers headers;
 
     /**
-     * Mock of {@link Response}
+     * Mock of {@link Response}.
      */
     @Mock
     private Response response;
 
     /**
-     * Mock of {@link Chain}
+     * Mock of {@link Chain}.
      */
     @Mock
     private Chain chain;
 
     /**
-     * Mock of {@link HttpUrl}
+     * Mock of {@link HttpUrl}.
      */
     @Mock
     private HttpUrl url;

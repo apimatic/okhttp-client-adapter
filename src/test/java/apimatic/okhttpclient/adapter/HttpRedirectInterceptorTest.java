@@ -26,28 +26,28 @@ import okhttp3.Response;
 public class HttpRedirectInterceptorTest {
 
     /**
-     * Http Url instance
+     * Http Url instance.
      */
-    private static final HttpUrl httpUrl = new HttpUrl("https", "username", "password", "localhost",
+    private static final HttpUrl HTTP_URL = new HttpUrl("https", "username", "password", "localhost",
             3000, Arrays.asList("Search"), null, null, "https:\\localhost:3000\\location");
 
     /**
-     * Status code of bad request
+     * Status code of bad request.
      */
     private static final int BAD_REQUET_STATUS_CODE = 400;
 
     /**
-     * Status code of resource not found
+     * Status code of resource not found.
      */
     private static final int NOT_FOUND_STATUS_CODE = 404;
 
     /**
-     * Status code of temporary redirect
+     * Status code of temporary redirect.
      */
     private static final int TEMPORARY_REDIRECT_STATUS_CODE = 307;
 
     /**
-     * redirect port
+     * redirect port.
      */
     private static final int PORT = 3000;
     /**
@@ -57,37 +57,37 @@ public class HttpRedirectInterceptorTest {
     public MockitoRule initRule = MockitoJUnit.rule().strictness(Strictness.LENIENT);
 
     /**
-     * Mock of {@link ClientConfiguration}
+     * Mock of {@link ClientConfiguration}.
      */
     @Mock
     private ClientConfiguration clientConfiguration;
 
     /**
-     * Mock of {@link Request}
+     * Mock of {@link Request}.
      */
     @Mock
     private Request request;
 
     /**
-     * Mock of {@link Request.Builder}
+     * Mock of {@link Request.Builder}.
      */
     @Mock
     private Request.Builder requestBuilder;
 
     /**
-     * Mock of {@link Response}
+     * Mock of {@link Response}.
      */
     @Mock
     private Response response;
 
     /**
-     * Mock of {@link Chain}
+     * Mock of {@link Chain}.
      */
     @Mock
     private Chain chain;
 
     /**
-     * Mock of {@link HttpUrl}
+     * Mock of {@link HttpUrl}.
      */
     @Mock
     private HttpUrl url;
@@ -119,7 +119,7 @@ public class HttpRedirectInterceptorTest {
         when(response.request()).thenReturn(request);
         when(request.url()).thenReturn(url);
         when(url.scheme()).thenReturn("https");
-        when(url.resolve("location")).thenReturn(httpUrl);
+        when(url.resolve("location")).thenReturn(HTTP_URL);
         when(url.host()).thenReturn("localhost");
         when(url.port()).thenReturn(PORT);
 
@@ -151,7 +151,7 @@ public class HttpRedirectInterceptorTest {
         when(clientConfiguration.getBackOffFactor()).thenReturn(2);
         when(clientConfiguration.getMaximumRetryWaitTime()).thenReturn(6L);
         when(request.newBuilder()).thenReturn(requestBuilder);
-        when(requestBuilder.url(httpUrl)).thenReturn(requestBuilder);
+        when(requestBuilder.url(HTTP_URL)).thenReturn(requestBuilder);
         when(requestBuilder.build()).thenReturn(request);
     }
 }

@@ -67,27 +67,27 @@ public class OkClient implements HttpClient {
     private static CompatibilityFactory compatibilityFactory;
 
     /**
-     * Constructor to initialize the OKClient
+     * Constructor to initialize the OKClient.
      * 
      * @param httpClientConfig client configuration
-     * @param compatibilityFactory the compatibilityFactory for backward compatibility
-     * @param apiLogger the logger for logging information
+     * @param compatibilityFactoryImpl the compatibilityFactory for backward compatibility
+     * @param httpLogger the logger for logging information
      */
     public OkClient(final ClientConfiguration httpClientConfig,
-            final CompatibilityFactory compatibilityFactory, final ApiLogger apiLogger) {
-        this(httpClientConfig, compatibilityFactory);
-        this.apiLogger = apiLogger;
+            final CompatibilityFactory compatibilityFactoryImpl, final ApiLogger httpLogger) {
+        this(httpClientConfig, compatibilityFactoryImpl);
+        this.apiLogger = httpLogger;
     }
 
     /**
-     * Constructor to initialize the OKClient
+     * Constructor to initialize the OKClient.
      * 
      * @param httpClientConfig the httpClientConfiguration
-     * @param compatibilityFactory the compatibilityFactory for backward compatibility
+     * @param compatibilityFactoryImpl the compatibilityFactory for backward compatibility
      */
     public OkClient(final ClientConfiguration httpClientConfig,
-            final CompatibilityFactory compatibilityFactory) {
-        OkClient.compatibilityFactory = compatibilityFactory;
+            final CompatibilityFactory compatibilityFactoryImpl) {
+        OkClient.compatibilityFactory = compatibilityFactoryImpl;
         okhttp3.OkHttpClient httpClientInstance = httpClientConfig.getHttpClientInstance();
         if (httpClientInstance != null) {
             if (httpClientConfig.shouldOverrideHttpClientConfigurations()) {

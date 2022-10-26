@@ -13,7 +13,7 @@ import okhttp3.Response;
  */
 public class HttpRedirectInterceptor implements Interceptor {
     /**
-     * Maximum follow ups
+     * Maximum follow ups.
      */
     private static final int MAX_FOLLOW_UPS = 20;
 
@@ -30,17 +30,17 @@ public class HttpRedirectInterceptor implements Interceptor {
     private static final int PERMENANT_REDIRECT = 308;
 
     /**
-     * boolean which directs to follow SSL Redirect
+     * boolean which directs to follow SSL Redirect.
      */
     private boolean followSslRedirects;
 
     /**
      * Initialization constructor.
      * 
-     * @param followSslRedirects boolean true if following ssl redirects
+     * @param isfollowSslRedirects boolean true if following ssl redirects
      */
-    public HttpRedirectInterceptor(boolean followSslRedirects) {
-        this.followSslRedirects = followSslRedirects;
+    public HttpRedirectInterceptor(boolean isfollowSslRedirects) {
+        this.followSslRedirects = isfollowSslRedirects;
     }
 
     /**
