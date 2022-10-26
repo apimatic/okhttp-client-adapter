@@ -68,6 +68,9 @@ public class OkClientTest extends OkHttpClientMock {
     @Mock
     private ApiLogger apiLogger;
 
+    /**
+     * Mock of {@link Response}
+     */
     @Mock
     private Response coreHttpResponse;
 
@@ -107,6 +110,10 @@ public class OkClientTest extends OkHttpClientMock {
     @Mock
     private CoreFileWrapper fileWrapper;
 
+    /**
+     * Setup the test setup
+     * @throws IOException in case of I/O Exception occurred
+     */
     @Before
     public void setup() {
         prepareStub();

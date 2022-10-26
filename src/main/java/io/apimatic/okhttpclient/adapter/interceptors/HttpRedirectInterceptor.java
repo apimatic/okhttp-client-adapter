@@ -36,7 +36,6 @@ public class HttpRedirectInterceptor implements Interceptor {
 
     /**
      * Initialization constructor.
-     * 
      * @param isfollowSslRedirects boolean true if following ssl redirects
      */
     public HttpRedirectInterceptor(boolean isfollowSslRedirects) {
@@ -45,7 +44,6 @@ public class HttpRedirectInterceptor implements Interceptor {
 
     /**
      * Intercepts and complete 307 and 308 redirects as described in RFC.
-     * 
      * @see okhttp3.Interceptor#intercept(okhttp3.Interceptor.Chain)
      */
     @Override

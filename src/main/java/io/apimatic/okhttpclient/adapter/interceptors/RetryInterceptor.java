@@ -57,7 +57,6 @@ public class RetryInterceptor implements Interceptor {
 
     /**
      * Default Constructor, Initializes the httpClientConfiguration attribute.
-     * 
      * @param httpClientConfig the user specified configurations.
      * @param httpApiLogger for logging request and response.
      */
@@ -70,7 +69,6 @@ public class RetryInterceptor implements Interceptor {
 
     /**
      * Intercepts and retry requests if failed based on configuration.
-     * 
      * @see okhttp3.Interceptor#intercept(okhttp3.Interceptor.Chain)
      */
     @Override
@@ -140,7 +138,6 @@ public class RetryInterceptor implements Interceptor {
 
     /**
      * Get the response Recursively since we have to handle the SocketException gracefully.
-     * 
      * @param chain the interceptor chain.
      * @param request the HTTP request.
      * @param response the HTTP response.
@@ -166,7 +163,6 @@ public class RetryInterceptor implements Interceptor {
 
     /**
      * Checks if the retry request is to be made against provided response.
-     * 
      * @param requestState the current state of request entry.
      * @param response the HTTP response.
      * @param isTimeoutException we are retrying because of timeout or not
@@ -184,7 +180,6 @@ public class RetryInterceptor implements Interceptor {
 
     /**
      * Checks if the overall wait time has reached to its limit.
-     * 
      * @param requestState the current state of request entry.
      * @return true if total wait time exceeds maximum back-off time.
      */
@@ -196,7 +191,6 @@ public class RetryInterceptor implements Interceptor {
 
     /**
      * Calculates the wait time for next request.
-     * 
      * @param requestState the current state of request entry.
      * @param response the HTTP response.
      */
@@ -213,7 +207,6 @@ public class RetryInterceptor implements Interceptor {
 
     /**
      * Checks if the response contains Retry-After header.
-     * 
      * @param response the HTTP response.
      * @return true if response contains Retry-After header.
      */
@@ -225,7 +218,6 @@ public class RetryInterceptor implements Interceptor {
     /**
      * Analyzes the header value and checks the header if it contains date in proper format or
      * seconds. If header value is date then it calculates the delta time in milliseconds.
-     * 
      * @param headerValue the retry-after header value.
      * @return long value of calculated wait time in milliseconds.
      */
@@ -243,7 +235,6 @@ public class RetryInterceptor implements Interceptor {
 
     /**
      * Calculates the back-off value based on a formula which uses back-off factor and retry Count.
-     * 
      * @param requestState the current state of request entry.
      * @return long value of back-off time based on formula in milliseconds.
      */
@@ -255,7 +246,6 @@ public class RetryInterceptor implements Interceptor {
 
     /**
      * Holds the execution for stored wait time in milliseconds of this thread.
-     * 
      * @param milliSeconds the wait time in milli seconds.
      */
     private void holdExecution(long milliSeconds) {
@@ -268,7 +258,6 @@ public class RetryInterceptor implements Interceptor {
 
     /**
      * Converts the seconds to milliseconds.
-     * 
      * @param seconds The seconds to convert.
      * @return long value of milliseconds.
      */
@@ -278,7 +267,6 @@ public class RetryInterceptor implements Interceptor {
 
     /**
      * Adds entry into Request entry map.
-     * 
      * @param okHttpRequest the OK HTTP Request.
      * @param endpointConfiguration The overridden endpointConfiguration for request.
      * @param request The core interface Request
@@ -290,7 +278,6 @@ public class RetryInterceptor implements Interceptor {
 
     /**
      * getter for current request state entry from map.
-     * 
      * @param okHttpRequest the OK HTTP Request.
      * @return RequestEntry the current request entry.
      */
@@ -300,7 +287,6 @@ public class RetryInterceptor implements Interceptor {
 
     /**
      * Logs the response.
-     * 
      * @param requestState The current state of request.
      * @param response The OKhttp Response.
      */
@@ -320,7 +306,6 @@ public class RetryInterceptor implements Interceptor {
 
     /**
      * Logs the exception.
-     * 
      * @param requestState The current state of request.
      * @param ioException the exception
      */
@@ -364,11 +349,11 @@ public class RetryInterceptor implements Interceptor {
 
         /**
          * Default Constructor.
-         * 
          * @param coreEndpointConfiguration the end point configuration
          * @param request the client request
          */
-        private RequestState(final CoreEndpointConfiguration coreEndpointConfiguration, final Request request) {
+        private RequestState(final CoreEndpointConfiguration coreEndpointConfiguration,
+                final Request request) {
             this.endpointConfiguration = coreEndpointConfiguration;
             this.httpRequest = request;
         }

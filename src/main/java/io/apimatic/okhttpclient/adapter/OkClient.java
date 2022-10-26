@@ -67,8 +67,7 @@ public class OkClient implements HttpClient {
     private static CompatibilityFactory compatibilityFactory;
 
     /**
-     * Constructor to initialize the OKClient.
-     * 
+     * Constructor to initialize the OKClient
      * @param httpClientConfig client configuration
      * @param compatibilityFactoryImpl the compatibilityFactory for backward compatibility
      * @param httpLogger the logger for logging information
@@ -80,8 +79,7 @@ public class OkClient implements HttpClient {
     }
 
     /**
-     * Constructor to initialize the OKClient.
-     * 
+     * Constructor to initialize the OKClient
      * @param httpClientConfig the httpClientConfiguration
      * @param compatibilityFactoryImpl the compatibilityFactory for backward compatibility
      */
@@ -107,7 +105,6 @@ public class OkClient implements HttpClient {
 
     /**
      * Applies the httpClientConfigurations on okhttp3.OkHttpClient.
-     * 
      * @param okHttpClient a okhttp client instance
      * @param httpClientConfig a client configuration
      */
@@ -132,7 +129,6 @@ public class OkClient implements HttpClient {
 
     /**
      * Getter for the default static instance of the okhttp3.OkHttpClient.
-     * 
      * @param httpClientConfiguration the client configuration
      * @return {@link OkHttpClient}
      */
@@ -219,7 +215,6 @@ public class OkClient implements HttpClient {
 
     /**
      * Execute a given Request to get string/binary response back.
-     * 
      * @param httpRequest The given Request to execute.
      * @param endpointConfiguration The endpointconfiguration for request.
      * @return CompletableFuture of HttpResponse after execution.
@@ -253,7 +248,6 @@ public class OkClient implements HttpClient {
 
     /**
      * Execute a given Request to get string/binary response back.
-     * 
      * @param httpRequest The given Request to execute.
      * @param endpointConfiguration The endpointConfiguration for request.
      * @return The converted http response.
@@ -300,7 +294,6 @@ public class OkClient implements HttpClient {
 
     /**
      * Returns RetryInterceptor instance registered with client.
-     * 
      * @return The RetryInterceptor instance.
      */
     private RetryInterceptor getRetryInterceptor() {
@@ -311,7 +304,6 @@ public class OkClient implements HttpClient {
 
     /**
      * Publishes success or failure result as HttpResponse from a HttpRequest.
-     * 
      * @param okHttpResponse The okhttp response to publish.
      * @param httpRequest The internal http request.
      * @param completionBlock The success and failure code block reference to invoke the delegate.
@@ -351,7 +343,6 @@ public class OkClient implements HttpClient {
 
     /**
      * Converts a given OkHttp response into our internal http response model.
-     * 
      * @param request The given http request in internal format.
      * @param response The given OkHttp response.
      * @param hasBinaryResponse Whether the response is binary or string.
@@ -389,7 +380,6 @@ public class OkClient implements HttpClient {
 
     /**
      * Converts a given internal http request into an okhttp request model.
-     * 
      * @param httpRequest The given http request in internal format.
      * @param arraySerializationFormat
      * @return The converted okhttp request
@@ -569,5 +559,4 @@ public class OkClient implements HttpClient {
         target += '"';
         return target;
     }
-
 }

@@ -34,7 +34,7 @@ public class RetryInterceptorTest extends CompatibilityFactoryMock {
      * Retry interval.
      */
     private static final Long RETRY_INTERVAL = 1L;
-    
+
     /**
      * Status code of bad request.
      */
@@ -49,12 +49,12 @@ public class RetryInterceptorTest extends CompatibilityFactoryMock {
      * back off interval.
      */
     private static final int BACK_OFF_FACTOR = 2;
-    
+
     /**
      * number of retries.
      */
     private static final int NO_OF_RETRIES = 3;
-    
+
     /**
      * Maximum retry wait time.
      */
@@ -77,7 +77,10 @@ public class RetryInterceptorTest extends CompatibilityFactoryMock {
      */
     @Mock
     private Request request;
-    
+
+    /**
+     * Mock of {@link CompatibilityFactory}.
+     */
     @Mock
     private CompatibilityFactory compatibilityFactory;
 
@@ -92,7 +95,7 @@ public class RetryInterceptorTest extends CompatibilityFactoryMock {
      */
     @Mock
     private ApiLogger apiLogger;
-    
+
     /**
      * Mock of {@link Headers}.
      */
@@ -116,7 +119,11 @@ public class RetryInterceptorTest extends CompatibilityFactoryMock {
      */
     @Mock
     private HttpUrl url;
-    
+
+    /**
+     * Setup the test setup
+     * @throws IOException in case of I/O Exception occurred
+     */
     @Before
     public void setup() throws IOException {
         prepareStub();
@@ -234,6 +241,5 @@ public class RetryInterceptorTest extends CompatibilityFactoryMock {
         when(endpointConfiguration.getRetryOption()).thenReturn(RetryOption.DEFAULT);
         when(headers.toMultimap()).thenReturn(Collections.EMPTY_MAP);
         when(compatibilityFactory.createHttpHeaders(anyMap())).thenReturn(getHttpHeaders());
-     
     }
 }

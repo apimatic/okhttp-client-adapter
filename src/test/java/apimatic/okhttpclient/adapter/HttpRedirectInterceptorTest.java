@@ -28,8 +28,9 @@ public class HttpRedirectInterceptorTest {
     /**
      * Http Url instance.
      */
-    private static final HttpUrl HTTP_URL = new HttpUrl("https", "username", "password", "localhost",
-            3000, Arrays.asList("Search"), null, null, "https:\\localhost:3000\\location");
+    private static final HttpUrl HTTP_URL =
+            new HttpUrl("https", "username", "password", "localhost", 3000, Arrays.asList("Search"),
+                    null, null, "https:\\localhost:3000\\location");
 
     /**
      * Status code of bad request.
@@ -50,6 +51,22 @@ public class HttpRedirectInterceptorTest {
      * redirect port.
      */
     private static final int PORT = 3000;
+
+    /**
+     * Retry interval
+     */
+    private static final long RETRY_INTERVAL = 1L;
+
+    /**
+     * Back off factor
+     */
+    private static final int BACK_OFF_FACTOR = 2;
+
+    /**
+     * Maximum retry wait time
+     */
+    private static final long MAX_RETRY_WAIT_TIME = 6L;
+
     /**
      * Initializes mocks annotated with Mock.
      */
@@ -93,6 +110,10 @@ public class HttpRedirectInterceptorTest {
     private HttpUrl url;
 
 
+    /**
+     * Setup the test setup
+     * @throws IOException in case of I/O Exception occurred
+     */
     @Before
     public void setup() throws IOException {
         prepareStub();
@@ -147,9 +168,9 @@ public class HttpRedirectInterceptorTest {
         when(chain.proceed(request)).thenReturn(response);
         when(clientConfiguration.getHttpMethodsToRetry()).thenReturn(methodToRetry);
         when(clientConfiguration.getHttpStatusCodesToRetry()).thenReturn(statusCodeToRetry);
-        when(clientConfiguration.getRetryInterval()).thenReturn(1L);
-        when(clientConfiguration.getBackOffFactor()).thenReturn(2);
-        when(clientConfiguration.getMaximumRetryWaitTime()).thenReturn(6L);
+        when(clientConfiguration.getRetryInterval()).thenReturn(RETRY_INTERVAL);
+        when(clientConfiguration.getBackOffFactor()).thenReturn(BACK_OFF_FACTOR);
+        when(clientConfiguration.getMaximumRetryWaitTime()).thenReturn(MAX_RETRY_WAIT_TIME);
         when(request.newBuilder()).thenReturn(requestBuilder);
         when(requestBuilder.url(HTTP_URL)).thenReturn(requestBuilder);
         when(requestBuilder.build()).thenReturn(request);
