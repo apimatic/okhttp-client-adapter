@@ -108,12 +108,12 @@ public class OkClient implements HttpClient {
     /**
      * Applies the httpClientConfigurations on okhttp3.OkHttpClient.
      * 
-     * @param client a okhttp client instance
+     * @param okHttpClient a okhttp client instance
      * @param httpClientConfig a client configuration
      */
-    private void applyHttpClientConfigurations(final okhttp3.OkHttpClient client,
+    private void applyHttpClientConfigurations(final okhttp3.OkHttpClient okHttpClient,
             final ClientConfiguration httpClientConfig) {
-        okhttp3.OkHttpClient.Builder clientBuilder = client.newBuilder();
+        okhttp3.OkHttpClient.Builder clientBuilder = okHttpClient.newBuilder();
         clientBuilder.readTimeout(httpClientConfig.getTimeout(), TimeUnit.SECONDS)
                 .writeTimeout(httpClientConfig.getTimeout(), TimeUnit.SECONDS)
                 .connectTimeout(httpClientConfig.getTimeout(), TimeUnit.SECONDS);

@@ -233,7 +233,7 @@ public class RetryInterceptorTest extends CompatibilityFactoryMock {
         when(clientConfiguration.getMaximumRetryWaitTime()).thenReturn(MAX_RETRY_WAIT_TIME);
         when(endpointConfiguration.getRetryOption()).thenReturn(RetryOption.DEFAULT);
         when(headers.toMultimap()).thenReturn(Collections.EMPTY_MAP);
-        when(compatibilityFactory.createHttpHeaders(anyMap())).thenReturn(httpHeaders);
+        when(compatibilityFactory.createHttpHeaders(anyMap())).thenReturn(getHttpHeaders());
      
     }
 }

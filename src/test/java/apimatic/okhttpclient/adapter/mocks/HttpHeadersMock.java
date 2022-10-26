@@ -18,5 +18,13 @@ public class HttpHeadersMock {
      * Mock of {@link HttpHeaders}.
      */
     @Mock
-    protected HttpHeaders httpHeaders;
+    private HttpHeaders httpHeaders;
+
+    /**
+     * 
+     * @return {@link HttpHeaders}
+     */
+    protected HttpHeaders getHttpHeaders() {
+        return httpHeaders;
+    }
 }

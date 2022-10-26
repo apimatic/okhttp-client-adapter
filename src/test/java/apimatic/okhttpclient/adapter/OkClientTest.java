@@ -114,29 +114,29 @@ public class OkClientTest extends OkHttpClientMock {
 
     @Test
     public void testDefaultOkHttpClient() {
-        OkClient client = new OkClient(clientConfiguration, compatibilityFactory);
-        assertNotNull(client);
+        OkClient client = new OkClient(clientConfiguration, getCompatibilityFactory());
+        assertNotNull(getClient());
     }
 
     @Test
     public void testInsecureOkhttpClient() {
         when(clientConfiguration.skipSslCertVerification()).thenReturn(true);
-        OkClient client = new OkClient(clientConfiguration, compatibilityFactory);
-        assertNotNull(client);
+        OkClient client = new OkClient(clientConfiguration, getCompatibilityFactory());
+        assertNotNull(getClient());
     }
 
     @SuppressWarnings("static-access")
     @Test
     public void testshutDown() {
-        OkClient client = new OkClient(clientConfiguration, compatibilityFactory);
+        OkClient client = new OkClient(clientConfiguration, getCompatibilityFactory());
         client.shutdown();
     }
 
     @Test
     public void testOkClientConstructor1() {
-        when(clientConfiguration.getHttpClientInstance()).thenReturn(client);
+        when(clientConfiguration.getHttpClientInstance()).thenReturn(getClient());
         when(clientConfiguration.shouldOverrideHttpClientConfigurations()).thenReturn(true);
-        when(client.newBuilder()).thenReturn(getOkHttpClientBuilder());
+        when(getClient().newBuilder()).thenReturn(getOkHttpClientBuilder());
         when(getOkHttpClientBuilder().readTimeout(DEFAULT_TIME_OUT, TimeUnit.SECONDS))
                 .thenReturn(getOkHttpClientBuilder());
         when(getOkHttpClientBuilder().writeTimeout(DEFAULT_TIME_OUT, TimeUnit.SECONDS))
@@ -144,35 +144,35 @@ public class OkClientTest extends OkHttpClientMock {
         when(getOkHttpClientBuilder().connectTimeout(DEFAULT_TIME_OUT, TimeUnit.SECONDS))
                 .thenReturn(getOkHttpClientBuilder());
 
-        OkClient client = new OkClient(clientConfiguration, compatibilityFactory);
-        assertNotNull(client);
+        OkClient client = new OkClient(clientConfiguration, getCompatibilityFactory());
+        assertNotNull(getClient());
     }
 
     @Test
     public void testFileWrapperMockClient() throws IOException {
-        when(clientConfiguration.getHttpClientInstance()).thenReturn(client);
+        when(clientConfiguration.getHttpClientInstance()).thenReturn(getClient());
         when(clientConfiguration.shouldOverrideHttpClientConfigurations()).thenReturn(true);
-        when(client.newCall(any(okhttp3.Request.class))).thenReturn(call);
+        when(getClient().newCall(any(okhttp3.Request.class))).thenReturn(getCall());
 
-        OkClient client = new OkClient(clientConfiguration, compatibilityFactory);
+        OkClient client = new OkClient(clientConfiguration, getCompatibilityFactory());
 
-        when(coreHttpRequest.getBody()).thenReturn(fileWrapper);
+        when(getRequest().getBody()).thenReturn(fileWrapper);
         when(fileWrapper.getContentType()).thenReturn("application/json");
 
-        when(coreHttpRequest.getHttpMethod()).thenReturn(Method.POST);
+        when(getRequest().getHttpMethod()).thenReturn(Method.POST);
 
 
-        when(call.execute()).thenReturn(getOkhttp3Response());
+        when(getCall().execute()).thenReturn(getOkhttp3Response());
         when(getOkhttp3Response().body()).thenReturn(getOkhttp3ResponseBody());
         String fileWrapperString = fileWrapper.toString();
         when(coreHttpResponse.getBody()).thenReturn(fileWrapperString);
         when(getOkhttp3ResponseBody().string()).thenReturn(fileWrapperString);
         when(getOkhttp3Response().code()).thenReturn(SUCCESS_STATUS_CODE);
 
-        when(compatibilityFactory.createHttpResponse(anyInt(), any(HttpHeaders.class),
+        when(getCompatibilityFactory().createHttpResponse(anyInt(), any(HttpHeaders.class),
                 any(InputStream.class), anyString())).thenReturn(coreHttpResponse);
 
-        Response coreHttpResponse = client.execute(coreHttpRequest, configuration);
+        Response coreHttpResponse = client.execute(getRequest(), configuration);
         String expected = fileWrapper.toString();
         String actual = coreHttpResponse.getBody();
         assertEquals(actual, expected);
@@ -181,30 +181,30 @@ public class OkClientTest extends OkHttpClientMock {
 
     @Test
     public void testFileWrapperMockClient1() throws IOException {
-        when(clientConfiguration.getHttpClientInstance()).thenReturn(client);
+        when(clientConfiguration.getHttpClientInstance()).thenReturn(getClient());
         when(clientConfiguration.shouldOverrideHttpClientConfigurations()).thenReturn(true);
-        when(client.newCall(any(okhttp3.Request.class))).thenReturn(call);
+        when(getClient().newCall(any(okhttp3.Request.class))).thenReturn(getCall());
 
-        OkClient client = new OkClient(clientConfiguration, compatibilityFactory);
+        OkClient client = new OkClient(clientConfiguration, getCompatibilityFactory());
 
-        when(coreHttpRequest.getBody()).thenReturn(fileWrapper);
-
-
-        when(coreHttpRequest.getHttpMethod()).thenReturn(Method.POST);
-        when(httpHeaders.has("content-type")).thenReturn(true);
+        when(getRequest().getBody()).thenReturn(fileWrapper);
 
 
-        when(call.execute()).thenReturn(getOkhttp3Response());
+        when(getRequest().getHttpMethod()).thenReturn(Method.POST);
+        when(getHttpHeaders().has("content-type")).thenReturn(true);
+
+
+        when(getCall().execute()).thenReturn(getOkhttp3Response());
         when(getOkhttp3Response().body()).thenReturn(getOkhttp3ResponseBody());
         String fileWrapperString = fileWrapper.toString();
         when(coreHttpResponse.getBody()).thenReturn(fileWrapperString);
         when(getOkhttp3ResponseBody().string()).thenReturn(fileWrapperString);
         when(getOkhttp3Response().code()).thenReturn(SUCCESS_STATUS_CODE);
 
-        when(compatibilityFactory.createHttpResponse(anyInt(), any(HttpHeaders.class),
+        when(getCompatibilityFactory().createHttpResponse(anyInt(), any(HttpHeaders.class),
                 any(InputStream.class), anyString())).thenReturn(coreHttpResponse);
 
-        Response coreHttpResponse = client.execute(coreHttpRequest, configuration);
+        Response coreHttpResponse = client.execute(getRequest(), configuration);
         String expected = fileWrapper.toString();
         String actual = coreHttpResponse.getBody();
         assertEquals(actual, expected);
@@ -213,29 +213,29 @@ public class OkClientTest extends OkHttpClientMock {
 
     @Test
     public void testFileWrapperMockClient2() throws IOException {
-        when(clientConfiguration.getHttpClientInstance()).thenReturn(client);
+        when(clientConfiguration.getHttpClientInstance()).thenReturn(getClient());
         when(clientConfiguration.shouldOverrideHttpClientConfigurations()).thenReturn(true);
-        when(client.newCall(any(okhttp3.Request.class))).thenReturn(call);
+        when(getClient().newCall(any(okhttp3.Request.class))).thenReturn(getCall());
 
-        OkClient client = new OkClient(clientConfiguration, compatibilityFactory);
+        OkClient client = new OkClient(clientConfiguration, getCompatibilityFactory());
 
-        when(coreHttpRequest.getBody()).thenReturn(fileWrapper);
-
-
-        when(coreHttpRequest.getHttpMethod()).thenReturn(Method.POST);
+        when(getRequest().getBody()).thenReturn(fileWrapper);
 
 
-        when(call.execute()).thenReturn(getOkhttp3Response());
+        when(getRequest().getHttpMethod()).thenReturn(Method.POST);
+
+
+        when(getCall().execute()).thenReturn(getOkhttp3Response());
         when(getOkhttp3Response().body()).thenReturn(getOkhttp3ResponseBody());
         String fileWrapperString = fileWrapper.toString();
         when(coreHttpResponse.getBody()).thenReturn(fileWrapperString);
         when(getOkhttp3ResponseBody().string()).thenReturn(fileWrapperString);
         when(getOkhttp3Response().code()).thenReturn(SUCCESS_STATUS_CODE);
 
-        when(compatibilityFactory.createHttpResponse(anyInt(), any(HttpHeaders.class),
+        when(getCompatibilityFactory().createHttpResponse(anyInt(), any(HttpHeaders.class),
                 any(InputStream.class), anyString())).thenReturn(coreHttpResponse);
 
-        Response coreHttpResponse = client.execute(coreHttpRequest, configuration);
+        Response coreHttpResponse = client.execute(getRequest(), configuration);
         String expected = fileWrapper.toString();
         String actual = coreHttpResponse.getBody();
         assertEquals(actual, expected);
@@ -244,25 +244,25 @@ public class OkClientTest extends OkHttpClientMock {
 
     @Test
     public void testGetRequestMockClient() throws IOException {
-        when(clientConfiguration.getHttpClientInstance()).thenReturn(client);
+        when(clientConfiguration.getHttpClientInstance()).thenReturn(getClient());
         when(clientConfiguration.shouldOverrideHttpClientConfigurations()).thenReturn(true);
-        when(client.newCall(any(okhttp3.Request.class))).thenReturn(call);
+        when(getClient().newCall(any(okhttp3.Request.class))).thenReturn(getCall());
 
-        OkClient client = new OkClient(clientConfiguration, compatibilityFactory);
-        when(coreHttpRequest.getHttpMethod()).thenReturn(Method.GET);
+        OkClient client = new OkClient(clientConfiguration, getCompatibilityFactory());
+        when(getRequest().getHttpMethod()).thenReturn(Method.GET);
 
 
-        when(call.execute()).thenReturn(getOkhttp3Response());
+        when(getCall().execute()).thenReturn(getOkhttp3Response());
         when(getOkhttp3Response().body()).thenReturn(getOkhttp3ResponseBody());
         String serverResponseString = "Get Response";
         when(coreHttpResponse.getBody()).thenReturn(serverResponseString);
         when(getOkhttp3ResponseBody().string()).thenReturn(serverResponseString);
         when(getOkhttp3Response().code()).thenReturn(SUCCESS_STATUS_CODE);
 
-        when(compatibilityFactory.createHttpResponse(anyInt(), any(HttpHeaders.class),
+        when(getCompatibilityFactory().createHttpResponse(anyInt(), any(HttpHeaders.class),
                 any(InputStream.class), anyString())).thenReturn(coreHttpResponse);
 
-        Response coreHttpResponse = client.execute(coreHttpRequest, configuration);
+        Response coreHttpResponse = client.execute(getRequest(), configuration);
         String expected = serverResponseString;
         String actual = coreHttpResponse.getBody();
         assertEquals(actual, expected);
@@ -270,26 +270,26 @@ public class OkClientTest extends OkHttpClientMock {
 
     @Test
     public void testSimplePostRequestMockClient() throws IOException {
-        when(clientConfiguration.getHttpClientInstance()).thenReturn(client);
+        when(clientConfiguration.getHttpClientInstance()).thenReturn(getClient());
         when(clientConfiguration.shouldOverrideHttpClientConfigurations()).thenReturn(true);
-        when(client.newCall(any(okhttp3.Request.class))).thenReturn(call);
+        when(getClient().newCall(any(okhttp3.Request.class))).thenReturn(getCall());
 
-        OkClient client = new OkClient(clientConfiguration, compatibilityFactory);
-        when(coreHttpRequest.getHttpMethod()).thenReturn(Method.POST);
-        when(coreHttpRequest.getBody()).thenReturn("bodyValue");
+        OkClient client = new OkClient(clientConfiguration, getCompatibilityFactory());
+        when(getRequest().getHttpMethod()).thenReturn(Method.POST);
+        when(getRequest().getBody()).thenReturn("bodyValue");
 
 
-        when(call.execute()).thenReturn(getOkhttp3Response());
+        when(getCall().execute()).thenReturn(getOkhttp3Response());
         when(getOkhttp3Response().body()).thenReturn(getOkhttp3ResponseBody());
         String serverResponseString = "Get Response";
         when(coreHttpResponse.getBody()).thenReturn(serverResponseString);
         when(getOkhttp3ResponseBody().string()).thenReturn(serverResponseString);
         when(getOkhttp3Response().code()).thenReturn(SUCCESS_STATUS_CODE);
 
-        when(compatibilityFactory.createHttpResponse(anyInt(), any(HttpHeaders.class),
+        when(getCompatibilityFactory().createHttpResponse(anyInt(), any(HttpHeaders.class),
                 any(InputStream.class), anyString())).thenReturn(coreHttpResponse);
 
-        Response coreHttpResponse = client.execute(coreHttpRequest, configuration);
+        Response coreHttpResponse = client.execute(getRequest(), configuration);
         String expected = serverResponseString;
         String actual = coreHttpResponse.getBody();
         assertEquals(actual, expected);
@@ -298,26 +298,26 @@ public class OkClientTest extends OkHttpClientMock {
     @Test
     public void testRequestWithNoRetries() throws IOException {
         when(clientConfiguration.getNumberOfRetries()).thenReturn(-1);
-        when(clientConfiguration.getHttpClientInstance()).thenReturn(client);
+        when(clientConfiguration.getHttpClientInstance()).thenReturn(getClient());
         when(clientConfiguration.shouldOverrideHttpClientConfigurations()).thenReturn(true);
-        when(client.newCall(any(okhttp3.Request.class))).thenReturn(call);
+        when(getClient().newCall(any(okhttp3.Request.class))).thenReturn(getCall());
 
-        OkClient client = new OkClient(clientConfiguration, compatibilityFactory);
-        when(coreHttpRequest.getHttpMethod()).thenReturn(Method.POST);
-        when(coreHttpRequest.getBody()).thenReturn("bodyValue");
+        OkClient client = new OkClient(clientConfiguration, getCompatibilityFactory());
+        when(getRequest().getHttpMethod()).thenReturn(Method.POST);
+        when(getRequest().getBody()).thenReturn("bodyValue");
 
 
-        when(call.execute()).thenReturn(getOkhttp3Response());
+        when(getCall().execute()).thenReturn(getOkhttp3Response());
         when(getOkhttp3Response().body()).thenReturn(getOkhttp3ResponseBody());
         String serverResponseString = "Get Response";
         when(coreHttpResponse.getBody()).thenReturn(serverResponseString);
         when(getOkhttp3ResponseBody().string()).thenReturn(serverResponseString);
         when(getOkhttp3Response().code()).thenReturn(SUCCESS_STATUS_CODE);
 
-        when(compatibilityFactory.createHttpResponse(anyInt(), any(HttpHeaders.class),
+        when(getCompatibilityFactory().createHttpResponse(anyInt(), any(HttpHeaders.class),
                 any(InputStream.class), anyString())).thenReturn(coreHttpResponse);
 
-        Response coreHttpResponse = client.execute(coreHttpRequest, configuration);
+        Response coreHttpResponse = client.execute(getRequest(), configuration);
         String expected = serverResponseString;
         String actual = coreHttpResponse.getBody();
         assertEquals(actual, expected);
@@ -326,26 +326,26 @@ public class OkClientTest extends OkHttpClientMock {
     @Test
     public void testExecuteRequestWithLogging() throws IOException {
         when(clientConfiguration.getNumberOfRetries()).thenReturn(-1);
-        when(clientConfiguration.getHttpClientInstance()).thenReturn(client);
+        when(clientConfiguration.getHttpClientInstance()).thenReturn(getClient());
         when(clientConfiguration.shouldOverrideHttpClientConfigurations()).thenReturn(true);
-        when(client.newCall(any(okhttp3.Request.class))).thenReturn(call);
+        when(getClient().newCall(any(okhttp3.Request.class))).thenReturn(getCall());
 
-        OkClient client = new OkClient(clientConfiguration, compatibilityFactory, apiLogger);
-        when(coreHttpRequest.getHttpMethod()).thenReturn(Method.POST);
-        when(coreHttpRequest.getBody()).thenReturn("bodyValue");
+        OkClient client = new OkClient(clientConfiguration, getCompatibilityFactory(), apiLogger);
+        when(getRequest().getHttpMethod()).thenReturn(Method.POST);
+        when(getRequest().getBody()).thenReturn("bodyValue");
 
 
-        when(call.execute()).thenReturn(getOkhttp3Response());
+        when(getCall().execute()).thenReturn(getOkhttp3Response());
         when(getOkhttp3Response().body()).thenReturn(getOkhttp3ResponseBody());
         String serverResponseString = "Get Response";
         when(coreHttpResponse.getBody()).thenReturn(serverResponseString);
         when(getOkhttp3ResponseBody().string()).thenReturn(serverResponseString);
         when(getOkhttp3Response().code()).thenReturn(SUCCESS_STATUS_CODE);
 
-        when(compatibilityFactory.createHttpResponse(anyInt(), any(HttpHeaders.class),
+        when(getCompatibilityFactory().createHttpResponse(anyInt(), any(HttpHeaders.class),
                 any(InputStream.class), anyString())).thenReturn(coreHttpResponse);
 
-        Response coreHttpResponse = client.execute(coreHttpRequest, configuration);
+        Response coreHttpResponse = client.execute(getRequest(), configuration);
         String expected = serverResponseString;
         String actual = coreHttpResponse.getBody();
         assertEquals(actual, expected);
@@ -354,47 +354,47 @@ public class OkClientTest extends OkHttpClientMock {
     @Test(expected = IOException.class)
     public void testExecuteRequestWithLogging1() throws IOException {
         IOException ioException = new IOException("Connection Error");
-        
-        when(clientConfiguration.getNumberOfRetries()).thenReturn(-1);
-        when(clientConfiguration.getHttpClientInstance()).thenReturn(client);
-        when(clientConfiguration.shouldOverrideHttpClientConfigurations()).thenReturn(true);
-        when(client.newCall(any(okhttp3.Request.class))).thenReturn(call);
 
-        OkClient client = new OkClient(clientConfiguration, compatibilityFactory, apiLogger);
-        when(coreHttpRequest.getHttpMethod()).thenReturn(Method.POST);
-        when(coreHttpRequest.getBody()).thenReturn("bodyValue");
-        when(call.execute()).thenThrow(ioException);
-        
-        client.execute(coreHttpRequest, configuration);
+        when(clientConfiguration.getNumberOfRetries()).thenReturn(-1);
+        when(clientConfiguration.getHttpClientInstance()).thenReturn(getClient());
+        when(clientConfiguration.shouldOverrideHttpClientConfigurations()).thenReturn(true);
+        when(getClient().newCall(any(okhttp3.Request.class))).thenReturn(getCall());
+
+        OkClient client = new OkClient(clientConfiguration, getCompatibilityFactory(), apiLogger);
+        when(getRequest().getHttpMethod()).thenReturn(Method.POST);
+        when(getRequest().getBody()).thenReturn("bodyValue");
+        when(getCall().execute()).thenThrow(ioException);
+
+        client.execute(getRequest(), configuration);
     }
-    
+
     @Test
     public void testPostMultipartFileWrapperRequest() throws IOException {
-        when(clientConfiguration.getHttpClientInstance()).thenReturn(client);
+        when(clientConfiguration.getHttpClientInstance()).thenReturn(getClient());
         when(clientConfiguration.shouldOverrideHttpClientConfigurations()).thenReturn(true);
-        when(client.newCall(any(okhttp3.Request.class))).thenReturn(call);
+        when(getClient().newCall(any(okhttp3.Request.class))).thenReturn(getCall());
 
-        OkClient client = new OkClient(clientConfiguration, compatibilityFactory);
-        when(coreHttpRequest.getHttpMethod()).thenReturn(Method.POST);
+        OkClient client = new OkClient(clientConfiguration, getCompatibilityFactory());
+        when(getRequest().getHttpMethod()).thenReturn(Method.POST);
 
         List<SimpleEntry<String, Object>> listP = new ArrayList<>();
         listP.add(new SimpleEntry<String, Object>("fileWrapper", coreMultipartFileWrapper));
 
-        when(coreHttpRequest.getParameters()).thenReturn(listP);
+        when(getRequest().getParameters()).thenReturn(listP);
         when(coreMultipartFileWrapper.getFileWrapper()).thenReturn(fileWrapper);
         when(file.getName()).thenReturn("Test\nFile\r\"Part\"");
 
-        when(call.execute()).thenReturn(getOkhttp3Response());
+        when(getCall().execute()).thenReturn(getOkhttp3Response());
         when(getOkhttp3Response().body()).thenReturn(getOkhttp3ResponseBody());
         String serverResponseString = "File has been posted";
         when(coreHttpResponse.getBody()).thenReturn(serverResponseString);
         when(getOkhttp3ResponseBody().string()).thenReturn(serverResponseString);
         when(getOkhttp3Response().code()).thenReturn(SUCCESS_STATUS_CODE);
 
-        when(compatibilityFactory.createHttpResponse(anyInt(), any(HttpHeaders.class),
+        when(getCompatibilityFactory().createHttpResponse(anyInt(), any(HttpHeaders.class),
                 any(InputStream.class), anyString())).thenReturn(coreHttpResponse);
 
-        Response coreHttpResponse = client.execute(coreHttpRequest, configuration);
+        Response coreHttpResponse = client.execute(getRequest(), configuration);
         String expected = serverResponseString;
         String actual = coreHttpResponse.getBody();
         assertEquals(actual, expected);
@@ -402,34 +402,34 @@ public class OkClientTest extends OkHttpClientMock {
 
     @Test
     public void testPostMultipartFileWrapperRequest1() throws IOException {
-        when(clientConfiguration.getHttpClientInstance()).thenReturn(client);
+        when(clientConfiguration.getHttpClientInstance()).thenReturn(getClient());
         when(clientConfiguration.shouldOverrideHttpClientConfigurations()).thenReturn(true);
-        when(client.newCall(any(okhttp3.Request.class))).thenReturn(call);
+        when(getClient().newCall(any(okhttp3.Request.class))).thenReturn(getCall());
 
-        OkClient client = new OkClient(clientConfiguration, compatibilityFactory);
-        when(coreHttpRequest.getHttpMethod()).thenReturn(Method.POST);
-        when(httpHeaders.asMultimap()).thenReturn(
+        OkClient client = new OkClient(clientConfiguration, getCompatibilityFactory());
+        when(getRequest().getHttpMethod()).thenReturn(Method.POST);
+        when(getHttpHeaders().asMultimap()).thenReturn(
                 Collections.singletonMap("custom-header", Arrays.asList("application/json")));
 
         List<SimpleEntry<String, Object>> listP = new ArrayList<>();
         listP.add(new SimpleEntry<String, Object>("fileWrapper", coreMultipartFileWrapper));
 
-        when(coreHttpRequest.getParameters()).thenReturn(listP);
+        when(getRequest().getParameters()).thenReturn(listP);
         when(coreMultipartFileWrapper.getFileWrapper()).thenReturn(fileWrapper);
         when(fileWrapper.getContentType()).thenReturn("application/octet-stream");
         when(file.getName()).thenReturn("Test\nFile\r\"Part\"");
 
-        when(call.execute()).thenReturn(getOkhttp3Response());
+        when(getCall().execute()).thenReturn(getOkhttp3Response());
         when(getOkhttp3Response().body()).thenReturn(getOkhttp3ResponseBody());
         String serverResponseString = "File has been posted";
         when(coreHttpResponse.getBody()).thenReturn(serverResponseString);
         when(getOkhttp3ResponseBody().string()).thenReturn(serverResponseString);
         when(getOkhttp3Response().code()).thenReturn(SUCCESS_STATUS_CODE);
 
-        when(compatibilityFactory.createHttpResponse(anyInt(), any(HttpHeaders.class),
+        when(getCompatibilityFactory().createHttpResponse(anyInt(), any(HttpHeaders.class),
                 any(InputStream.class), anyString())).thenReturn(coreHttpResponse);
 
-        Response coreHttpResponse = client.execute(coreHttpRequest, configuration);
+        Response coreHttpResponse = client.execute(getRequest(), configuration);
         String expected = serverResponseString;
         String actual = coreHttpResponse.getBody();
         assertEquals(actual, expected);
@@ -437,64 +437,64 @@ public class OkClientTest extends OkHttpClientMock {
 
     @Test
     public void testPostMultipartRequest() throws IOException {
-        when(clientConfiguration.getHttpClientInstance()).thenReturn(client);
+        when(clientConfiguration.getHttpClientInstance()).thenReturn(getClient());
         when(clientConfiguration.shouldOverrideHttpClientConfigurations()).thenReturn(true);
-        when(client.newCall(any(okhttp3.Request.class))).thenReturn(call);
+        when(getClient().newCall(any(okhttp3.Request.class))).thenReturn(getCall());
 
-        OkClient client = new OkClient(clientConfiguration, compatibilityFactory);
-        when(coreHttpRequest.getHttpMethod()).thenReturn(Method.POST);
+        OkClient client = new OkClient(clientConfiguration, getCompatibilityFactory());
+        when(getRequest().getHttpMethod()).thenReturn(Method.POST);
 
         List<SimpleEntry<String, Object>> listP = new ArrayList<>();
         listP.add(new SimpleEntry<String, Object>("fileWrapper", coreMultipartWrapper));
 
         String serverResponseString = "File has been posted";
         byte[] byteArray = serverResponseString.getBytes();
-        when(coreHttpRequest.getParameters()).thenReturn(listP);
+        when(getRequest().getParameters()).thenReturn(listP);
         when(coreMultipartWrapper.getByteArray()).thenReturn(byteArray);
         when(file.getName()).thenReturn("Test\nFile\r\"Part\"");
 
-        when(call.execute()).thenReturn(getOkhttp3Response());
+        when(getCall().execute()).thenReturn(getOkhttp3Response());
         when(getOkhttp3Response().body()).thenReturn(getOkhttp3ResponseBody());
         when(coreHttpResponse.getBody()).thenReturn(serverResponseString);
         when(getOkhttp3ResponseBody().string()).thenReturn(serverResponseString);
         when(getOkhttp3Response().code()).thenReturn(SUCCESS_STATUS_CODE);
 
-        when(compatibilityFactory.createHttpResponse(anyInt(), any(HttpHeaders.class),
+        when(getCompatibilityFactory().createHttpResponse(anyInt(), any(HttpHeaders.class),
                 any(InputStream.class), anyString())).thenReturn(coreHttpResponse);
 
-        Response coreHttpResponse = client.execute(coreHttpRequest, configuration);
+        Response coreHttpResponse = client.execute(getRequest(), configuration);
         String expected = serverResponseString;
         String actual = coreHttpResponse.getBody();
         assertEquals(actual, expected);
     }
-    
+
     @Test
     public void testSimpleObjectWithMultiPart() throws IOException {
-        when(clientConfiguration.getHttpClientInstance()).thenReturn(client);
+        when(clientConfiguration.getHttpClientInstance()).thenReturn(getClient());
         when(clientConfiguration.shouldOverrideHttpClientConfigurations()).thenReturn(true);
-        when(client.newCall(any(okhttp3.Request.class))).thenReturn(call);
+        when(getClient().newCall(any(okhttp3.Request.class))).thenReturn(getCall());
 
-        OkClient client = new OkClient(clientConfiguration, compatibilityFactory);
-        when(coreHttpRequest.getHttpMethod()).thenReturn(Method.POST);
+        OkClient client = new OkClient(clientConfiguration, getCompatibilityFactory());
+        when(getRequest().getHttpMethod()).thenReturn(Method.POST);
 
         List<SimpleEntry<String, Object>> listP = new ArrayList<>();
         listP.add(new SimpleEntry<String, Object>("fileWrapper", coreMultipartWrapper));
         listP.add(new SimpleEntry<String, Object>("simple object", "object"));
 
         String serverResponseString = "object";
-      
-        when(coreHttpRequest.getParameters()).thenReturn(listP);
 
-        when(call.execute()).thenReturn(getOkhttp3Response());
+        when(getRequest().getParameters()).thenReturn(listP);
+
+        when(getCall().execute()).thenReturn(getOkhttp3Response());
         when(getOkhttp3Response().body()).thenReturn(getOkhttp3ResponseBody());
         when(coreHttpResponse.getBody()).thenReturn(serverResponseString);
         when(getOkhttp3ResponseBody().string()).thenReturn(serverResponseString);
         when(getOkhttp3Response().code()).thenReturn(SUCCESS_STATUS_CODE);
 
-        when(compatibilityFactory.createHttpResponse(anyInt(), any(HttpHeaders.class),
+        when(getCompatibilityFactory().createHttpResponse(anyInt(), any(HttpHeaders.class),
                 any(InputStream.class), anyString())).thenReturn(coreHttpResponse);
 
-        Response coreHttpResponse = client.execute(coreHttpRequest, configuration);
+        Response coreHttpResponse = client.execute(getRequest(), configuration);
         String expected = serverResponseString;
         String actual = coreHttpResponse.getBody();
         assertEquals(actual, expected);
@@ -502,30 +502,30 @@ public class OkClientTest extends OkHttpClientMock {
 
     @Test
     public void testPostFormParametersRequest() throws IOException {
-        when(clientConfiguration.getHttpClientInstance()).thenReturn(client);
+        when(clientConfiguration.getHttpClientInstance()).thenReturn(getClient());
         when(clientConfiguration.shouldOverrideHttpClientConfigurations()).thenReturn(false);
-        when(client.newCall(any(okhttp3.Request.class))).thenReturn(call);
+        when(getClient().newCall(any(okhttp3.Request.class))).thenReturn(getCall());
 
-        OkClient client = new OkClient(clientConfiguration, compatibilityFactory, null);
-        when(coreHttpRequest.getHttpMethod()).thenReturn(Method.POST);
+        OkClient client = new OkClient(clientConfiguration, getCompatibilityFactory(), null);
+        when(getRequest().getHttpMethod()).thenReturn(Method.POST);
 
         List<SimpleEntry<String, Object>> listP = new ArrayList<>();
         listP.add(new SimpleEntry<String, Object>("fileWrapper", "form value"));
 
-        when(coreHttpRequest.getParameters()).thenReturn(listP);
+        when(getRequest().getParameters()).thenReturn(listP);
 
 
-        when(call.execute()).thenReturn(getOkhttp3Response());
+        when(getCall().execute()).thenReturn(getOkhttp3Response());
         when(getOkhttp3Response().body()).thenReturn(getOkhttp3ResponseBody());
         String serverResponseString = "form paramaters";
         when(coreHttpResponse.getBody()).thenReturn(serverResponseString);
         when(getOkhttp3ResponseBody().string()).thenReturn(serverResponseString);
         when(getOkhttp3Response().code()).thenReturn(SUCCESS_STATUS_CODE);
 
-        when(compatibilityFactory.createHttpResponse(anyInt(), any(HttpHeaders.class),
+        when(getCompatibilityFactory().createHttpResponse(anyInt(), any(HttpHeaders.class),
                 any(InputStream.class), anyString())).thenReturn(coreHttpResponse);
 
-        Response coreHttpResponse = client.execute(coreHttpRequest, configuration);
+        Response coreHttpResponse = client.execute(getRequest(), configuration);
         String expected = serverResponseString;
         String actual = coreHttpResponse.getBody();
         assertEquals(actual, expected);
@@ -533,24 +533,24 @@ public class OkClientTest extends OkHttpClientMock {
 
     @Test
     public void testPostEmptyBodyRequest() throws IOException {
-        when(clientConfiguration.getHttpClientInstance()).thenReturn(client);
+        when(clientConfiguration.getHttpClientInstance()).thenReturn(getClient());
         when(clientConfiguration.shouldOverrideHttpClientConfigurations()).thenReturn(true);
-        when(client.newCall(any(okhttp3.Request.class))).thenReturn(call);
+        when(getClient().newCall(any(okhttp3.Request.class))).thenReturn(getCall());
 
-        OkClient client = new OkClient(clientConfiguration, compatibilityFactory);
-        when(coreHttpRequest.getHttpMethod()).thenReturn(Method.POST);
+        OkClient client = new OkClient(clientConfiguration, getCompatibilityFactory());
+        when(getRequest().getHttpMethod()).thenReturn(Method.POST);
 
-        when(call.execute()).thenReturn(getOkhttp3Response());
+        when(getCall().execute()).thenReturn(getOkhttp3Response());
         when(getOkhttp3Response().body()).thenReturn(getOkhttp3ResponseBody());
         String serverResponseString = "empty body";
         when(coreHttpResponse.getBody()).thenReturn(serverResponseString);
         when(getOkhttp3ResponseBody().string()).thenReturn(serverResponseString);
         when(getOkhttp3Response().code()).thenReturn(SUCCESS_STATUS_CODE);
 
-        when(compatibilityFactory.createHttpResponse(anyInt(), any(HttpHeaders.class),
+        when(getCompatibilityFactory().createHttpResponse(anyInt(), any(HttpHeaders.class),
                 any(InputStream.class), anyString())).thenReturn(coreHttpResponse);
 
-        Response coreHttpResponse = client.execute(coreHttpRequest, configuration);
+        Response coreHttpResponse = client.execute(getRequest(), configuration);
         String expected = serverResponseString;
         String actual = coreHttpResponse.getBody();
         assertEquals(actual, expected);
@@ -558,29 +558,29 @@ public class OkClientTest extends OkHttpClientMock {
 
     @Test
     public void testPostMultipartWrapperRequest() throws IOException {
-        when(clientConfiguration.getHttpClientInstance()).thenReturn(client);
+        when(clientConfiguration.getHttpClientInstance()).thenReturn(getClient());
         when(clientConfiguration.shouldOverrideHttpClientConfigurations()).thenReturn(true);
-        when(client.newCall(any(okhttp3.Request.class))).thenReturn(call);
+        when(getClient().newCall(any(okhttp3.Request.class))).thenReturn(getCall());
 
-        OkClient client = new OkClient(clientConfiguration, compatibilityFactory);
-        when(coreHttpRequest.getHttpMethod()).thenReturn(Method.POST);
+        OkClient client = new OkClient(clientConfiguration, getCompatibilityFactory());
+        when(getRequest().getHttpMethod()).thenReturn(Method.POST);
 
         List<SimpleEntry<String, Object>> listP = new ArrayList<>();
         listP.add(new SimpleEntry<String, Object>("fileWrapper", "formValue"));
 
-        when(coreHttpRequest.getParameters()).thenReturn(listP);
+        when(getRequest().getParameters()).thenReturn(listP);
 
-        when(call.execute()).thenReturn(getOkhttp3Response());
+        when(getCall().execute()).thenReturn(getOkhttp3Response());
         when(getOkhttp3Response().body()).thenReturn(getOkhttp3ResponseBody());
         String serverResponseString = "form parameters sent";
         when(coreHttpResponse.getBody()).thenReturn(serverResponseString);
         when(getOkhttp3ResponseBody().string()).thenReturn(serverResponseString);
         when(getOkhttp3Response().code()).thenReturn(SUCCESS_STATUS_CODE);
 
-        when(compatibilityFactory.createHttpResponse(anyInt(), any(HttpHeaders.class),
+        when(getCompatibilityFactory().createHttpResponse(anyInt(), any(HttpHeaders.class),
                 any(InputStream.class), anyString())).thenReturn(coreHttpResponse);
 
-        Response coreHttpResponse = client.execute(coreHttpRequest, configuration);
+        Response coreHttpResponse = client.execute(getRequest(), configuration);
         String expected = serverResponseString;
         String actual = coreHttpResponse.getBody();
         assertEquals(actual, expected);
@@ -588,21 +588,21 @@ public class OkClientTest extends OkHttpClientMock {
 
     @Test
     public void testFileWrapperMockClientBinaryResponse() throws IOException {
-        when(clientConfiguration.getHttpClientInstance()).thenReturn(client);
+        when(clientConfiguration.getHttpClientInstance()).thenReturn(getClient());
         when(clientConfiguration.shouldOverrideHttpClientConfigurations()).thenReturn(true);
         when(configuration.hasBinaryResponse()).thenReturn(true);
-        when(client.newCall(any(okhttp3.Request.class))).thenReturn(call);
+        when(getClient().newCall(any(okhttp3.Request.class))).thenReturn(getCall());
 
-        OkClient client = new OkClient(clientConfiguration, compatibilityFactory);
+        OkClient client = new OkClient(clientConfiguration, getCompatibilityFactory());
 
-        when(coreHttpRequest.getBody()).thenReturn(fileWrapper);
+        when(getRequest().getBody()).thenReturn(fileWrapper);
         when(fileWrapper.getContentType()).thenReturn("application/json");
         when(fileWrapper.getFile()).thenReturn(file);
 
 
-        when(coreHttpRequest.getHttpMethod()).thenReturn(Method.POST);
+        when(getRequest().getHttpMethod()).thenReturn(Method.POST);
 
-        when(call.execute()).thenReturn(getOkhttp3Response());
+        when(getCall().execute()).thenReturn(getOkhttp3Response());
         when(getOkhttp3Response().body()).thenReturn(getOkhttp3ResponseBody());
         String serverResponse =
                 "{\"ServerMessage\" : \"This is a message from server\" , \"ServerCode\" : 5000 }";
@@ -612,10 +612,10 @@ public class OkClientTest extends OkHttpClientMock {
         when(getOkhttp3ResponseBody().byteStream()).thenReturn(serverResponseStream);
         when(getOkhttp3Response().code()).thenReturn(SUCCESS_STATUS_CODE);
 
-        when(compatibilityFactory.createHttpResponse(anyInt(), any(HttpHeaders.class),
+        when(getCompatibilityFactory().createHttpResponse(anyInt(), any(HttpHeaders.class),
                 any(InputStream.class))).thenReturn(coreHttpResponse);
 
-        Response coreHttpResponse = client.execute(coreHttpRequest, configuration);
+        Response coreHttpResponse = client.execute(getRequest(), configuration);
         InputStream expected = serverResponseStream;
         InputStream actual = coreHttpResponse.getRawBody();
         assertEquals(actual, expected);
@@ -629,28 +629,30 @@ public class OkClientTest extends OkHttpClientMock {
         when(clientConfiguration.getNumberOfRetries()).thenReturn(3);
         when(clientConfiguration.getTimeout()).thenReturn(DEFAULT_TIME_OUT);
         when(clientConfiguration.getMaximumRetryWaitTime()).thenReturn(1l);
-        when(compatibilityFactory.createHttpHeaders(anyMap())).thenReturn(httpHeaders);
-        when(compatibilityFactory.createHttpHeaders(httpHeaders)).thenReturn(httpHeaders);
-        when(httpHeaders.value("content-type")).thenReturn("application/octet-stream");
-        when(client.newBuilder()).thenReturn(getOkHttpClientBuilder());
+        when(getCompatibilityFactory().createHttpHeaders(anyMap())).thenReturn(getHttpHeaders());
+        when(getCompatibilityFactory().createHttpHeaders(getHttpHeaders()))
+                .thenReturn(getHttpHeaders());
+        when(getHttpHeaders().value("content-type")).thenReturn("application/octet-stream");
+        when(getClient().newBuilder()).thenReturn(getOkHttpClientBuilder());
         when(getOkHttpClientBuilder().readTimeout(DEFAULT_TIME_OUT, TimeUnit.SECONDS))
                 .thenReturn(getOkHttpClientBuilder());
         when(getOkHttpClientBuilder().writeTimeout(DEFAULT_TIME_OUT, TimeUnit.SECONDS))
                 .thenReturn(getOkHttpClientBuilder());
         when(getOkHttpClientBuilder().connectTimeout(DEFAULT_TIME_OUT, TimeUnit.SECONDS))
                 .thenReturn(getOkHttpClientBuilder());
-        when(getOkHttpClientBuilder().callTimeout(1l, TimeUnit.SECONDS)).thenReturn(getOkHttpClientBuilder());
-        when(getOkHttpClientBuilder().build()).thenReturn(client);
+        when(getOkHttpClientBuilder().callTimeout(1l, TimeUnit.SECONDS))
+                .thenReturn(getOkHttpClientBuilder());
+        when(getOkHttpClientBuilder().build()).thenReturn(getClient());
         when(configuration.getArraySerializationFormat())
                 .thenReturn(ArraySerializationFormat.INDEXED);
         when(configuration.getRetryOption()).thenReturn(RetryOption.DEFAULT);
-        when(coreHttpRequest.getHeaders()).thenReturn(httpHeaders);
+        when(getRequest().getHeaders()).thenReturn(getHttpHeaders());
         when(getOkhttp3Response().headers()).thenReturn(getOkhttpHeaders());
-        when(coreHttpRequest.getUrl(ArraySerializationFormat.INDEXED))
+        when(getRequest().getUrl(ArraySerializationFormat.INDEXED))
                 .thenReturn("https://localhost:3000");
         when(fileWrapper.getFile()).thenReturn(file);
-        when(coreMultipartFileWrapper.getHeaders()).thenReturn(httpHeaders);
-        when(coreMultipartWrapper.getHeaders()).thenReturn(httpHeaders);
+        when(coreMultipartFileWrapper.getHeaders()).thenReturn(getHttpHeaders());
+        when(coreMultipartWrapper.getHeaders()).thenReturn(getHttpHeaders());
         String fileContent = "I'm the file content";
         byte[] fileBytes = fileContent.getBytes();
         when(coreMultipartWrapper.getByteArray()).thenReturn(fileBytes);

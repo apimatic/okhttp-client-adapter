@@ -18,6 +18,14 @@ public class CoreHttpRequestMock extends HttpHeadersMock {
      * Mock of {@link Request}.
      */
     @Mock
-    public Request coreHttpRequest;
+    private Request coreHttpRequest;
+    
+    /**
+     * 
+     * @return {@link Request}
+     */
+    protected Request getRequest() {
+        return coreHttpRequest;
+    }
 
 }

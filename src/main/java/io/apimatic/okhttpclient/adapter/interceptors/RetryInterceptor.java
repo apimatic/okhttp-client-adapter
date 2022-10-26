@@ -169,6 +169,7 @@ public class RetryInterceptor implements Interceptor {
      * 
      * @param requestState the current state of request entry.
      * @param response the HTTP response.
+     * @param isTimeoutException we are retrying because of timeout or not
      * @return true if request is needed to be retried.
      */
     private boolean needToRetry(RequestState requestState, okhttp3.Response response,
@@ -364,11 +365,11 @@ public class RetryInterceptor implements Interceptor {
         /**
          * Default Constructor.
          * 
-         * @param endpointConfiguration the end point configuration
+         * @param coreEndpointConfiguration the end point configuration
          * @param request the client request
          */
-        private RequestState(CoreEndpointConfiguration endpointConfiguration, Request request) {
-            this.endpointConfiguration = endpointConfiguration;
+        private RequestState(final CoreEndpointConfiguration coreEndpointConfiguration, final Request request) {
+            this.endpointConfiguration = coreEndpointConfiguration;
             this.httpRequest = request;
         }
     }
