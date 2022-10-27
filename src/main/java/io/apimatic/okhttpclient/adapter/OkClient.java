@@ -132,8 +132,8 @@ public class OkClient implements HttpClient {
      * @param httpClientConfiguration the client configuration
      * @return {@link OkHttpClient}
      */
-    private okhttp3.OkHttpClient getInsecureOkHttpClient(
-            ClientConfiguration httpClientConfiguration) {
+    private okhttp3.OkHttpClient
+            getInsecureOkHttpClient(ClientConfiguration httpClientConfiguration) {
         if (insecureOkHttpClient == null) {
             synchronized (SYNC_OBJECT) {
                 if (insecureOkHttpClient == null) {
@@ -144,8 +144,8 @@ public class OkClient implements HttpClient {
         return insecureOkHttpClient;
     }
 
-    private static okhttp3.OkHttpClient createInsecureOkHttpClient(
-            final ClientConfiguration httpClientConfiguration) {
+    private static okhttp3.OkHttpClient
+            createInsecureOkHttpClient(final ClientConfiguration httpClientConfiguration) {
         try {
             // Create a trust manager that does not validate certificate chains
             final TrustManager[] trustAllCerts = new TrustManager[] {new X509TrustManager() {

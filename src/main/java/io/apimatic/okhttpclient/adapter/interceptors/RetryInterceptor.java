@@ -26,12 +26,12 @@ public class RetryInterceptor implements Interceptor {
     /**
      * Maximum Back off interval.
      */
-    private static final int MAXIMUM_BACK_OFF_INTERVAL = 100;
+    private static final int RANDOM_NUMBER_MULTIPLIER = 100;
 
     /**
      * Maximu Retry interval.
      */
-    private static final int MILISECONDS = 1000;
+    private static final int TO_MILLISECOND_MULTIPLIER = 1000;
 
 
     /**
@@ -239,9 +239,9 @@ public class RetryInterceptor implements Interceptor {
      * @return long value of back-off time based on formula in milliseconds.
      */
     private long getCalculatedBackOffValue(RequestState requestState) {
-        return (long) (MILISECONDS * this.httpClientConfiguration.getRetryInterval()
+        return (long) (TO_MILLISECOND_MULTIPLIER * this.httpClientConfiguration.getRetryInterval()
                 * Math.pow(this.httpClientConfiguration.getBackOffFactor(), requestState.retryCount)
-                + Math.random() * MAXIMUM_BACK_OFF_INTERVAL);
+                + Math.random() * RANDOM_NUMBER_MULTIPLIER);
     }
 
     /**
@@ -262,7 +262,7 @@ public class RetryInterceptor implements Interceptor {
      * @return long value of milliseconds.
      */
     private long toMilliseconds(long seconds) {
-        return seconds * MILISECONDS;
+        return seconds * TO_MILLISECOND_MULTIPLIER;
     }
 
     /**
@@ -278,8 +278,8 @@ public class RetryInterceptor implements Interceptor {
 
     /**
      * getter for current request state entry from map.
-     * @param okHttpRequest the OK HTTP Request.
-     * @return RequestEntry the current request entry.
+     * @param okHttpRequest The OK HTTP Request.
+     * @return RequestEntry The current request entry.
      */
     private RequestState getRequestState(okhttp3.Request okHttpRequest) {
         return this.requestEntries.get(okHttpRequest);
@@ -307,7 +307,7 @@ public class RetryInterceptor implements Interceptor {
     /**
      * Logs the exception.
      * @param requestState The current state of request.
-     * @param ioException the exception
+     * @param ioException The exception.
      */
     private void logError(RequestState requestState, IOException ioException) {
         if (httpLogger != null) {
