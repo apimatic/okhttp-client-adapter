@@ -41,7 +41,7 @@ import io.apimatic.okhttpclient.adapter.OkClient;
 public class OkClientTest extends OkHttpClientMock {
 
     /**
-     * timeout.
+     * Timeout.
      */
     private static final long DEFAULT_TIME_OUT = 30L;
 
@@ -127,7 +127,7 @@ public class OkClientTest extends OkHttpClientMock {
 
     /**
      * Setup the test setup.
-     * @throws IOException in case of I/O Exception occurred.
+     * @throws IOException Signals that an I/O exception of some sort has occurred.
      */
     @Before
     public void setup() {

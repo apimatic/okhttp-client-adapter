@@ -68,9 +68,9 @@ public class OkClient implements HttpClient {
 
     /**
      * Constructor to initialize the OKClient.
-     * @param httpClientConfig client configuration
-     * @param compatibilityFactory the compatibilityFactory for backward compatibility
-     * @param apiLogger the logger for logging information
+     * @param httpClientConfig Client configuration
+     * @param compatibilityFactory The compatibilityFactory for backward compatibility
+     * @param apiLogger The logger for logging information
      */
     public OkClient(final ClientConfiguration httpClientConfig,
             final CompatibilityFactory compatibilityFactory, final ApiLogger apiLogger) {
@@ -80,8 +80,8 @@ public class OkClient implements HttpClient {
 
     /**
      * Constructor to initialize the OKClient.
-     * @param httpClientConfig the httpClientConfiguration
-     * @param compatibilityFactory the compatibilityFactory for backward compatibility
+     * @param httpClientConfig The httpClientConfiguration
+     * @param compatibilityFactory The compatibilityFactory for backward compatibility
      */
     public OkClient(final ClientConfiguration httpClientConfig,
             final CompatibilityFactory compatibilityFactory) {
@@ -105,8 +105,8 @@ public class OkClient implements HttpClient {
 
     /**
      * Applies the httpClientConfigurations on okhttp3.OkHttpClient.
-     * @param okHttpClient a okhttp client instance
-     * @param httpClientConfig a client configuration
+     * @param okHttpClient A okhttp client instance
+     * @param httpClientConfig A client configuration
      */
     private void applyHttpClientConfigurations(final okhttp3.OkHttpClient okHttpClient,
             final ClientConfiguration httpClientConfig) {
@@ -129,7 +129,7 @@ public class OkClient implements HttpClient {
 
     /**
      * Getter for the default static instance of the okhttp3.OkHttpClient.
-     * @param httpClientConfiguration the client configuration
+     * @param httpClientConfiguration The client configuration
      * @return {@link OkHttpClient}
      */
     private okhttp3.OkHttpClient
@@ -250,7 +250,7 @@ public class OkClient implements HttpClient {
      * @param httpRequest The given Request to execute.
      * @param endpointConfiguration The endpointConfiguration for request.
      * @return The converted http response.
-     * @throws IOException exception to be thrown while converting response.
+     * @throws IOException Exception to be thrown while converting response.
      */
     public Response execute(final Request httpRequest,
             final CoreEndpointConfiguration endpointConfiguration) throws IOException {

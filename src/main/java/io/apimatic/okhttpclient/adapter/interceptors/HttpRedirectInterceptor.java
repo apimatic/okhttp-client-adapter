@@ -36,7 +36,7 @@ public class HttpRedirectInterceptor implements Interceptor {
 
     /**
      * Initialization constructor.
-     * @param isfollowSslRedirects boolean true if following ssl redirects
+     * @param isfollowSslRedirects Bboolean true if following ssl redirects
      */
     public HttpRedirectInterceptor(boolean isfollowSslRedirects) {
         this.followSslRedirects = isfollowSslRedirects;

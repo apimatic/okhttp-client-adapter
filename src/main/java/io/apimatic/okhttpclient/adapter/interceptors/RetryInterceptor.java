@@ -163,10 +163,10 @@ public class RetryInterceptor implements Interceptor {
 
     /**
      * Checks if the retry request is to be made against provided response.
-     * @param requestState the current state of request entry.
-     * @param response the HTTP response.
-     * @param isTimeoutException we are retrying because of timeout or not
-     * @return true if request is needed to be retried.
+     * @param requestState The current state of request entry.
+     * @param response The HTTP response.
+     * @param isTimeoutException We are retrying because of timeout or not
+     * @return true If request is needed to be retried.
      */
     private boolean needToRetry(RequestState requestState, okhttp3.Response response,
             boolean isTimeoutException) {
@@ -191,8 +191,8 @@ public class RetryInterceptor implements Interceptor {
 
     /**
      * Calculates the wait time for next request.
-     * @param requestState the current state of request entry.
-     * @param response the HTTP response.
+     * @param requestState The current state of request entry.
+     * @param response The HTTP response.
      */
     private void calculateWaitTime(RequestState requestState, okhttp3.Response response) {
         long retryAfterHeaderValue = 0;
@@ -207,8 +207,8 @@ public class RetryInterceptor implements Interceptor {
 
     /**
      * Checks if the response contains Retry-After header.
-     * @param response the HTTP response.
-     * @return true if response contains Retry-After header.
+     * @param response The HTTP response.
+     * @return true If response contains Retry-After header.
      */
     private boolean hasRetryAfterHeader(okhttp3.Response response) {
         String retryAfter = response.header("Retry-After");
@@ -218,7 +218,7 @@ public class RetryInterceptor implements Interceptor {
     /**
      * Analyzes the header value and checks the header if it contains date in proper format or
      * seconds. If header value is date then it calculates the delta time in milliseconds.
-     * @param headerValue the retry-after header value.
+     * @param headerValue The retry-after header value.
      * @return long value of calculated wait time in milliseconds.
      */
     private long getCalculatedHeaderValue(String headerValue) {
@@ -235,7 +235,7 @@ public class RetryInterceptor implements Interceptor {
 
     /**
      * Calculates the back-off value based on a formula which uses back-off factor and retry Count.
-     * @param requestState the current state of request entry.
+     * @param requestState The current state of request entry.
      * @return long value of back-off time based on formula in milliseconds.
      */
     private long getCalculatedBackOffValue(RequestState requestState) {
@@ -246,7 +246,7 @@ public class RetryInterceptor implements Interceptor {
 
     /**
      * Holds the execution for stored wait time in milliseconds of this thread.
-     * @param milliSeconds the wait time in milli seconds.
+     * @param milliSeconds The wait time in milli seconds.
      */
     private void holdExecution(long milliSeconds) {
         try {
@@ -267,7 +267,7 @@ public class RetryInterceptor implements Interceptor {
 
     /**
      * Adds entry into Request entry map.
-     * @param okHttpRequest the OK HTTP Request.
+     * @param okHttpRequest The OK HTTP Request.
      * @param endpointConfiguration The overridden endpointConfiguration for request.
      * @param request The core interface Request
      */
@@ -349,8 +349,8 @@ public class RetryInterceptor implements Interceptor {
 
         /**
          * Default Constructor.
-         * @param coreEndpointConfiguration the end point configuration
-         * @param request the client request
+         * @param coreEndpointConfiguration The end point configuration
+         * @param request The client request
          */
         private RequestState(final CoreEndpointConfiguration coreEndpointConfiguration,
                 final Request request) {
