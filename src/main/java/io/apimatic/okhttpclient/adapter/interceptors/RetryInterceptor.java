@@ -23,6 +23,20 @@ import okhttp3.Interceptor;
  */
 public class RetryInterceptor implements Interceptor {
 
+    /**
+     * Maximum Back off interval.
+     */
+    private static final int RANDOM_NUMBER_MULTIPLIER = 100;
+
+    /**
+     * Maximum Retry interval.
+     */
+    private static final int TO_MILLISECOND_MULTIPLIER = 1000;
+
+
+    /**
+     * RFC Date Time Formatter.
+     */
     private static final DateTimeFormatter RFC1123_DATE_TIME_FORMATTER =
             DateTimeFormatter.ofPattern("EEE, dd MMM yyyy HH:mm:ss z").withZone(ZoneId.of("GMT"));
 
@@ -43,11 +57,11 @@ public class RetryInterceptor implements Interceptor {
 
     /**
      * Default Constructor, Initializes the httpClientConfiguration attribute.
-     * 
      * @param httpClientConfig the user specified configurations.
      * @param httpApiLogger for logging request and response.
      */
-    public RetryInterceptor(ClientConfiguration httpClientConfig, ApiLogger httpApiLogger) {
+    public RetryInterceptor(final ClientConfiguration httpClientConfig,
+            final ApiLogger httpApiLogger) {
         this.httpLogger = httpApiLogger;
         this.httpClientConfiguration = httpClientConfig;
         requestEntries = new ConcurrentHashMap<>();
@@ -55,7 +69,6 @@ public class RetryInterceptor implements Interceptor {
 
     /**
      * Intercepts and retry requests if failed based on configuration.
-     * 
      * @see okhttp3.Interceptor#intercept(okhttp3.Interceptor.Chain)
      */
     @Override
@@ -125,7 +138,6 @@ public class RetryInterceptor implements Interceptor {
 
     /**
      * Get the response Recursively since we have to handle the SocketException gracefully.
-     * 
      * @param chain the interceptor chain.
      * @param request the HTTP request.
      * @param response the HTTP response.
@@ -151,10 +163,10 @@ public class RetryInterceptor implements Interceptor {
 
     /**
      * Checks if the retry request is to be made against provided response.
-     * 
-     * @param requestState the current state of request entry.
-     * @param response the HTTP response.
-     * @return true if request is needed to be retried.
+     * @param requestState The current state of request entry.
+     * @param response The HTTP response.
+     * @param isTimeoutException We are retrying because of timeout or not
+     * @return true If request is needed to be retried.
      */
     private boolean needToRetry(RequestState requestState, okhttp3.Response response,
             boolean isTimeoutException) {
@@ -168,7 +180,6 @@ public class RetryInterceptor implements Interceptor {
 
     /**
      * Checks if the overall wait time has reached to its limit.
-     * 
      * @param requestState the current state of request entry.
      * @return true if total wait time exceeds maximum back-off time.
      */
@@ -180,9 +191,8 @@ public class RetryInterceptor implements Interceptor {
 
     /**
      * Calculates the wait time for next request.
-     * 
-     * @param requestState the current state of request entry.
-     * @param response the HTTP response.
+     * @param requestState The current state of request entry.
+     * @param response The HTTP response.
      */
     private void calculateWaitTime(RequestState requestState, okhttp3.Response response) {
         long retryAfterHeaderValue = 0;
@@ -197,9 +207,8 @@ public class RetryInterceptor implements Interceptor {
 
     /**
      * Checks if the response contains Retry-After header.
-     * 
-     * @param response the HTTP response.
-     * @return true if response contains Retry-After header.
+     * @param response The HTTP response.
+     * @return true If response contains Retry-After header.
      */
     private boolean hasRetryAfterHeader(okhttp3.Response response) {
         String retryAfter = response.header("Retry-After");
@@ -209,8 +218,7 @@ public class RetryInterceptor implements Interceptor {
     /**
      * Analyzes the header value and checks the header if it contains date in proper format or
      * seconds. If header value is date then it calculates the delta time in milliseconds.
-     * 
-     * @param headerValue the retry-after header value.
+     * @param headerValue The retry-after header value.
      * @return long value of calculated wait time in milliseconds.
      */
     private long getCalculatedHeaderValue(String headerValue) {
@@ -227,20 +235,18 @@ public class RetryInterceptor implements Interceptor {
 
     /**
      * Calculates the back-off value based on a formula which uses back-off factor and retry Count.
-     * 
-     * @param requestState the current state of request entry.
+     * @param requestState The current state of request entry.
      * @return long value of back-off time based on formula in milliseconds.
      */
     private long getCalculatedBackOffValue(RequestState requestState) {
-        return (long) (1000 * this.httpClientConfiguration.getRetryInterval()
+        return (long) (TO_MILLISECOND_MULTIPLIER * this.httpClientConfiguration.getRetryInterval()
                 * Math.pow(this.httpClientConfiguration.getBackOffFactor(), requestState.retryCount)
-                + Math.random() * 100);
+                + Math.random() * RANDOM_NUMBER_MULTIPLIER);
     }
 
     /**
      * Holds the execution for stored wait time in milliseconds of this thread.
-     * 
-     * @param milliSeconds the wait time in milli seconds.
+     * @param milliSeconds The wait time in milli seconds.
      */
     private void holdExecution(long milliSeconds) {
         try {
@@ -252,18 +258,16 @@ public class RetryInterceptor implements Interceptor {
 
     /**
      * Converts the seconds to milliseconds.
-     * 
      * @param seconds The seconds to convert.
      * @return long value of milliseconds.
      */
     private long toMilliseconds(long seconds) {
-        return seconds * 1000;
+        return seconds * TO_MILLISECOND_MULTIPLIER;
     }
 
     /**
      * Adds entry into Request entry map.
-     * 
-     * @param okHttpRequest the OK HTTP Request.
+     * @param okHttpRequest The OK HTTP Request.
      * @param endpointConfiguration The overridden endpointConfiguration for request.
      * @param request The core interface Request
      */
@@ -274,9 +278,8 @@ public class RetryInterceptor implements Interceptor {
 
     /**
      * getter for current request state entry from map.
-     * 
-     * @param okHttpRequest the OK HTTP Request.
-     * @return RequestEntry the current request entry.
+     * @param okHttpRequest The OK HTTP Request.
+     * @return RequestEntry The current request entry.
      */
     private RequestState getRequestState(okhttp3.Request okHttpRequest) {
         return this.requestEntries.get(okHttpRequest);
@@ -284,7 +287,6 @@ public class RetryInterceptor implements Interceptor {
 
     /**
      * Logs the response.
-     * 
      * @param requestState The current state of request.
      * @param response The OKhttp Response.
      */
@@ -304,9 +306,8 @@ public class RetryInterceptor implements Interceptor {
 
     /**
      * Logs the exception.
-     * 
      * @param requestState The current state of request.
-     * @param response The OKhttp Response.
+     * @param ioException The exception.
      */
     private void logError(RequestState requestState, IOException ioException) {
         if (httpLogger != null) {
@@ -319,12 +320,12 @@ public class RetryInterceptor implements Interceptor {
     /**
      * Class to hold the request info until request completes.
      */
-    private class RequestState {
+    private final class RequestState {
 
         /**
          * The internal HTTP request.
          */
-        Request httpRequest;
+        private Request httpRequest;
 
         /**
          * To keep track of requests count.
@@ -342,18 +343,18 @@ public class RetryInterceptor implements Interceptor {
         private long totalWaitTimeInMilliSeconds = 0;
 
         /**
-         * To keep track of request retry configurations.
+         * To keep track of request endpoint configurations.
          */
         private CoreEndpointConfiguration endpointConfiguration;
 
         /**
          * Default Constructor.
-         * 
-         * @param retryForAllHttpMethods Whether to bypass the HTTP method checking for the given
-         *        request in retries.
+         * @param coreEndpointConfiguration The end point configuration
+         * @param request The client request
          */
-        private RequestState(CoreEndpointConfiguration endpointConfiguration, Request request) {
-            this.endpointConfiguration = endpointConfiguration;
+        private RequestState(final CoreEndpointConfiguration coreEndpointConfiguration,
+                final Request request) {
+            this.endpointConfiguration = coreEndpointConfiguration;
             this.httpRequest = request;
         }
     }

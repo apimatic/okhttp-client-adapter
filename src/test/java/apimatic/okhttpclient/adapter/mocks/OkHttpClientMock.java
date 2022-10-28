@@ -8,25 +8,87 @@ import okhttp3.Call;
 
 public class OkHttpClientMock extends CompatibilityFactoryMock {
 
+    /**
+     * Initializes mocks annotated with Mock.
+     */
     @Rule
     public MockitoRule initRule = MockitoJUnit.rule().silent();
 
+    /**
+     * Mock of {okhttp3.OkHttpClient}.
+     */
     @Mock
-    protected okhttp3.OkHttpClient client;
+    private okhttp3.OkHttpClient client;
 
+    /**
+     * Mock of {@link Call}.
+     */
     @Mock
-    protected Call call;
+    private Call call;
 
+    /**
+     * Mock of {@link okhttp3.OkHttpClient.Builder}.
+     */
     @Mock
-    protected okhttp3.OkHttpClient.Builder clientBuilder;
+    private okhttp3.OkHttpClient.Builder clientBuilder;
 
+    /**
+     * Mock of {@link okhttp3.Response}.
+     */
     @Mock
-    protected okhttp3.Response okHttpResponse;
+    private okhttp3.Response okHttpResponse;
 
+    /**
+     * Mock of {@link okhttp3.ResponseBody}.
+     */
     @Mock
-    protected okhttp3.ResponseBody okHttpResponseBody;
+    private okhttp3.ResponseBody okHttpResponseBody;
 
+    /**
+     * Mock of {@link okhttp3.Headers}.
+     */
     @Mock
-    protected okhttp3.Headers okHttpHeaders;
+    private okhttp3.Headers okHttpHeaders;
 
+    /**
+     * @return {@link okhttp3.OkHttpClient.Builder}.
+     */
+    protected okhttp3.OkHttpClient.Builder getOkHttpClientBuilder() {
+        return clientBuilder;
+    }
+
+    /**
+     * @return {@link okhttp3.Response}.
+     */
+    protected okhttp3.Response getOkhttp3Response() {
+        return okHttpResponse;
+    }
+
+    /**
+     * @return {@link okhttp3.ResponseBody}.
+     */
+    protected okhttp3.ResponseBody getOkhttp3ResponseBody() {
+        return okHttpResponseBody;
+    }
+
+    /**
+     * @return {@link okhttp3.Headers}.
+     */
+    protected okhttp3.Headers getOkhttpHeaders() {
+        return okHttpHeaders;
+    }
+
+    /**
+     * @return {@link okhttp3.OkHttpClient}.
+     */
+    protected okhttp3.OkHttpClient getClient() {
+        return client;
+    }
+
+    /**
+     * @return {@link Call}.
+     */
+    protected Call getCall() {
+        return call;
+    }
 }
