@@ -127,7 +127,6 @@ public class OkClientTest extends OkHttpClientMock {
 
     /**
      * Setup the test setup.
-     * @throws IOException Signals that an I/O exception of some sort has occurred.
      */
     @Before
     public void setup() {
