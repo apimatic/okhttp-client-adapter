@@ -29,7 +29,7 @@ public class RetryInterceptor implements Interceptor {
     private static final int RANDOM_NUMBER_MULTIPLIER = 100;
 
     /**
-     * Maximu Retry interval.
+     * Maximum Retry interval.
      */
     private static final int TO_MILLISECOND_MULTIPLIER = 1000;
 
