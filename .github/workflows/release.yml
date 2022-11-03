@@ -1,6 +1,6 @@
 name: Release To Maven Central
 
-# Run workflow on commits to the `main` branch
+# Release to Maven Central
 on:
    workflow_dispatch:
     inputs:
