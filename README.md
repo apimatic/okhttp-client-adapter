@@ -13,14 +13,7 @@ This project contains OkHttp client adpater which is wrapper of Okhttp client im
 * The JRE flavor requires `JDK 1.8`.
 ## Install the maven package
 OKHttp Client adapter's Maven group ID is `io.apimatic`, and its artifact ID is `core-interfaces`.
-To add a dependency on OkHttp client adapter using Maven, use the following:
-```java
-<dependency>
-    <groupId>io.apimatic</groupId>
-    <artifactId>okhttp-client-adapter</artifactId>
-    <version>0.1.1</version>
-</dependency>
-```
+
 
 ## Classes
 | Name                                                                    | Description                                                        |
