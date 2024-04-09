@@ -262,32 +262,12 @@ public class OkClient implements HttpClient {
             retryInterceptor.addRequestEntry(okHttpRequest, endpointConfiguration, httpRequest);
         }
 
-        okhttp3.Response okHttpResponse = null;
-        try {
-            okHttpResponse = client.newCall(okHttpRequest).execute();
-        } catch (IOException e) {
-            // log response with error
-            if (apiLogger != null) {
-                apiLogger.setError(httpRequest, e);
-                apiLogger.logResponse(httpRequest, null);
-            }
-            throw e;
-        }
+        okhttp3.Response okHttpResponse = client.newCall(okHttpRequest).execute();
 
-        Response httpResponse = null;
-        try {
-            httpResponse = convertResponse(httpRequest, okHttpResponse,
-                    endpointConfiguration.hasBinaryResponse());
-        } catch (IOException e) {
-            if (apiLogger != null) {
-                apiLogger.setError(httpRequest, e);
-            }
-        }
+        Response httpResponse = convertResponse(httpRequest,
+        		                                okHttpResponse,
+        		                                endpointConfiguration.hasBinaryResponse());
 
-        if (apiLogger != null) {
-            // log response
-            apiLogger.logResponse(httpRequest, httpResponse);
-        }
         return httpResponse;
     }
 
@@ -458,11 +438,6 @@ public class OkClient implements HttpClient {
         okhttp3.Headers.Builder requestHeaders = new okhttp3.Headers.Builder();
         if (httpRequest.getHeaders() != null) {
             requestHeaders = createRequestHeaders(httpRequest.getHeaders());
-        }
-
-        // log request
-        if (apiLogger != null) {
-            apiLogger.logRequest(httpRequest, httpRequest.getUrl(arraySerializationFormat));
         }
 
         // build the request
