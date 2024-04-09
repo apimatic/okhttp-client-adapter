@@ -110,7 +110,6 @@ public class RetryInterceptor implements Interceptor {
                 }
 
                 if (response == null) {
-
                     logError(requestState, timeoutException);
                 }
                 // Waiting before making next request
@@ -311,8 +310,7 @@ public class RetryInterceptor implements Interceptor {
      */
     private void logError(RequestState requestState, IOException ioException) {
         if (httpLogger != null) {
-            httpLogger.setError(requestState.httpRequest, ioException);
-            httpLogger.logResponse(requestState.httpRequest, null);
+            httpLogger.logRequestError(requestState.httpRequest, requestState.httpRequest.getQueryUrl(), ioException);
         }
     }
 

@@ -297,7 +297,7 @@ public class OkClient implements HttpClient {
         try {
             if (error != null) {
                 if (apiLogger != null) {
-                    apiLogger.setError(httpRequest, error);
+                	apiLogger.logRequestError(httpRequest, httpRequest.getQueryUrl(), error);
                 }
             }
             httpResponse = convertResponse(httpRequest, okHttpResponse, hasBinaryResponse);
@@ -310,13 +310,11 @@ public class OkClient implements HttpClient {
             }
         } catch (IOException e) {
             if (apiLogger != null) {
-                apiLogger.setError(httpRequest, e);
+                apiLogger.logRequestError(httpRequest, httpRequest.getQueryUrl(), error);
             }
             completionBlock.completeExceptionally(e);
         }
-        if (apiLogger != null) {
-            apiLogger.logResponse(httpRequest, httpResponse);
-        }
+
         return httpResponse;
     }
 
