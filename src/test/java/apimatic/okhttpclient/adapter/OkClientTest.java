@@ -694,8 +694,6 @@ public class OkClientTest extends OkHttpClientMock {
     }
 
     private void prepareStub() {
-        when(configuration.getArraySerializationFormat())
-                .thenReturn(ArraySerializationFormat.INDEXED);
         when(configuration.getRetryOption()).thenReturn(RetryOption.DEFAULT);
 
         when(clientConfiguration.getNumberOfRetries()).thenReturn(RETRY_INTERVAL);
@@ -715,12 +713,10 @@ public class OkClientTest extends OkHttpClientMock {
         when(getOkHttpClientBuilder().callTimeout(CALL_TIMEOUT, TimeUnit.SECONDS))
                 .thenReturn(getOkHttpClientBuilder());
         when(getOkHttpClientBuilder().build()).thenReturn(getClient());
-        when(configuration.getArraySerializationFormat())
-                .thenReturn(ArraySerializationFormat.INDEXED);
         when(configuration.getRetryOption()).thenReturn(RetryOption.DEFAULT);
         when(getRequest().getHeaders()).thenReturn(getHttpHeaders());
         when(getOkhttp3Response().headers()).thenReturn(getOkhttpHeaders());
-        when(getRequest().getUrl(ArraySerializationFormat.INDEXED))
+        when(getRequest().getQueryUrl())
                 .thenReturn("https://localhost:3000");
         when(fileWrapper.getFile()).thenReturn(file);
         when(coreMultipartFileWrapper.getHeaders()).thenReturn(getHttpHeaders());

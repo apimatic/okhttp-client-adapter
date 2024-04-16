@@ -57,11 +57,6 @@ public class OkClient implements HttpClient {
     private okhttp3.OkHttpClient client;
 
     /**
-     * Private instance of ApiLogger.
-     */
-    private ApiLogger apiLogger;
-
-    /**
      * Private instance of CompatibilityFactory.
      */
     private static CompatibilityFactory compatibilityFactory;
@@ -75,7 +70,6 @@ public class OkClient implements HttpClient {
     public OkClient(final ClientConfiguration httpClientConfig,
             final CompatibilityFactory compatibilityFactory, final ApiLogger apiLogger) {
         this(httpClientConfig, compatibilityFactory);
-        this.apiLogger = apiLogger;
     }
 
     /**
@@ -119,7 +113,7 @@ public class OkClient implements HttpClient {
         // If retries are allowed then RetryInterceptor must be registered
         if (httpClientConfig.getNumberOfRetries() > 0) {
             clientBuilder.callTimeout(httpClientConfig.getMaximumRetryWaitTime(), TimeUnit.SECONDS)
-                    .addInterceptor(new RetryInterceptor(httpClientConfig, apiLogger));
+                    .addInterceptor(new RetryInterceptor(httpClientConfig));
         } else {
             clientBuilder.callTimeout(httpClientConfig.getTimeout(), TimeUnit.SECONDS);
         }
@@ -220,8 +214,7 @@ public class OkClient implements HttpClient {
      */
     public CompletableFuture<Response> executeAsync(final Request httpRequest,
             final CoreEndpointConfiguration endpointConfiguration) {
-        okhttp3.Request okHttpRequest =
-                convertRequest(httpRequest, endpointConfiguration.getArraySerializationFormat());
+        okhttp3.Request okHttpRequest = convertRequest(httpRequest);
 
         RetryInterceptor retryInterceptor = getRetryInterceptor();
         if (retryInterceptor != null) {
@@ -254,8 +247,7 @@ public class OkClient implements HttpClient {
      */
     public Response execute(final Request httpRequest,
             final CoreEndpointConfiguration endpointConfiguration) throws IOException {
-        okhttp3.Request okHttpRequest =
-                convertRequest(httpRequest, endpointConfiguration.getArraySerializationFormat());
+        okhttp3.Request okHttpRequest = convertRequest(httpRequest);
 
         RetryInterceptor retryInterceptor = getRetryInterceptor();
         if (retryInterceptor != null) {
@@ -295,11 +287,6 @@ public class OkClient implements HttpClient {
             final Throwable error, final boolean hasBinaryResponse) {
         Response httpResponse = null;
         try {
-            if (error != null) {
-                if (apiLogger != null) {
-                	apiLogger.logRequestError(httpRequest, httpRequest.getQueryUrl(), error);
-                }
-            }
             httpResponse = convertResponse(httpRequest, okHttpResponse, hasBinaryResponse);
 
             // if there are no errors, pass on to the callback function
@@ -309,9 +296,6 @@ public class OkClient implements HttpClient {
                 completionBlock.completeExceptionally(error);
             }
         } catch (IOException e) {
-            if (apiLogger != null) {
-                apiLogger.logRequestError(httpRequest, httpRequest.getQueryUrl(), error);
-            }
             completionBlock.completeExceptionally(e);
         }
 
@@ -358,11 +342,9 @@ public class OkClient implements HttpClient {
     /**
      * Converts a given internal http request into an okhttp request model.
      * @param httpRequest The given http request in internal format.
-     * @param arraySerializationFormat
      * @return The converted okhttp request
      */
-    private okhttp3.Request convertRequest(final Request httpRequest,
-            final ArraySerializationFormat arraySerializationFormat) {
+    private okhttp3.Request convertRequest(final Request httpRequest) {
         okhttp3.RequestBody requestBody;
 
         if (httpRequest.getBody() != null) {
@@ -441,7 +423,7 @@ public class OkClient implements HttpClient {
         // build the request
         okhttp3.Request okHttpRequest = new okhttp3.Request.Builder()
                 .method(httpRequest.getHttpMethod().toString(), requestBody)
-                .headers(requestHeaders.build()).url(httpRequest.getUrl(arraySerializationFormat))
+                .headers(requestHeaders.build()).url(httpRequest.getQueryUrl())
                 .build();
 
         return okHttpRequest;

@@ -51,18 +51,11 @@ public class RetryInterceptor implements Interceptor {
     private final ClientConfiguration httpClientConfiguration;
 
     /**
-     * Private instance of HttpLogger.
-     */
-    private final ApiLogger httpLogger;
-
-    /**
      * Default Constructor, Initializes the httpClientConfiguration attribute.
      * @param httpClientConfig the user specified configurations.
      * @param httpApiLogger for logging request and response.
      */
-    public RetryInterceptor(final ClientConfiguration httpClientConfig,
-            final ApiLogger httpApiLogger) {
-        this.httpLogger = httpApiLogger;
+    public RetryInterceptor(final ClientConfiguration httpClientConfig) {
         this.httpClientConfiguration = httpClientConfig;
         requestEntries = new ConcurrentHashMap<>();
     }
@@ -109,19 +102,11 @@ public class RetryInterceptor implements Interceptor {
                     break;
                 }
 
-                if (response == null) {
-                    logError(requestState, timeoutException);
-                }
                 // Waiting before making next request
                 holdExecution(requestState.currentWaitInMilliSeconds);
 
                 // Incrementing retry attempt count
                 requestState.retryCount++;
-
-                if (httpLogger != null) {
-                    httpLogger.logRequest(requestState.httpRequest, request.url().toString(),
-                            "Retry Attempt # " + requestState.retryCount);
-                }
             }
 
         } while (shouldRetry);
@@ -295,25 +280,10 @@ public class RetryInterceptor implements Interceptor {
         try {
             httpResponse = OkClient.convertResponse(requestState.httpRequest, response,
                     requestState.endpointConfiguration.hasBinaryResponse());
-            if (httpLogger != null) {
-                httpLogger.logResponse(requestState.httpRequest, httpResponse);
-            }
         } catch (IOException ioException) {
-            logError(requestState, ioException);
+            // log error
         }
     }
-
-    /**
-     * Logs the exception.
-     * @param requestState The current state of request.
-     * @param ioException The exception.
-     */
-    private void logError(RequestState requestState, IOException ioException) {
-        if (httpLogger != null) {
-            httpLogger.logRequestError(requestState.httpRequest, requestState.httpRequest.getQueryUrl(), ioException);
-        }
-    }
-
 
     /**
      * Class to hold the request info until request completes.
