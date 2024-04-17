@@ -14,7 +14,6 @@ import io.apimatic.coreinterfaces.http.HttpMethodType;
 import io.apimatic.coreinterfaces.http.request.Request;
 import io.apimatic.coreinterfaces.http.request.configuration.CoreEndpointConfiguration;
 import io.apimatic.coreinterfaces.http.response.Response;
-import io.apimatic.coreinterfaces.logger.ApiLogger;
 import io.apimatic.okhttpclient.adapter.OkClient;
 import okhttp3.Interceptor;
 
