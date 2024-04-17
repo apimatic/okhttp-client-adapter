@@ -374,7 +374,7 @@ public class OkClientTest extends OkHttpClientMock {
         when(clientConfiguration.shouldOverrideHttpClientConfigurations()).thenReturn(true);
         when(getClient().newCall(any(okhttp3.Request.class))).thenReturn(getCall());
 
-        OkClient client = new OkClient(clientConfiguration, getCompatibilityFactory(), apiLogger);
+        OkClient client = new OkClient(clientConfiguration, getCompatibilityFactory());
         when(getRequest().getHttpMethod()).thenReturn(Method.POST);
         when(getRequest().getBody()).thenReturn("bodyValue");
 
@@ -407,7 +407,7 @@ public class OkClientTest extends OkHttpClientMock {
         when(clientConfiguration.shouldOverrideHttpClientConfigurations()).thenReturn(true);
         when(getClient().newCall(any(okhttp3.Request.class))).thenReturn(getCall());
 
-        OkClient client = new OkClient(clientConfiguration, getCompatibilityFactory(), apiLogger);
+        OkClient client = new OkClient(clientConfiguration, getCompatibilityFactory());
         when(getRequest().getHttpMethod()).thenReturn(Method.POST);
         when(getRequest().getBody()).thenReturn("bodyValue");
         when(getCall().execute()).thenThrow(ioException);
@@ -568,7 +568,7 @@ public class OkClientTest extends OkHttpClientMock {
         when(clientConfiguration.shouldOverrideHttpClientConfigurations()).thenReturn(false);
         when(getClient().newCall(any(okhttp3.Request.class))).thenReturn(getCall());
 
-        OkClient client = new OkClient(clientConfiguration, getCompatibilityFactory(), null);
+        OkClient client = new OkClient(clientConfiguration, getCompatibilityFactory());
         when(getRequest().getHttpMethod()).thenReturn(Method.POST);
 
         List<SimpleEntry<String, Object>> listP = new ArrayList<>();

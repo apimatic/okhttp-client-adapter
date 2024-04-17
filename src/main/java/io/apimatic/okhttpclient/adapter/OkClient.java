@@ -62,17 +62,6 @@ public class OkClient implements HttpClient {
 
     /**
      * Constructor to initialize the OKClient.
-     * @param httpClientConfig Client configuration
-     * @param compatibilityFactory The compatibilityFactory for backward compatibility
-     * @param apiLogger The logger for logging information
-     */
-    public OkClient(final ClientConfiguration httpClientConfig,
-            final CompatibilityFactory compatibilityFactory, final ApiLogger apiLogger) {
-        this(httpClientConfig, compatibilityFactory);
-    }
-
-    /**
-     * Constructor to initialize the OKClient.
      * @param httpClientConfig The httpClientConfiguration
      * @param compatibilityFactory The compatibilityFactory for backward compatibility
      */
