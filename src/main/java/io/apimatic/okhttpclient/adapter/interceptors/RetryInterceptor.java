@@ -52,7 +52,6 @@ public class RetryInterceptor implements Interceptor {
     /**
      * Default Constructor, Initializes the httpClientConfiguration attribute.
      * @param httpClientConfig the user specified configurations.
-     * @param httpApiLogger for logging request and response.
      */
     public RetryInterceptor(final ClientConfiguration httpClientConfig) {
         this.httpClientConfiguration = httpClientConfig;
