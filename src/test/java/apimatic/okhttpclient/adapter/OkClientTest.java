@@ -28,7 +28,6 @@ import apimatic.okhttpclient.adapter.mocks.OkHttpClientMock;
 import io.apimatic.coreinterfaces.http.ClientConfiguration;
 import io.apimatic.coreinterfaces.http.HttpHeaders;
 import io.apimatic.coreinterfaces.http.Method;
-import io.apimatic.coreinterfaces.http.request.ArraySerializationFormat;
 import io.apimatic.coreinterfaces.http.request.Multipart;
 import io.apimatic.coreinterfaces.http.request.MultipartFile;
 import io.apimatic.coreinterfaces.http.request.configuration.CoreEndpointConfiguration;
