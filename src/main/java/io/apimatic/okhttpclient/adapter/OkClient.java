@@ -43,19 +43,19 @@ public class OkClient implements HttpClient {
     private static final Object SYNC_OBJECT = new Object();
 
     /**
-     * A default okhttp3.OkHttpClient instance.
+     * A default OkHttpClient instance.
      */
-    private static volatile okhttp3.OkHttpClient defaultOkHttpClient;
+    private static volatile OkHttpClient defaultOkHttpClient;
 
     /**
-     * An instance for insecure okhttp3.OkHttpClient.
+     * An instance for insecure OkHttpClient.
      */
-    private static okhttp3.OkHttpClient insecureOkHttpClient;
+    private static OkHttpClient insecureOkHttpClient;
 
     /**
-     * Private instance of the okhttp3.OkHttpClient.
+     * Private instance of the OkHttpClient.
      */
-    private okhttp3.OkHttpClient client;
+    private OkHttpClient client;
 
     /**
      * Private instance of CompatibilityFactory.
@@ -70,7 +70,7 @@ public class OkClient implements HttpClient {
     public OkClient(final ClientConfiguration httpClientConfig,
             final CompatibilityFactory compatibilityFactory) {
         OkClient.compatibilityFactory = compatibilityFactory;
-        okhttp3.OkHttpClient httpClientInstance = httpClientConfig.getHttpClientInstance();
+        OkHttpClient httpClientInstance = httpClientConfig.getHttpClientInstance();
         if (httpClientInstance != null) {
             if (httpClientConfig.shouldOverrideHttpClientConfigurations()) {
                 applyHttpClientConfigurations(httpClientInstance, httpClientConfig);
@@ -88,13 +88,13 @@ public class OkClient implements HttpClient {
     }
 
     /**
-     * Applies the httpClientConfigurations on okhttp3.OkHttpClient.
+     * Applies the httpClientConfigurations on OkHttpClient.
      * @param okHttpClient A okhttp client instance
      * @param httpClientConfig A client configuration
      */
-    private void applyHttpClientConfigurations(final okhttp3.OkHttpClient okHttpClient,
+    private void applyHttpClientConfigurations(final OkHttpClient okHttpClient,
             final ClientConfiguration httpClientConfig) {
-        okhttp3.OkHttpClient.Builder clientBuilder = okHttpClient.newBuilder();
+        OkHttpClient.Builder clientBuilder = okHttpClient.newBuilder();
         clientBuilder.readTimeout(httpClientConfig.getTimeout(), TimeUnit.SECONDS)
                 .writeTimeout(httpClientConfig.getTimeout(), TimeUnit.SECONDS)
                 .connectTimeout(httpClientConfig.getTimeout(), TimeUnit.SECONDS);
@@ -112,11 +112,11 @@ public class OkClient implements HttpClient {
     }
 
     /**
-     * Getter for the default static instance of the okhttp3.OkHttpClient.
+     * Getter for the default static instance of the OkHttpClient.
      * @param httpClientConfiguration The client configuration
      * @return {@link OkHttpClient}
      */
-    private okhttp3.OkHttpClient
+    private OkHttpClient
             getInsecureOkHttpClient(ClientConfiguration httpClientConfiguration) {
         if (insecureOkHttpClient == null) {
             synchronized (SYNC_OBJECT) {
@@ -128,7 +128,7 @@ public class OkClient implements HttpClient {
         return insecureOkHttpClient;
     }
 
-    private static okhttp3.OkHttpClient
+    private static OkHttpClient
             createInsecureOkHttpClient(final ClientConfiguration httpClientConfiguration) {
         try {
             // Create a trust manager that does not validate certificate chains
@@ -150,7 +150,7 @@ public class OkClient implements HttpClient {
             // Create an ssl socket factory with our all-trusting manager
             final SSLSocketFactory sslSocketFactory = sslContext.getSocketFactory();
 
-            return new okhttp3.OkHttpClient().newBuilder()
+            return new OkHttpClient().newBuilder()
                     .sslSocketFactory(sslSocketFactory, (X509TrustManager) trustAllCerts[0])
                     .hostnameVerifier(new HostnameVerifier() {
                         public boolean verify(final String hostname, final SSLSession session) {
@@ -165,15 +165,15 @@ public class OkClient implements HttpClient {
     }
 
     /**
-     * Getter for the default static instance of the okhttp3.OkHttpClient.
+     * Getter for the default static instance of the OkHttpClient.
      * @return {@link OkHttpClient}
      */
-    private okhttp3.OkHttpClient getDefaultOkHttpClient() {
+    private OkHttpClient getDefaultOkHttpClient() {
         if (defaultOkHttpClient == null) {
             synchronized (SYNC_OBJECT) {
                 if (defaultOkHttpClient == null) {
                     defaultOkHttpClient =
-                            new okhttp3.OkHttpClient.Builder().retryOnConnectionFailure(false)
+                            new OkHttpClient.Builder().retryOnConnectionFailure(false)
                                     .callTimeout(0, TimeUnit.SECONDS).build();
                 }
             }
