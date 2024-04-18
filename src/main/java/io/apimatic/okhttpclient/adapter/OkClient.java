@@ -10,12 +10,14 @@ import java.util.List;
 import java.util.Map.Entry;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
+
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLSession;
 import javax.net.ssl.SSLSocketFactory;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
+
 import io.apimatic.coreinterfaces.compatibility.CompatibilityFactory;
 import io.apimatic.coreinterfaces.http.ClientConfiguration;
 import io.apimatic.coreinterfaces.http.HttpClient;
@@ -26,10 +28,10 @@ import io.apimatic.coreinterfaces.http.request.MultipartFile;
 import io.apimatic.coreinterfaces.http.request.Request;
 import io.apimatic.coreinterfaces.http.request.configuration.CoreEndpointConfiguration;
 import io.apimatic.coreinterfaces.http.response.Response;
-import io.apimatic.coreinterfaces.logger.ApiLogger;
 import io.apimatic.coreinterfaces.type.CoreFileWrapper;
 import io.apimatic.okhttpclient.adapter.interceptors.HttpRedirectInterceptor;
 import io.apimatic.okhttpclient.adapter.interceptors.RetryInterceptor;
+import okhttp3.OkHttpClient;
 
 /**
  * HTTP Client class to send HTTP Requests and read the responses.
