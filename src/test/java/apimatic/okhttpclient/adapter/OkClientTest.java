@@ -28,7 +28,6 @@ import apimatic.okhttpclient.adapter.mocks.OkHttpClientMock;
 import io.apimatic.coreinterfaces.http.ClientConfiguration;
 import io.apimatic.coreinterfaces.http.HttpHeaders;
 import io.apimatic.coreinterfaces.http.Method;
-import io.apimatic.coreinterfaces.http.request.ArraySerializationFormat;
 import io.apimatic.coreinterfaces.http.request.Multipart;
 import io.apimatic.coreinterfaces.http.request.MultipartFile;
 import io.apimatic.coreinterfaces.http.request.configuration.CoreEndpointConfiguration;
@@ -375,7 +374,7 @@ public class OkClientTest extends OkHttpClientMock {
         when(clientConfiguration.shouldOverrideHttpClientConfigurations()).thenReturn(true);
         when(getClient().newCall(any(okhttp3.Request.class))).thenReturn(getCall());
 
-        OkClient client = new OkClient(clientConfiguration, getCompatibilityFactory(), apiLogger);
+        OkClient client = new OkClient(clientConfiguration, getCompatibilityFactory());
         when(getRequest().getHttpMethod()).thenReturn(Method.POST);
         when(getRequest().getBody()).thenReturn("bodyValue");
 
@@ -408,7 +407,7 @@ public class OkClientTest extends OkHttpClientMock {
         when(clientConfiguration.shouldOverrideHttpClientConfigurations()).thenReturn(true);
         when(getClient().newCall(any(okhttp3.Request.class))).thenReturn(getCall());
 
-        OkClient client = new OkClient(clientConfiguration, getCompatibilityFactory(), apiLogger);
+        OkClient client = new OkClient(clientConfiguration, getCompatibilityFactory());
         when(getRequest().getHttpMethod()).thenReturn(Method.POST);
         when(getRequest().getBody()).thenReturn("bodyValue");
         when(getCall().execute()).thenThrow(ioException);
@@ -569,7 +568,7 @@ public class OkClientTest extends OkHttpClientMock {
         when(clientConfiguration.shouldOverrideHttpClientConfigurations()).thenReturn(false);
         when(getClient().newCall(any(okhttp3.Request.class))).thenReturn(getCall());
 
-        OkClient client = new OkClient(clientConfiguration, getCompatibilityFactory(), null);
+        OkClient client = new OkClient(clientConfiguration, getCompatibilityFactory());
         when(getRequest().getHttpMethod()).thenReturn(Method.POST);
 
         List<SimpleEntry<String, Object>> listP = new ArrayList<>();
@@ -694,8 +693,6 @@ public class OkClientTest extends OkHttpClientMock {
     }
 
     private void prepareStub() {
-        when(configuration.getArraySerializationFormat())
-                .thenReturn(ArraySerializationFormat.INDEXED);
         when(configuration.getRetryOption()).thenReturn(RetryOption.DEFAULT);
 
         when(clientConfiguration.getNumberOfRetries()).thenReturn(RETRY_INTERVAL);
@@ -715,12 +712,10 @@ public class OkClientTest extends OkHttpClientMock {
         when(getOkHttpClientBuilder().callTimeout(CALL_TIMEOUT, TimeUnit.SECONDS))
                 .thenReturn(getOkHttpClientBuilder());
         when(getOkHttpClientBuilder().build()).thenReturn(getClient());
-        when(configuration.getArraySerializationFormat())
-                .thenReturn(ArraySerializationFormat.INDEXED);
         when(configuration.getRetryOption()).thenReturn(RetryOption.DEFAULT);
         when(getRequest().getHeaders()).thenReturn(getHttpHeaders());
         when(getOkhttp3Response().headers()).thenReturn(getOkhttpHeaders());
-        when(getRequest().getUrl(ArraySerializationFormat.INDEXED))
+        when(getRequest().getQueryUrl())
                 .thenReturn("https://localhost:3000");
         when(fileWrapper.getFile()).thenReturn(file);
         when(coreMultipartFileWrapper.getHeaders()).thenReturn(getHttpHeaders());

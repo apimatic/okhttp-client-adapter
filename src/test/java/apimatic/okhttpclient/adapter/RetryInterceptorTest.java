@@ -138,7 +138,7 @@ public class RetryInterceptorTest extends CompatibilityFactoryMock {
         when(request.method()).thenReturn(Method.GET.toString());
         when(response.code()).thenReturn(BAD_REQUET_STATUS_CODE);
         when(request.url()).thenReturn(url);
-        RetryInterceptor interceptor = new RetryInterceptor(clientConfiguration, apiLogger);
+        RetryInterceptor interceptor = new RetryInterceptor(clientConfiguration);
         interceptor.addRequestEntry(request, endpointConfiguration, null);
         Response httpResponse = interceptor.intercept(chain);
         assertFalse(httpResponse.isSuccessful());
@@ -153,7 +153,7 @@ public class RetryInterceptorTest extends CompatibilityFactoryMock {
         when(chain.proceed(request)).thenThrow(IOException.class);
         when(request.method()).thenReturn(Method.GET.toString());
         when(response.code()).thenReturn(BAD_REQUET_STATUS_CODE);
-        RetryInterceptor interceptor = new RetryInterceptor(clientConfiguration, apiLogger);
+        RetryInterceptor interceptor = new RetryInterceptor(clientConfiguration);
         interceptor.addRequestEntry(request, endpointConfiguration, null);
         interceptor.intercept(chain);
     }
@@ -169,7 +169,7 @@ public class RetryInterceptorTest extends CompatibilityFactoryMock {
         when(request.method()).thenReturn(Method.GET.toString());
         when(request.url()).thenReturn(url);
         when(response.code()).thenReturn(BAD_REQUET_STATUS_CODE);
-        RetryInterceptor interceptor = new RetryInterceptor(clientConfiguration, apiLogger);
+        RetryInterceptor interceptor = new RetryInterceptor(clientConfiguration);
         interceptor.addRequestEntry(request, endpointConfiguration, null);
         interceptor.intercept(chain);
     }
@@ -183,7 +183,7 @@ public class RetryInterceptorTest extends CompatibilityFactoryMock {
         when(request.method()).thenReturn(Method.GET.toString());
         when(request.url()).thenReturn(url);
         when(response.code()).thenReturn(BAD_REQUET_STATUS_CODE);
-        RetryInterceptor interceptor = new RetryInterceptor(clientConfiguration, apiLogger);
+        RetryInterceptor interceptor = new RetryInterceptor(clientConfiguration);
         interceptor.addRequestEntry(request, endpointConfiguration, null);
         Response httpResponse = interceptor.intercept(chain);
         assertFalse(httpResponse.isSuccessful());
@@ -200,7 +200,7 @@ public class RetryInterceptorTest extends CompatibilityFactoryMock {
         when(response.header("Retry-After")).thenReturn("3");
         when(response.headers()).thenReturn(headers);
         when(request.url()).thenReturn(url);
-        RetryInterceptor interceptor = new RetryInterceptor(clientConfiguration, apiLogger);
+        RetryInterceptor interceptor = new RetryInterceptor(clientConfiguration);
         interceptor.addRequestEntry(request, endpointConfiguration, null);
         Response httpResponse = interceptor.intercept(chain);
         assertFalse(httpResponse.isSuccessful());
@@ -214,7 +214,7 @@ public class RetryInterceptorTest extends CompatibilityFactoryMock {
         when(clientConfiguration.getNumberOfRetries()).thenReturn(NO_OF_RETRIES);
         when(request.method()).thenReturn(Method.GET.toString());
         when(response.header("Retry-After")).thenReturn("3N");
-        RetryInterceptor interceptor = new RetryInterceptor(clientConfiguration, apiLogger);
+        RetryInterceptor interceptor = new RetryInterceptor(clientConfiguration);
         interceptor.addRequestEntry(request, endpointConfiguration, null);
         interceptor.intercept(chain);
     }
@@ -228,7 +228,7 @@ public class RetryInterceptorTest extends CompatibilityFactoryMock {
         when(request.url()).thenReturn(url);
         when(request.method()).thenReturn(Method.GET.toString());
         when(response.header("Retry-After")).thenReturn("Wed, 13 Jul 2022 06:10:00 GMT");
-        RetryInterceptor interceptor = new RetryInterceptor(clientConfiguration, apiLogger);
+        RetryInterceptor interceptor = new RetryInterceptor(clientConfiguration);
         interceptor.addRequestEntry(request, endpointConfiguration, null);
         interceptor.intercept(chain);
     }
@@ -240,7 +240,7 @@ public class RetryInterceptorTest extends CompatibilityFactoryMock {
     public void testZeroRetry() throws IOException {
         when(clientConfiguration.getNumberOfRetries()).thenReturn(0);
         when(request.method()).thenReturn(Method.GET.toString());
-        RetryInterceptor interceptor = new RetryInterceptor(clientConfiguration, apiLogger);
+        RetryInterceptor interceptor = new RetryInterceptor(clientConfiguration);
         interceptor.addRequestEntry(request, endpointConfiguration, null);
         Response httpResponse = interceptor.intercept(chain);
         assertFalse(httpResponse.isSuccessful());
