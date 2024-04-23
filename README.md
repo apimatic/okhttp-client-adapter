@@ -25,7 +25,7 @@ OKHttp Client adapter's Maven group ID is `io.apimatic`, and its artifact ID is 
 [license-badge]: https://img.shields.io/badge/licence-MIT-blue
 [license-url]: LICENSE
 [maven-badge]: https://img.shields.io/maven-central/v/io.apimatic/okhttp-client-adapter?color=green
-[maven-url]: https://central.sonatype.dev/artifact/io.apimatic/okhttp-client-adapter/0.1.0
+[maven-url]: https://central.sonatype.com/artifact/io.apimatic/okhttp-client-adapter
 [test-badge]: https://github.com/apimatic/okhttp-client-adapter/actions/workflows/build-and-test.yml/badge.svg
 [test-url]: https://github.com/apimatic/okhttp-client-adapter/actions/workflows/build-and-test.yml
 [code-climate-url]: https://codeclimate.com/github/apimatic/okhttp-client-adapter
