@@ -199,7 +199,7 @@ public class OkClient implements HttpClient {
     /**
      * Execute a given Request to get string/binary response back.
      * @param httpRequest The given Request to execute.
-     * @param endpointConfiguration The endpointconfiguration for request.
+     * @param endpointConfiguration The endpoint configuration for request.
      * @return CompletableFuture of HttpResponse after execution.
      */
     public CompletableFuture<Response> executeAsync(final Request httpRequest,
