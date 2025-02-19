@@ -173,7 +173,7 @@ public class OkClient implements HttpClient {
             synchronized (SYNC_OBJECT) {
                 if (defaultOkHttpClient == null) {
                     defaultOkHttpClient =
-                            new OkHttpClient.Builder().retryOnConnectionFailure(false)
+                            new OkHttpClient.Builder().retryOnConnectionFailure(true)
                                     .callTimeout(0, TimeUnit.SECONDS).build();
                 }
             }
