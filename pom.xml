@@ -5,7 +5,7 @@
 
 	<groupId>io.apimatic</groupId>
 	<artifactId>okhttp-client-adapter</artifactId>
-	<version>0.3.3</version>
+	<version>0.3.4</version>
 
 	<name>okhttp-client-adapter</name>
 	<description>An adapter for okhttp-client library consumed by the SDKs generated with APIMatic.</description>
