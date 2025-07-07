@@ -5,7 +5,7 @@
 
 	<groupId>io.apimatic</groupId>
 	<artifactId>okhttp-client-adapter</artifactId>
-	<version>0.3.3</version>
+	<version>0.3.4</version>
 
 	<name>okhttp-client-adapter</name>
 	<description>An adapter for okhttp-client library consumed by the SDKs generated with APIMatic.</description>
@@ -31,17 +31,6 @@
 		<developerConnection>scm:git:ssh://github.com/apimatic/okhttp-client-adapter.git</developerConnection>
 		<url>https://github.com/apimatic/okhttp-client-adapter</url>
 	</scm>
-
-	<distributionManagement>
-		<snapshotRepository>
-			<id>ossrh</id>
-			<url>https://s01.oss.sonatype.org/content/repositories/snapshots</url>
-		</snapshotRepository>
-		<repository>
-			<id>ossrh</id>
-			<url>https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/</url>
-		</repository>
-	</distributionManagement>
 
 	<dependencies>
 		<dependency>
@@ -157,16 +146,17 @@
 				</configuration>
 			</plugin>
 			<plugin>
-				<groupId>org.sonatype.plugins</groupId>
-				<artifactId>nexus-staging-maven-plugin</artifactId>
-				<version>1.6.7</version>
-				<extensions>true</extensions>
-				<configuration>
-					<serverId>ossrh</serverId>
-					<nexusUrl>https://s01.oss.sonatype.org/</nexusUrl>
-					<autoReleaseAfterClose>true</autoReleaseAfterClose>
+		        	<groupId>org.sonatype.central</groupId>
+		            	<artifactId>central-publishing-maven-plugin</artifactId>
+		            	<version>0.8.0</version>
+		            	<extensions>true</extensions>
+		        	<configuration>
+			              	<publishingServerId>ossrh</publishingServerId>
+			              	<tokenAuth>true</tokenAuth>
+			              	<autoPublish>true</autoPublish>
+			              	<waitUntil>published</waitUntil>
 				</configuration>
-			</plugin>
+		        </plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-source-plugin</artifactId>
