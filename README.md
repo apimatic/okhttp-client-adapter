@@ -5,7 +5,6 @@
 [![Lint Code][lint-badge]][lint-url]
 [![Test Coverage][coverage-badge]][coverage-url]
 [![Maintainability Rating][maintainability-badge]][maintainability-url]
-[![Vulnerabilities][vulnerabilities-badge]][vulnerabilities-url]
 [![Licence][license-badge]][license-url]
 ## Introduction
 This project contains OkHttp client adpater which is wrapper of Okhttp client implementation. This implementation is being provided to java core library from an APIMatic SDK.
@@ -34,7 +33,5 @@ OKHttp Client adapter's Maven group ID is `io.apimatic`, and its artifact ID is 
 [coverage-url]: https://sonarcloud.io/summary/new_code?id=apimatic_okhttp-client-adapter
 [maintainability-badge]: https://sonarcloud.io/api/project_badges/measure?project=apimatic_okhttp-client-adapter&metric=sqale_rating
 [maintainability-url]: https://sonarcloud.io/summary/new_code?id=apimatic_okhttp-client-adapter
-[vulnerabilities-badge]: https://sonarcloud.io/api/project_badges/measure?project=apimatic_okhttp-client-adapter&metric=vulnerabilities
-[vulnerabilities-url]: https://sonarcloud.io/summary/new_code?id=apimatic_okhttp-client-adapter
 [lint-badge]: https://github.com/apimatic/okhttp-client-adapter/actions/workflows/linter.yml/badge.svg
 [lint-url]: https://github.com/apimatic/okhttp-client-adapter/actions/workflows/linter.yml
