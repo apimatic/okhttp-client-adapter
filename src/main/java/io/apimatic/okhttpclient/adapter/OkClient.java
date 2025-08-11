@@ -140,10 +140,10 @@ public class OkClient implements HttpClient {
 
     /**
      * Builds a proxy authenticator using the provided credentials.
-     *
      * @param username the proxy username
      * @param password the proxy password
-     * @return an {@link Authenticator} that adds Proxy-Authorization headers, or null if credentials are incomplete
+     * @return an {@link Authenticator} that adds Proxy-Authorization headers,
+     * or null if credentials are incomplete
      */
     public static okhttp3.Authenticator buildProxyAuthenticator(String username, String password) {
         return new okhttp3.Authenticator() {
