@@ -4,7 +4,6 @@ import io.apimatic.coreinterfaces.http.proxy.ProxyConfiguration;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.Authenticator;
 import java.net.InetSocketAddress;
 import java.net.Proxy;
 import java.net.Proxy.Type;
@@ -142,23 +141,19 @@ public class OkClient implements HttpClient {
      * Builds a proxy authenticator using the provided credentials.
      * @param username the proxy username
      * @param password the proxy password
-     * @return an {@link Authenticator} that adds Proxy-Authorization headers,
+     * @return an {@link okhttp3.Authenticator} that adds Proxy-Authorization headers,
      * or null if credentials are incomplete
      */
     public static okhttp3.Authenticator buildProxyAuthenticator(String username, String password) {
-        return new okhttp3.Authenticator() {
-            @Override
-            public okhttp3.Request authenticate(okhttp3.Route route, okhttp3.Response response)
-              throws IOException {
-                if (response.request().header("Proxy-Authorization") != null) {
-                    return null; // Prevent retry loop
-                }
-
-                String credential = okhttp3.Credentials.basic(username, password);
-                return response.request().newBuilder()
-                  .header("Proxy-Authorization", credential)
-                  .build();
+        return (route, response) -> {
+            if (response.request().header("Proxy-Authorization") != null) {
+                return null; // Prevent retry loop
             }
+
+            String credential = okhttp3.Credentials.basic(username, password);
+            return response.request().newBuilder()
+              .header("Proxy-Authorization", credential)
+              .build();
         };
     }
 
