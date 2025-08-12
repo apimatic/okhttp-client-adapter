@@ -155,6 +155,7 @@
 			              	<tokenAuth>true</tokenAuth>
 			              	<autoPublish>true</autoPublish>
 			              	<waitUntil>published</waitUntil>
+							<deploymentName>APIMatic OKHttp Client Adapter</deploymentName>
 				</configuration>
 		        </plugin>
 			<plugin>
